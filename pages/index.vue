@@ -1,0 +1,171 @@
+<template>
+  <div class="w-100">
+    <div class="row mb-4">
+      <div class="offset-md-3 col-md-6 text-center">
+        <div class="input-group my-3">
+          <input type="text" class="form-control" placeholder="Išči" v-model="searchQuery"
+                 aria-describedby="basic-addon2" @keydown.enter="search">
+          <div class="input-group-append" @click="search">
+            <span class="input-group-text fake-button" id="basic-addon2">
+              <span
+                class="material-icons icon-button"
+              >
+                search
+              </span>
+            </span>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="row">
+      <sidebar
+        class="col-2"
+        :filters="filters"
+        @filterChange="onFilterChange"
+      />
+      <div class="col-10">
+        <table class="table table-hover">
+          <thead>
+          <tr>
+            <th scope="col">Ime</th>
+            <th scope="col">Število</th>
+            <th scope="col">Stanje</th>
+            <th scope="col">Značke</th>
+          </tr>
+          </thead>
+          <tbody>
+          <tr
+            v-for="item of items"
+            :key="item._id"
+            @click="openDetails(item)"
+          >
+            <th>{{ item.name }}</th>
+            <td>{{ item.count }}</td>
+            <td>{{ item.status }}</td>
+            <td><b-badge v-for="tag of item.tags" variant="info" :key="tag._id" class="m-1">{{ tag.name }}</b-badge></td>
+          </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</template>
+
+<script>
+export default {
+  components: {},
+  data() {
+    return {
+      searchQuery: null,
+      selected: {
+        category: null,
+        tags: null,
+      },
+      filters: {
+        categories: {
+          name: 'Kategorija',
+          values: [],
+          visible: true,
+          type: 'single',
+        },
+        tags: {
+          name: 'Značke',
+          values: [],
+          visible: true,
+          type: 'multiple'
+        },
+      },
+      items: [],
+    }
+  },
+  methods: {
+    async onFilterChange(event) {
+      this.selected.category = event.categories
+      this.selected.tags = event.tags
+      await this.getItems()
+    },
+    async setCategory(category) {
+      if (category._id === this.selected.category._id) {
+        this.selected.category = {};
+        const query = Object.assign({}, this.$route.query);
+        delete query.category;
+        await this.$router.replace({query});
+      } else {
+        this.selected.category = category
+        const query = Object.assign({}, this.$route.query);
+        query.category = category._id;
+        await this.$router.replace({query});
+      }
+      await this.getItems()
+    },
+    async getItems() {
+      this.$axios.$get(`/inventory`, {
+        params: {
+          category: this.selected.category,
+          tags: this.selected.tags,
+          search: this.searchQuery
+        }
+      })
+        .then(res => {
+          this.items = res;
+        })
+        .catch(res => {
+          console.error(res)
+          this.$toast.error('Napaka pri pridobivanju podatkov', { duration: 10000 });
+        })
+    },
+    async getCategories() {
+      this.$axios.$get(`/categories`)
+        .then(res => {
+          if (res.length) {
+            this.filters.categories.values.push(...res);
+          }
+        })
+        .catch(res => {
+          console.error(res)
+          this.$toast.error('Napaka pri pridobivanju kategorij', { duration: 10000 });
+        })
+    },
+    async getTags() {
+      this.$axios.$get(`/tags`)
+        .then(res => {
+          if (res.length) {
+            this.filters.tags.values.push(...res);
+          }
+        })
+        .catch(res => {
+          console.error(res)
+          this.$toast.error('Napaka pri pridobivanju kategorij', { duration: 10000 });
+        })
+    },
+    async openDetails(item) {
+      await this.$router.push(`/item/${item._id}`)
+    },
+    async search() {
+      await this.getItems()
+    }
+  },
+  computed: {
+  },
+  async created() {
+    if (this.$route.query.category) {
+      this.selected.category._id = this.$route.query.category
+    }
+    if (this.$route.query.tag) {
+      this.selected.tag = this.$route.query.tag
+    }
+    await Promise.all([
+      this.getCategories(),
+      this.getItems(),
+      this.getTags(),
+    ])
+  }
+}
+</script>
+
+<style lang="scss" scoped>
+.fake-button:hover {
+  background: #dcdee1;
+  cursor: pointer;
+}
+</style>
