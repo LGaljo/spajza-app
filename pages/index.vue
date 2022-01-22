@@ -26,12 +26,12 @@
       <div class="col-10">
         <table class="table table-hover">
           <thead>
-          <tr>
-            <th scope="col">Ime</th>
-            <th scope="col">Število</th>
-            <th scope="col">Stanje</th>
-            <th scope="col">Značke</th>
-          </tr>
+            <tr>
+              <th scope="col">Ime</th>
+              <th scope="col">Število</th>
+              <th scope="col">Stanje</th>
+              <th scope="col">Značke</th>
+            </tr>
           </thead>
           <tbody>
           <tr
@@ -41,8 +41,8 @@
           >
             <th>{{ item.name }}</th>
             <td>{{ item.count }}</td>
-            <td>{{ item.status }}</td>
-            <td><b-badge v-for="tag of item.tags" variant="info" :key="tag._id" class="m-1">{{ tag.name }}</b-badge></td>
+            <td><b-badge :variant="getVariantForStatus(item.status)">{{ getNameForStatus(item.status) }}</b-badge></td>
+            <td><b-badge v-for="tag of item.tags" variant="secondary" :key="tag._id" class="m-1">{{ tag.name }}</b-badge></td>
           </tr>
           </tbody>
         </table>
@@ -143,7 +143,31 @@ export default {
     },
     async search() {
       await this.getItems()
-    }
+    },
+    getVariantForStatus(status) {
+      switch(status) {
+        case 'new':
+          return 'info'
+        case 'borrowed':
+          return 'warning'
+        case 'writtenoff':
+          return 'secondary'
+        case 'stored':
+          return 'success'
+      }
+    },
+    getNameForStatus(status) {
+      switch(status) {
+        case 'new':
+          return 'Novo'
+        case 'borrowed':
+          return 'Izposojeno'
+        case 'writtenoff':
+          return 'Odpisano'
+        case 'stored':
+          return 'Na voljo'
+      }
+    },
   },
   computed: {
   },

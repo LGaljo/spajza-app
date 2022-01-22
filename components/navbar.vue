@@ -3,6 +3,8 @@
     <nav class="navbar navbar-expand-lg navbar-light bg-light">
       <div class="container-fluid">
         <nuxt-link class="navbar-brand" href="/" :to="`/`">Špajza</nuxt-link>
+        <nuxt-link class="nav-item nav-link link" :to="`/tags`">Značke</nuxt-link>
+        <nuxt-link class="nav-item nav-link link" :to="`/categories`">Kategorije</nuxt-link>
         <nuxt-link class="nav-item nav-link link" :to="`/add`">Dodaj</nuxt-link>
         <nuxt-link class="nav-item nav-link link" :to="`/import`">Uvozi</nuxt-link>
         <div class="mr-auto"></div>

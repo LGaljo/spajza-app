@@ -6,7 +6,7 @@
     <div v-if="item" class="card-body">
       <h5 class="card-title">Card title</h5>
       <div v-for="(value, key) in item"><b>{{ key }}:</b> {{ value }}</div>
-      <button @click="editItem" class="btn btn-primary">Uredi</button>
+      <nuxt-link :to="`/edit/${this.$route.params.id}`" class="btn btn-primary">Uredi</nuxt-link>
     </div>
   </div>
 </template>
@@ -22,7 +22,6 @@ export default {
   async created() {
     await this.$axios.$get(`/inventory/${this.$route.params.id}`)
       .then(res => {
-        console.log(res)
         this.item = res;
       })
       .catch(res => {

@@ -2,6 +2,8 @@
   <div class="offset-3 col-6 offset-md-0 col-md-12">
     <h1>Dodaj nov predmet</h1>
     <b-form class="w-100" @submit.prevent="onSubmit" @reset="onReset">
+
+      <!-- IME -->
       <b-form-group
         id="input-group-1"
         label="Ime predmeta"
@@ -16,6 +18,7 @@
         />
       </b-form-group>
 
+      <!-- KATEGORIJA -->
       <b-form-group
         id="input-group-2"
         label="Kategorija"
@@ -36,6 +39,7 @@
         </b-form-radio-group>
       </b-form-group>
 
+      <!-- ZNAČKE -->
       <b-form-group
         id="input-group-3"
         label="Značke"
@@ -61,6 +65,7 @@
         <b-form-select-option :value="null" disabled>-- Izberi stanje predmeta --</b-form-select-option>
       </b-form-select>
 
+      <!-- ČAS PRIDOBITVE -->
       <b-form-group
         id="input-group-4"
         label="Čas pridobitve"
@@ -76,6 +81,7 @@
         <b-badge pill @click="setCurrentTime">Nastavi danes</b-badge>
       </b-form-group>
 
+      <!-- ŠTEVILO KOSOV -->
       <b-form-group
         id="input-group-5"
         label="Število kosov"
@@ -92,6 +98,7 @@
         />
       </b-form-group>
 
+      <!-- LOKACIJA -->
       <b-form-group
         id="input-group-5"
         label="Lokacija"
@@ -107,6 +114,7 @@
         />
       </b-form-group>
 
+      <!-- LASTNIK -->
       <b-form-group
         id="input-group-6"
         label="Lastnik"
@@ -122,6 +130,7 @@
         />
       </b-form-group>
 
+      <!-- OPIS -->
       <b-form-group
         label="Opis"
         label-for="description"
@@ -135,7 +144,7 @@
         ></b-form-textarea>
       </b-form-group>
 
-      <b-button type="submit" class="btn-primary">Dodaj</b-button>
+      <b-button type="submit" class="btn-primary">Shrani</b-button>
     </b-form>
   </div>
 </template>
@@ -145,7 +154,7 @@
 import {DateTime} from "luxon";
 
 export default {
-  name: "add.vue",
+  name: "edit.vue",
   components: {},
   data() {
     return {
@@ -176,27 +185,50 @@ export default {
         location: '',
         boughtTime: null,
         owner: 'RZS',
-        status: null
       },
       tags: [],
       categories: [],
     }
   },
+  // watch: {
+  //   'form.category'() {
+  //     console.log(this.form.category);
+  //   }
+  // },
   async created() {
     await Promise.all([
       this.getCategories(),
       this.getTags(),
     ])
+    await this.getItem();
   },
   methods: {
     setCurrentTime() {
       this.form.boughtTime = DateTime.now().toFormat('yyyy-MM-dd') + "T" + DateTime.now().toFormat('hh:mm')
     },
+    async getItem() {
+      await this.$axios.$get(`/inventory/${this.$route.params.id}`)
+        .then(res => {
+          this.form.name = res.name
+          this.form.category = res.categoryId
+          this.form.tags = res.tags.map(t => t._id)
+          this.form.count = res.count || null
+          this.form.description = res.description || null
+          this.form.location = res.location || null
+          this.form.boughtTime = DateTime.fromISO(res.boughtTime).toFormat('yyyy-MM-dd') +
+            "T" + DateTime.fromISO(res.boughtTime).toFormat('hh:mm')
+          this.form.owner = res.owner || null
+          this.form.status = res.status || null
+        })
+        .catch(res => {
+          console.error(res)
+          this.$toast.error('Napaka pri pridobivanju podatkov', { duration: 10000 });
+        })
+    },
     async getCategories() {
       this.$axios.$get(`/categories`)
         .then(res => {
           this.categories = res;
-
         })
         .catch(res => {
           console.error(res)
@@ -231,10 +263,12 @@ export default {
         return;
       }
 
-      await this.$axios.$post('/inventory', this.form
-      )
+      await this.$axios.$put(`/inventory/${this.$route.params.id}`, {
+        ...this.form,
+        category: this.form.category
+      })
         .then(res => {
-          this.$toast.success(`Predmet "${this.form.name}" uspešno dodan`, {duration: 2000});
+          this.$toast.success(`Predmet "${this.form.name}" uspešno posodobljen`, {duration: 2000});
           this.$router.replace('/')
         })
         .catch(rej => {
