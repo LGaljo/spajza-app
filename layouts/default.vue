@@ -1,16 +1,7 @@
 <template>
   <div>
     <navbar/>
-
-    <b-container>
-      <b-row class="pt-3">
-        <Nuxt/>
-      </b-row>
-
-      <div class="bottom-padding">
-      </div>
-    </b-container>
-
+    <Nuxt/>
   </div>
 </template>
 <script>

@@ -1,30 +1,30 @@
 <template>
-  <div class="w-100 mt-4">
-      <b-row>
-        <b-col class="col-12 offset-md-3 col-md-6">
-          <h2>Uvozi predmete iz datoteke</h2>
-          <b-form-file
-            v-model="file"
-            accept=".xlsx"
-            :state="Boolean(file)"
-            placeholder="Izberi ali odloži datoteko..."
-            drop-placeholder="Odloži tukaj..."
-            browse-text="Prebrskaj"
-            class="mt-2"
-          ></b-form-file>
+  <b-container>
+    <b-row>
+      <b-col offset-md="3" md="6" cols="12" class=" my-3">
+        <h2>Uvozi predmete iz datoteke</h2>
+        <b-form-file
+          v-model="file"
+          accept=".xlsx"
+          :state="Boolean(file)"
+          placeholder="Izberi ali odloži datoteko..."
+          drop-placeholder="Odloži tukaj..."
+          browse-text="Prebrskaj"
+          class="mt-2"
+        ></b-form-file>
 
-          <b-button
-            variant="secondary"
-            @click="importItems"
-            :disabled="!file || loading"
-            class="mt-2"
-          >
-            <b-spinner v-if="loading" small></b-spinner>
-            {{ loading ? 'Uvažam...' : 'Uvozi' }}
-          </b-button>
-        </b-col>
-      </b-row>
-  </div>
+        <b-button
+          variant="secondary"
+          @click="importItems"
+          :disabled="!file || loading"
+          class="mt-2"
+        >
+          <b-spinner v-if="loading" small></b-spinner>
+          {{ loading ? 'Uvažam...' : 'Uvozi' }}
+        </b-button>
+      </b-col>
+    </b-row>
+  </b-container>
 </template>
 
 <script>

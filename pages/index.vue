@@ -1,6 +1,6 @@
 <template>
-  <div class="w-100">
-    <div class="row mb-4">
+  <b-container>
+    <b-row class="mb-2">
       <div class="offset-md-3 col-md-6 text-center">
         <div class="input-group my-3">
           <input type="text" class="form-control" placeholder="Išči" v-model="searchQuery"
@@ -16,14 +16,14 @@
           </div>
         </div>
       </div>
-    </div>
-    <div class="row">
+    </b-row>
+    <b-row>
       <sidebar
-        class="col-2"
+        class="col-md-2 col-12 mb-3"
         :filters="filters"
         @filterChange="onFilterChange"
       />
-      <div class="col-10">
+      <div class="col-md-10 col-12">
         <table class="table table-hover">
           <thead>
             <tr>
@@ -47,8 +47,8 @@
           </tbody>
         </table>
       </div>
-    </div>
-  </div>
+    </b-row>
+  </b-container>
 </template>
 
 <script>
@@ -65,13 +65,13 @@ export default {
         categories: {
           name: 'Kategorija',
           values: [],
-          visible: true,
+          visible: false,
           type: 'single',
         },
         tags: {
           name: 'Značke',
           values: [],
-          visible: true,
+          visible: false,
           type: 'multiple'
         },
       },

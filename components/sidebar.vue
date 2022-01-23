@@ -1,7 +1,7 @@
 <template>
   <div class="col-2">
     <div v-for="(filter, key) of filters">
-      <div class="mb-3">
+      <div class="mb-1">
         <b-button
           @click="filter.visible = !filter.visible"
           variant="outline-secondary"
@@ -18,12 +18,13 @@
           <b-form-checkbox-group
             v-if="filter.type === 'multiple'"
             v-model="selected[key]"
-            class="ml-2 mt-2"
+            class="ml-2 mt-2 d-block"
           >
             <b-form-checkbox
               v-for="value of filter.values"
               :key="value.name"
               :value="value._id"
+              class="d-block"
             >
               {{ value.name }}
             </b-form-checkbox>
@@ -31,12 +32,13 @@
           <b-form-radio-group
             v-else
             v-model="selected[key]"
-            class="ml-2 mt-2"
+            class="ml-2 mt-2 d-block"
           >
             <b-form-radio
               v-for="value of filter.values"
               :key="value.name"
               :value="value._id"
+              class="d-block"
             >
               {{ value.name }}
             </b-form-radio>
@@ -44,11 +46,11 @@
         </b-collapse>
       </div>
     </div>
-    <div>
+    <div v-if="showFilterClear">
       <b-button
         size="sm"
         variant="outline-info"
-        class="w-100 mt-4"
+        class="w-100 my-1"
         @click="resetSelected"
       >
         Počisti filtre
@@ -68,7 +70,10 @@ export default {
   },
   data() {
     return {
-      selected: {}
+      selected: {
+        categories: null,
+        tags: []
+      }
     }
   },
   watch: {
@@ -77,6 +82,11 @@ export default {
       handler() {
         this.$emit('filterChange', this.selected)
       }
+    }
+  },
+  computed:  {
+    showFilterClear() {
+      return !this.selected.categories && this.selected.tags.length
     }
   },
   methods: {

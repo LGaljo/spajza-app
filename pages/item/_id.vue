@@ -1,14 +1,21 @@
 <template>
-  <div class="card">
-    <div class="card-header">
-      Featured
-    </div>
-    <div v-if="item" class="card-body">
-      <h5 class="card-title">Card title</h5>
-      <div v-for="(value, key) in item"><b>{{ key }}:</b> {{ value }}</div>
-      <nuxt-link :to="`/edit/${this.$route.params.id}`" class="btn btn-primary">Uredi</nuxt-link>
-    </div>
-  </div>
+  <b-container>
+    <b-row>
+      <b-col offset-md="3" md="6" cols="12" class=" my-3">
+        <div class="card">
+          <div class="card-header">
+            <nuxt-link :to="`/edit/${this.$route.params.id}`" class="btn btn-primary">Uredi</nuxt-link>
+            <nuxt-link :to="`/edit/${this.$route.params.id}`" class="btn btn-danger">Izbriši</nuxt-link>
+          </div>
+          <div v-if="item" class="card-body">
+            <h5 class="card-title">{{ item.name }}</h5>
+            <div v-for="(value, key) in item"><b>{{ key }}:</b> {{ value }}</div>
+          </div>
+        </div>
+      </b-col>
+    </b-row>
+  </b-container>
+
 </template>
 
 <script>

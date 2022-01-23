@@ -1,143 +1,149 @@
 <template>
-  <div class="offset-3 col-6 offset-md-0 col-md-12">
-    <h1>Dodaj nov predmet</h1>
-    <b-form class="w-100" @submit.prevent="onSubmit" @reset="onReset">
-      <b-form-group
-        id="input-group-1"
-        label="Ime predmeta"
-        label-for="title"
-      >
-        <b-form-input
-          type="text"
-          class="form-control"
-          id="title"
-          placeholder="Vnesi ime"
-          v-model="form.name"
-        />
-      </b-form-group>
-
-      <b-form-group
-        id="input-group-2"
-        label="Kategorija"
-        label-for="category"
-      >
-        <b-form-radio-group
-          v-model="form.category"
-          id="category"
-          multiple="false"
-        >
-          <b-form-radio
-            v-for="category of categories"
-            :key="category.name"
-            :value="category._id"
+  <b-container>
+    <b-row>
+      <div class="col-12 offset-md-3 col-md-12 my-3">
+        <div>
+          <h1>Dodaj nov predmet</h1>
+        </div>
+        <b-form class="w-100" @submit.prevent="onSubmit" @reset="onReset">
+          <b-form-group
+            id="input-group-1"
+            label="Ime predmeta"
+            label-for="title"
           >
-            {{ category.name }}
-          </b-form-radio>
-        </b-form-radio-group>
-      </b-form-group>
+            <b-form-input
+              type="text"
+              class="form-control"
+              id="title"
+              placeholder="Vnesi ime"
+              v-model="form.name"
+            />
+          </b-form-group>
 
-      <b-form-group
-        id="input-group-3"
-        label="Značke"
-        label-for="tags"
-      >
-        <b-form-checkbox-group
-          v-model="form.tags"
-          id="tags"
-        >
-          <b-form-checkbox
-            v-for="tag of tags"
-            :key="tag.name"
-            :value="tag._id"
+          <b-form-group
+            id="input-group-2"
+            label="Kategorija"
+            label-for="category"
           >
-            {{ tag.name }}
-          </b-form-checkbox>
+            <b-form-radio-group
+              v-model="form.category"
+              id="category"
+              multiple="false"
+            >
+              <b-form-radio
+                v-for="category of categories"
+                :key="category.name"
+                :value="category._id"
+              >
+                {{ category.name }}
+              </b-form-radio>
+            </b-form-radio-group>
+          </b-form-group>
 
-        </b-form-checkbox-group>
-      </b-form-group>
+          <b-form-group
+            id="input-group-3"
+            label="Značke"
+            label-for="tags"
+          >
+            <b-form-checkbox-group
+              v-model="form.tags"
+              id="tags"
+            >
+              <b-form-checkbox
+                v-for="tag of tags"
+                :key="tag.name"
+                :value="tag._id"
+              >
+                {{ tag.name }}
+              </b-form-checkbox>
 
-      <!-- STATUS -->
-      <b-form-select v-model="form.status" :options="statuses" aria-placeholder="Stanje" class="mb-2">
-        <b-form-select-option :value="null" disabled>-- Izberi stanje predmeta --</b-form-select-option>
-      </b-form-select>
+            </b-form-checkbox-group>
+          </b-form-group>
 
-      <b-form-group
-        id="input-group-4"
-        label="Čas pridobitve"
-        label-for="boughtTime"
-      >
-        <b-form-input
-          type="datetime-local"
-          v-model="form.boughtTime"
-          class="form-control"
-          id="boughtTime"
-          placeholder="Povezava do pesmi"
-        />
-        <b-badge pill @click="setCurrentTime">Nastavi danes</b-badge>
-      </b-form-group>
+          <!-- STATUS -->
+          <b-form-select v-model="form.status" :options="statuses" aria-placeholder="Stanje" class="mb-2">
+            <b-form-select-option :value="null" disabled>-- Izberi stanje predmeta --</b-form-select-option>
+          </b-form-select>
 
-      <b-form-group
-        id="input-group-5"
-        label="Število kosov"
-        label-for="count"
-      >
-        <b-form-input
-          type="number"
-          class="form-control"
-          id="count"
-          placeholder="1"
-          min="1"
-          v-model="form.count"
-          required
-        />
-      </b-form-group>
+          <b-form-group
+            id="input-group-4"
+            label="Čas pridobitve"
+            label-for="boughtTime"
+          >
+            <b-form-input
+              type="datetime-local"
+              v-model="form.boughtTime"
+              class="form-control"
+              id="boughtTime"
+              placeholder="Povezava do pesmi"
+            />
+            <b-badge pill @click="setCurrentTime">Nastavi danes</b-badge>
+          </b-form-group>
 
-      <b-form-group
-        id="input-group-5"
-        label="Lokacija"
-        label-for="boughtTime"
-      >
-        <b-form-input
-          type="text"
-          class="form-control"
-          id="location"
-          placeholder="Lokacija predmeta"
-          v-model="form.location"
-          required
-        />
-      </b-form-group>
+          <b-form-group
+            id="input-group-5"
+            label="Število kosov"
+            label-for="count"
+          >
+            <b-form-input
+              type="number"
+              class="form-control"
+              id="count"
+              placeholder="1"
+              min="1"
+              v-model="form.count"
+              required
+            />
+          </b-form-group>
 
-      <b-form-group
-        id="input-group-6"
-        label="Lastnik"
-        label-for="owner"
-      >
-        <b-form-input
-          type="text"
-          class="form-control"
-          id="owner"
-          placeholder="Lastnik predmeta"
-          v-model="form.owner"
-          required
-        />
-      </b-form-group>
+          <b-form-group
+            id="input-group-5"
+            label="Lokacija"
+            label-for="boughtTime"
+          >
+            <b-form-input
+              type="text"
+              class="form-control"
+              id="location"
+              placeholder="Lokacija predmeta"
+              v-model="form.location"
+              required
+            />
+          </b-form-group>
 
-      <b-form-group
-        label="Opis"
-        label-for="description"
-      >
-        <b-form-textarea
-          id="description"
-          v-model="form.description"
-          placeholder="Vnesi podrobnosti..."
-          rows="3"
-          max-rows="6"
-        ></b-form-textarea>
-      </b-form-group>
+          <b-form-group
+            id="input-group-6"
+            label="Lastnik"
+            label-for="owner"
+          >
+            <b-form-input
+              type="text"
+              class="form-control"
+              id="owner"
+              placeholder="Lastnik predmeta"
+              v-model="form.owner"
+              required
+            />
+          </b-form-group>
 
-      <b-button type="submit" class="btn-primary">Dodaj</b-button>
-    </b-form>
-  </div>
+          <b-form-group
+            label="Opis"
+            label-for="description"
+          >
+            <b-form-textarea
+              id="description"
+              v-model="form.description"
+              placeholder="Vnesi podrobnosti..."
+              rows="3"
+              max-rows="6"
+            ></b-form-textarea>
+          </b-form-group>
+
+          <b-button type="submit" class="btn-primary">Dodaj</b-button>
+        </b-form>
+      </div>
+    </b-row>
+  </b-container>
 </template>
 
 <script>
