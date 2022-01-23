@@ -12,7 +12,7 @@ export default {
   head: {
     title: 'Špajza',
     htmlAttrs: {
-      lang: 'en'
+      lang: 'sl'
     },
     meta: [
       { charset: 'utf-8' },
