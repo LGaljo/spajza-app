@@ -5,7 +5,7 @@ export default {
   },
 
   env: {
-    apiUrl: process.env.apiUrl || 'http://localhost:4500'
+    apiUrl: process.env.API_URL || 'http://localhost:4500'
   },
 
   // Global page headers: https://go.nuxtjs.dev/config-head
@@ -62,7 +62,7 @@ export default {
   axios: {
     https: false,
     // baseURL: process.env.base_url || 'http://192.168.34.217:4500'
-    baseURL: process.env.apiUrl || 'http://localhost:4500'
+    baseURL: process.env.API_URL || 'http://localhost:4500'
   },
 
   toast: {
