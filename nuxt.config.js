@@ -1,7 +1,7 @@
 export default {
   server: {
-    host: 'localhost',
-    port: 3100
+    host: process.env.HOST || 'localhost',
+    port: process.env.PORT || 3100
   },
 
   env: {
