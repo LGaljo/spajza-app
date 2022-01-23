@@ -86,7 +86,7 @@ export default {
   },
   computed:  {
     showFilterClear() {
-      return !this.selected.categories && this.selected.tags.length
+      return this.selected.categories || this.selected.tags.length
     }
   },
   methods: {
