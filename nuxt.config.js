@@ -39,6 +39,7 @@ export default {
   // Plugins to run before rendering page: https://go.nuxtjs.dev/config-plugins
   plugins: [
     '~/plugins/click-outside.js',
+    '~/plugins/axios.js'
   ],
 
   // Auto import components: https://go.nuxtjs.dev/config-components
