@@ -1,8 +1,8 @@
 <template>
   <b-container>
     <b-row>
-      <div class="col-12 offset-md-3 col-md-12 my-3">
-        <div>
+      <b-col offset-md="3" md="6" cols="12" class="my-3">
+        <div class="text-center">
           <h1>Dodaj nov predmet</h1>
         </div>
         <b-form class="w-100" @submit.prevent="onSubmit" @reset="onReset">
@@ -141,7 +141,7 @@
 
           <b-button type="submit" class="btn-primary">Dodaj</b-button>
         </b-form>
-      </div>
+      </b-col>
     </b-row>
   </b-container>
 </template>

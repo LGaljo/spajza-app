@@ -4,6 +4,12 @@ export default {
     port: process.env.PORT || 3100
   },
 
+  router: {
+    middleware: [
+      'auth'
+    ]
+  },
+
   env: {
     apiUrl: process.env.API_URL || 'http://localhost:4500'
   },
@@ -38,8 +44,10 @@ export default {
 
   // Plugins to run before rendering page: https://go.nuxtjs.dev/config-plugins
   plugins: [
+    {src: '~/plugins/init.js', ssr: false},
     '~/plugins/click-outside.js',
-    '~/plugins/axios.js'
+    '~/plugins/axios.js',
+    '~/plugins/veevalidate.js',
   ],
 
   // Auto import components: https://go.nuxtjs.dev/config-components
@@ -58,6 +66,8 @@ export default {
 
   // Build Configuration: https://go.nuxtjs.dev/config-build
   build: {
+    transpile: ["vee-validate/dist/rules"],
+    extend(config, ctx) {}
   },
 
   axios: {

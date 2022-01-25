@@ -10,7 +10,7 @@
     "build": "nuxt build",
     "start": "nuxt start",
     "generate": "nuxt generate",
-    "heroku-postbuild":  "npm run build"
+    "heroku-postbuild": "npm run build"
   },
   "dependencies": {
     "@nuxtjs/axios": "^5.13.1",
@@ -21,9 +21,9 @@
     "core-js": "^3.8.3",
     "luxon": "^2.3.0",
     "nuxt": "^2.15.8",
-    "qrcode.vue": "^1.7.0",
     "read-excel-file": "^5.2.26",
-    "v-click-outside": "^3.1.2"
+    "v-click-outside": "^3.1.2",
+    "vee-validate": "^3.4.14"
   },
   "devDependencies": {
     "@nuxt/types": "^2.15.8",

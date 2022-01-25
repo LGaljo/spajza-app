@@ -40,7 +40,6 @@ export const actions = {
   async fetchUser({ commit }, userId) {
     await this.$axios.$get(`/user/${userId}`)
       .then(res => {
-        console.log(res)
         commit('setUser', res)
       })
       .catch(res => {

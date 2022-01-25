@@ -15,7 +15,6 @@ const responseInterceptor = app => {
     config => config,
     async error => {
       if (error.response.status === 401) {
-        // TODO: Remove JWT, remove user from storage, redirect user to login
         localStorage.removeItem('jwt')
         await app.store.dispatch('user/unsetUser')
         await app.router.push('/login')

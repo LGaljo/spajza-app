@@ -50,12 +50,10 @@ export default {
       form: {
         username: null,
         password: null,
-        loading: false,
       },
       loading: false
     }
   },
-
   methods: {
     ...mapMutations(["user/setUser", "user/setToken"]),
     ...mapActions(["user/fetchUser", "user/unsetUser"]),
@@ -64,7 +62,6 @@ export default {
 
       this.$axios.$post('/auth/login', this.form)
       .then(async res => {
-        console.log(res)
         localStorage.setItem('jwt', res.access_token)
         localStorage.setItem('userId', res.userId)
         await this.$store.commit('user/setToken', res.access_token)

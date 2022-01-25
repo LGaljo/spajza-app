@@ -1,7 +1,7 @@
 <template>
   <b-container>
     <b-row>
-      <b-col offset-md="3" md="6" cols="12" class=" my-3">
+      <b-col offset-md="3" md="6" cols="12" class="my-3">
         <h1>Kategorije</h1>
 
         <!-- ADD NEW -->
