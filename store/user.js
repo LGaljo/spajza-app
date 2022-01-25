@@ -26,7 +26,7 @@ export const getters = {
     if (!state.user) return false;
     return state.user.role === 'ADMIN'
   },
-  isUserApproved(state) {
+  isApproved(state) {
     if (!state.user) return false;
     return state.user.role !== 'UNAPPROVED'
   },
@@ -48,5 +48,6 @@ export const actions = {
   },
   unsetUser({ commit }) {
     commit('unsetUser')
+    commit('unsetToken')
   },
 }

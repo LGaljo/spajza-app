@@ -1,7 +1,7 @@
 <template>
   <b-navbar toggleable type="dark" variant="dark">
     <nuxt-link class="navbar-brand" href="/" :to="`/`">Špajza</nuxt-link>
-    <nuxt-link v-if="user" class="nav-item nav-link link" :to="`/add`">Dodaj</nuxt-link>
+    <nuxt-link v-if="isAdmin"  class="nav-item nav-link link" :to="`/add`">Dodaj</nuxt-link>
     <div class="mr-auto"></div>
 
     <b-navbar-toggle v-if="user" target="navbar-toggle-collapse">
@@ -18,9 +18,9 @@
 
     <b-collapse v-if="user" id="navbar-toggle-collapse" is-nav>
       <b-navbar-nav class="ml-auto">
-        <nuxt-link class="nav-item nav-link link" :to="`/tags`">Značke</nuxt-link>
-        <nuxt-link class="nav-item nav-link link" :to="`/categories`">Kategorije</nuxt-link>
-        <nuxt-link class="nav-item nav-link link" :to="`/import`">Uvozi</nuxt-link>
+        <nuxt-link v-if="isAdmin" class="nav-item nav-link link" :to="`/tags`">Značke</nuxt-link>
+        <nuxt-link v-if="isAdmin" class="nav-item nav-link link" :to="`/categories`">Kategorije</nuxt-link>
+        <nuxt-link v-if="isAdmin" class="nav-item nav-link link" :to="`/import`">Uvozi</nuxt-link>
         <a class="nav-item nav-link link" @click="logout">Odjava</a>
       </b-navbar-nav>
     </b-collapse>
@@ -44,12 +44,16 @@ export default {
   computed: {
     ...mapGetters({
       user: 'user/getUser',
+      isAdmin: 'user/isAdmin',
+      isApproved: 'user/isApproved',
+      isNormalUser: 'user/isNormalUser',
     }),
     ...mapActions(['user/unsetUser', 'user/fetchUser'])
   },
   methods: {
     async logout() {
       localStorage.removeItem('jwt');
+      localStorage.removeItem('userId');
       await this.$store.dispatch('user/unsetUser');
       await this.$router.replace('/login')
     }
