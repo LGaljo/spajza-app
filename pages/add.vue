@@ -149,30 +149,14 @@
 <script>
 
 import {DateTime} from "luxon";
+import status from "@/mixins/status";
 
 export default {
   name: "add.vue",
   components: {},
+  mixins: [status],
   data() {
     return {
-      statuses: [
-        {
-          text: "Novo",
-          value: "new"
-        },
-        {
-          text: "Izposojeno",
-          value: "borrowed"
-        },
-        {
-          text: "V placu",
-          value: "stored"
-        },
-        {
-          text: "Odpisano",
-          value: "writtenoff"
-        },
-      ],
       form: {
         name: '',
         category: null,

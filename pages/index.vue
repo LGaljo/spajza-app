@@ -27,6 +27,7 @@
         <table class="table table-hover">
           <thead>
             <tr>
+              <th scope="col">Inv. št.</th>
               <th scope="col">Ime</th>
               <th scope="col">Število</th>
               <th scope="col">Stanje</th>
@@ -39,6 +40,7 @@
             :key="item._id"
             @click="openDetails(item)"
           >
+            <th>{{ item.code }}</th>
             <th>{{ item.name }}</th>
             <td>{{ item.count }}</td>
             <td><b-badge :variant="getVariantForStatus(item.status)">{{ getNameForStatus(item.status) }}</b-badge></td>
@@ -52,8 +54,11 @@
 </template>
 
 <script>
+import status from "@/mixins/status";
+
 export default {
   components: {},
+  mixins: [status],
   data() {
     return {
       searchQuery: null,
@@ -143,30 +148,6 @@ export default {
     },
     async search() {
       await this.getItems()
-    },
-    getVariantForStatus(status) {
-      switch(status) {
-        case 'new':
-          return 'info'
-        case 'borrowed':
-          return 'warning'
-        case 'writtenoff':
-          return 'secondary'
-        case 'stored':
-          return 'success'
-      }
-    },
-    getNameForStatus(status) {
-      switch(status) {
-        case 'new':
-          return 'Novo'
-        case 'borrowed':
-          return 'Izposojeno'
-        case 'writtenoff':
-          return 'Odpisano'
-        case 'stored':
-          return 'Na voljo'
-      }
     },
   },
   computed: {
