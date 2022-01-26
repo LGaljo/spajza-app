@@ -3,7 +3,7 @@
     <b-row>
       <b-col offset-md="3" md="6" cols="12" class=" my-3">
         <div class="card">
-          <div class="card-header">
+          <div v-if="isAdmin || isKeeper" class="card-header">
             <nuxt-link :to="`/edit/${this.$route.params.id}`" class="btn btn-primary">Uredi</nuxt-link>
             <a @click.prevent.st.stop="deleteItem" class="btn btn-danger">Izbriši</a>
           </div>
@@ -39,12 +39,12 @@
       </b-col>
     </b-row>
   </b-container>
-
 </template>
 
 <script>
 import status from "@/mixins/status";
 import {DateTime} from "luxon";
+import {mapGetters} from "vuex";
 
 export default {
   name: "Item",
@@ -53,6 +53,13 @@ export default {
     return {
       item: null
     }
+  },
+  computed: {
+    ...mapGetters({
+      isAdmin: 'user/isAdmin',
+      isKeeper: 'user/isKeeper',
+      isNormalUser: 'user/isNormalUser',
+    }),
   },
   async created() {
     await this.$axios.$get(`/inventory/${this.$route.params.id}`)
@@ -64,8 +71,6 @@ export default {
         this.$toast.error('Napaka pri pridobivanju podatkov', { duration: 10000 });
       })
 
-  },
-  computed: {
   },
   methods: {
     formatTime(time) {
