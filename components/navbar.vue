@@ -21,7 +21,7 @@
         <nuxt-link v-if="isAdmin" class="nav-item nav-link link" :to="`/tags`">Značke</nuxt-link>
         <nuxt-link v-if="isAdmin" class="nav-item nav-link link" :to="`/categories`">Kategorije</nuxt-link>
         <nuxt-link v-if="isAdmin" class="nav-item nav-link link" :to="`/users`">Uporabniki</nuxt-link>
-        <nuxt-link v-if="isAdmin" class="nav-item nav-link link" :to="`/import`">Uvozi</nuxt-link>
+        <nuxt-link v-if="isAdmin || isKeeper" class="nav-item nav-link link" :to="`/import`">Uvozi</nuxt-link>
         <a class="nav-item nav-link link" @click="logout">Odjava</a>
       </b-navbar-nav>
     </b-collapse>
