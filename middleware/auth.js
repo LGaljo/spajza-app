@@ -1,11 +1,7 @@
-import {checkAuth, checkRole} from "@/plugins/init";
+import {checkAuth} from "@/plugins/init";
 
 export default async function (context) {
-
-  if (process.server) {
-    return;
+  if (process.client) {
+    await checkAuth(context)
   }
-
-  await checkAuth(context)
-  // await checkRole(context)
 }

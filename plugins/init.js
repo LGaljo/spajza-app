@@ -1,3 +1,5 @@
+var jwt = require('jsonwebtoken');
+
 const unprotectedPaths = [
   '/login',
   '/register'
@@ -15,7 +17,6 @@ const adminOnlyPaths = [
 export default function (context) {
   window.onNuxtReady(async () => {
     await checkAuth(context);
-    // await checkRole(context);
   })
 }
 
@@ -27,30 +28,14 @@ export async function checkAuth(context) {
     await window.$nuxt.$router.push('/login')
   }
 
+  const decoded = jwt.decode(localStorage.getItem('jwt'), {complete: false})
+  console.log(decoded)
+
   if (
-    unprotectedPaths.find(path => decodeURI(context.route.path).startsWith(path)) &&
-    localStorage.getItem('jwt')
+    !unprotectedPaths.find(path => decodeURI(context.route.path).startsWith(path)) &&
+    adminOnlyPaths.find(path => decodeURI(context.route.path).startsWith(path)) &&
+    decoded.role !== 'ADMIN'
   ) {
     await window.$nuxt.$router.push('/')
-  }
-}
-
-export async function checkRole(context) {
-  if (!unprotectedPaths.find(path => decodeURI(context.route.path).startsWith(path))) {
-    let user = context.store.getters['user/getUser']
-    if (!user) {
-      user = await context.app.$axios.$get(`/user/${localStorage.getItem('userId')}`)
-    }
-    if (!user) {
-      await window.$nuxt.$router.push('/login')
-    } else {
-      const isAdmin = user.role === 'ADMIN'
-      if (
-        adminOnlyPaths.find(path => decodeURI(context.route.path).startsWith(path)) &&
-        !isAdmin
-      ) {
-        await window.$nuxt.$router.push('/')
-      }
-    }
   }
 }

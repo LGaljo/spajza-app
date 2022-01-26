@@ -1,7 +1,9 @@
 const requestInterceptor = app => {
   app.$axios.interceptors.request.use(
     config => {
-      config.headers.Authorization =  `Bearer ${localStorage.getItem('jwt')}`;
+      if (localStorage.getItem('jwt')) {
+        config.headers.Authorization =  `Bearer ${localStorage.getItem('jwt')}`;
+      }
       return config;
     },
     err => {

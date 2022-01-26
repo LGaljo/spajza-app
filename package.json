@@ -19,6 +19,7 @@
     "bootstrap": "^4.6.0",
     "bootstrap-vue": "2.21.2",
     "core-js": "^3.8.3",
+    "jsonwebtoken": "^8.5.1",
     "luxon": "^2.3.0",
     "nuxt": "^2.15.8",
     "read-excel-file": "^5.2.26",
