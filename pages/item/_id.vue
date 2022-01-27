@@ -14,7 +14,7 @@
           </b-card-header>
           <b-collapse id="accordion-2" accordion="my-accordion" role="tabpanel">
             <b-card-body>
-              <b-card-text>sdfgsdfgfdsg</b-card-text>
+              <b-card-text>{{ changes }}</b-card-text>
             </b-card-body>
           </b-collapse>
         </b-card>
@@ -37,7 +37,8 @@ export default {
   },
   data() {
     return {
-      item: null
+      item: null,
+      changes: [],
     }
   },
   computed: {
@@ -54,9 +55,16 @@ export default {
       })
       .catch(res => {
         console.error(res)
-        this.$toast.error('Napaka pri pridobivanju podatkov', { duration: 10000 });
+        this.$toast.error('Napaka pri pridobivanju podatkov', { duration: 3000 });
       })
-
+    await this.$axios.$get(`/tracing/${this.$route.params.id}`)
+      .then(res => {
+        this.changes = res;
+      })
+      .catch(res => {
+        console.error(res)
+        this.$toast.error('Napaka pri pridobivanju podatkov', { duration: 3000 });
+      })
   },
   methods: {
     formatTime(time) {
