@@ -178,8 +178,6 @@ export default {
       await this.getItems()
     },
   },
-  computed: {
-  },
   async created() {
     if (this.$route.query.category) {
       this.selected.category._id = this.$route.query.category

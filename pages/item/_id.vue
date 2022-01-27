@@ -21,7 +21,6 @@
       </b-col>
     </b-row>
   </b-container>
-
 </template>
 
 <script>
@@ -41,6 +40,13 @@ export default {
       item: null
     }
   },
+  computed: {
+    ...mapGetters({
+      isAdmin: 'user/isAdmin',
+      isKeeper: 'user/isKeeper',
+      isNormalUser: 'user/isNormalUser',
+    }),
+  },
   async created() {
     await this.$axios.$get(`/inventory/${this.$route.params.id}`)
       .then(res => {
@@ -51,8 +57,6 @@ export default {
         this.$toast.error('Napaka pri pridobivanju podatkov', { duration: 10000 });
       })
 
-  },
-  computed: {
   },
   methods: {
     formatTime(time) {

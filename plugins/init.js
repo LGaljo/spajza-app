@@ -14,6 +14,12 @@ const adminOnlyPaths = [
   '/add'
 ]
 
+const keeperOnlyPaths = [
+  '/import',
+  '/edit',
+  '/add'
+]
+
 export default function (context) {
   window.onNuxtReady(async () => {
     await checkAuth(context);
@@ -30,6 +36,12 @@ export async function checkAuth(context) {
         adminOnlyPaths.find(path => decodeURI(context.route.path).startsWith(path)) &&
         decoded.role !== 'ADMIN'
       ) {
+        if (
+          keeperOnlyPaths.find(path => decodeURI(context.route.path).startsWith(path)) &&
+          decoded.role === 'KEEPER'
+        ) {
+          return;
+        }
         await window.$nuxt.$router.push('/')
       }
     } else {

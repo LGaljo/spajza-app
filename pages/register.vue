@@ -123,7 +123,7 @@ export default {
       return dirty || validated ? valid : null;
     },
     async onSubmit() {
-      this.$axios.$post('/user', {
+      this.$axios.$post('/users', {
         username: this.form.username,
         email: this.form.email,
         password: this.form.password

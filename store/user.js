@@ -26,6 +26,10 @@ export const getters = {
     if (!state.user) return false;
     return state.user.role === 'ADMIN'
   },
+  isKeeper(state) {
+    if (!state.user) return false;
+    return state.user.role === 'KEEPER'
+  },
   isApproved(state) {
     if (!state.user) return false;
     return state.user.role !== 'UNAPPROVED'
@@ -38,7 +42,7 @@ export const getters = {
 
 export const actions = {
   async fetchUser({ commit }, userId) {
-    await this.$axios.$get(`/user/${userId}`)
+    await this.$axios.$get(`/users/${userId}`)
       .then(res => {
         commit('setUser', res)
       })
