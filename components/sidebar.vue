@@ -22,11 +22,11 @@
           >
             <b-form-checkbox
               v-for="value of filter.values"
-              :key="value.name"
-              :value="value._id"
+              :key="value[filter.nameKey]"
+              :value="value[filter.valueKey]"
               class="d-block"
             >
-              {{ value.name }}
+              {{ value[filter.nameKey] }}
             </b-form-checkbox>
           </b-form-checkbox-group>
           <b-form-radio-group
@@ -36,11 +36,11 @@
           >
             <b-form-radio
               v-for="value of filter.values"
-              :key="value.name"
-              :value="value._id"
+              :key="value[filter.nameKey]"
+              :value="value[filter.valueKey]"
               class="d-block"
             >
-              {{ value.name }}
+              {{ value[filter.nameKey] }}
             </b-form-radio>
           </b-form-radio-group>
         </b-collapse>
@@ -60,6 +60,7 @@
 </template>
 
 <script>
+
 export default {
   name: "sidebar",
   props: {
@@ -72,7 +73,8 @@ export default {
     return {
       selected: {
         categories: null,
-        tags: []
+        tags: [],
+        statuses: [],
       }
     }
   },
@@ -86,14 +88,15 @@ export default {
   },
   computed:  {
     showFilterClear() {
-      return this.selected.categories || this.selected.tags.length
+      return this.selected.categories || this.selected.tags.length || this.selected.statuses.length
     }
   },
   methods: {
     resetSelected() {
       this.selected = {
         categories: null,
-        tags: []
+        tags: [],
+        statuses: []
       }
     },
     activeCategory(category) {

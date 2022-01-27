@@ -1,0 +1,73 @@
+<template>
+  <div class="card">
+    <div v-if="isAdmin || isKeeper" class="card-header">
+      <nuxt-link :to="`/edit/${this.$route.params.id}`" class="btn btn-primary">Uredi</nuxt-link>
+      <a @click.prevent.st.stop="deleteItem" class="btn btn-danger">Izbriši</a>
+    </div>
+    <div v-if="object" class="card-body">
+      <b-badge v-if="object.category" variant="primary" class="m-1">{{ object.category.name }}</b-badge>
+      <b-badge v-if="object.status" :variant="getVariantForStatus(object.status)" class="m-1">{{ getNameForStatus(object.status) }}</b-badge>
+      <h4 class="card-title">{{ object.name }}</h4>
+      <div v-if="object.description" class="mb-4">
+        <span>{{ object.description }}</span>
+      </div>
+      <div v-if="object.tags" class="my-2">
+        <b>Značke:</b>
+        <b-badge v-for="tag of object.tags" variant="secondary" :key="tag._id" class="m-1">{{ tag.name }}</b-badge>
+      </div>
+      <div v-if="object.boughtTime" class="my-2">
+        <b>Čas pridobitve:</b>
+        <span>{{ formatTime(object.boughtTime) }}</span>
+      </div>
+      <div v-if="object.count" class="my-2">
+        <b>Količina:</b>
+        <span>{{ object.count }}</span>
+      </div>
+      <div v-if="object.location" class="my-2">
+        <b>Lokacija:</b>
+        <span>{{ object.location }}</span>
+      </div>
+      <div v-if="object.owner" class="my-2">
+        <b>Lastnik:</b>
+        <span>{{ object.owner }}</span>
+      </div>
+    </div>
+  </div>
+</template>
+
+<script>
+import status from "@/mixins/status";
+import {DateTime} from "luxon";
+import {mapGetters} from "vuex";
+
+export default {
+  name: "ItemCard",
+  mixins: [status],
+  props: {
+    object: {
+      type: Object,
+      required: true,
+      default: () => {},
+    }
+  },
+  computed: {
+    ...mapGetters({
+      isAdmin: 'user/isAdmin',
+      isKeeper: 'user/isKeeper',
+      isNormalUser: 'user/isNormalUser',
+    }),
+  },
+  methods: {
+    formatTime(time) {
+      return DateTime.fromISO(time).toFormat('dd. MM. yyyy hh:mm')
+    },
+    deleteItem() {
+      this.$emit('delete')
+    }
+  }
+}
+</script>
+
+<style scoped>
+
+</style>

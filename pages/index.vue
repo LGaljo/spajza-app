@@ -27,11 +27,12 @@
         <table class="table table-hover">
           <thead>
             <tr>
-              <th scope="col">Inv. št.</th>
+              <th scope="col" v-if="hideOnMinWidth">Inv. št.</th>
+              <th scope="col" v-if="hideOnMinWidth">Kat.</th>
               <th scope="col">Ime</th>
               <th scope="col">Število</th>
               <th scope="col">Stanje</th>
-              <th scope="col">Značke</th>
+              <th scope="col" v-if="hideOnMinWidth">Značke</th>
             </tr>
           </thead>
           <tbody>
@@ -40,11 +41,12 @@
             :key="item._id"
             @click="openDetails(item)"
           >
-            <th>{{ item.code }}</th>
+            <th v-if="hideOnMinWidth">{{ item.code }}</th>
+            <th v-if="hideOnMinWidth"><b-badge variant="primary" class="m-1">{{ item.category.name }}</b-badge></th>
             <th>{{ item.name }}</th>
             <td>{{ item.count }}</td>
             <td><b-badge :variant="getVariantForStatus(item.status)">{{ getNameForStatus(item.status) }}</b-badge></td>
-            <td><b-badge v-for="tag of item.tags" variant="secondary" :key="tag._id" class="m-1">{{ tag.name }}</b-badge></td>
+            <td v-if="hideOnMinWidth"><b-badge v-for="tag of item.tags" variant="secondary" :key="tag._id" class="m-1">{{ tag.name }}</b-badge></td>
           </tr>
           </tbody>
         </table>
@@ -65,28 +67,53 @@ export default {
       selected: {
         category: null,
         tags: null,
+        statuses: null,
       },
       filters: {
         categories: {
           name: 'Kategorija',
           values: [],
+          nameKey: 'name',
+          valueKey: '_id',
           visible: false,
           type: 'single',
         },
         tags: {
           name: 'Značke',
           values: [],
+          nameKey: 'name',
+          valueKey: '_id',
+          visible: false,
+          type: 'multiple'
+        },
+        statuses: {
+          name: 'Status',
+          values: [],
+          nameKey: 'text',
+          valueKey: 'value',
           visible: false,
           type: 'multiple'
         },
       },
       items: [],
+      innerWidth: 799,
     }
+  },
+  mounted() {
+    window.addEventListener('resize', () => {
+      this.innerWidth = window.innerWidth
+    })
+  },
+  computed: {
+    hideOnMinWidth() {
+      return this.innerWidth > 800;
+    },
   },
   methods: {
     async onFilterChange(event) {
       this.selected.category = event.categories
       this.selected.tags = event.tags
+      this.selected.statuses = event.statuses
       await this.getItems()
     },
     async setCategory(category) {
@@ -108,6 +135,7 @@ export default {
         params: {
           category: this.selected.category,
           tags: this.selected.tags,
+          statuses: this.selected.statuses,
           search: this.searchQuery
         }
       })
@@ -159,6 +187,7 @@ export default {
     if (this.$route.query.tag) {
       this.selected.tag = this.$route.query.tag
     }
+    this.filters.statuses.values = this.statuses
     await Promise.all([
       this.getCategories(),
       this.getItems(),

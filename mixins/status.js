@@ -4,19 +4,19 @@ export default {
       statuses: [
         {
           text: "Novo",
-          value: "new"
+          value: "NEW"
         },
         {
           text: "Izposojeno",
-          value: "borrowed"
+          value: "BORROWED"
         },
         {
           text: "Na voljo",
-          value: "stored"
+          value: "STORED"
         },
         {
           text: "Odpisano",
-          value: "writtenoff"
+          value: "WRITTEN_OFF"
         },
       ],
     }
@@ -24,25 +24,25 @@ export default {
   methods: {
     getVariantForStatus(status) {
       switch(status) {
-        case 'new':
+        case 'NEW':
           return 'info'
-        case 'borrowed':
+        case 'BORROWED':
           return 'warning'
-        case 'writtenoff':
+        case 'WRITTEN_OFF':
           return 'secondary'
-        case 'stored':
+        case 'STORED':
           return 'success'
       }
     },
     getNameForStatus(status) {
       switch(status) {
-        case 'new':
+        case 'NEW':
           return 'Novo'
-        case 'borrowed':
+        case 'BORROWED':
           return 'Izposojeno'
-        case 'writtenoff':
+        case 'WRITTEN_OFF':
           return 'Odpisano'
-        case 'stored':
+        case 'STORED':
           return 'Na voljo'
       }
     },
