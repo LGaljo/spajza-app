@@ -1,28 +1,46 @@
 <template>
   <b-navbar toggleable type="dark" variant="dark">
     <nuxt-link class="navbar-brand" href="/" :to="`/`">Špajza</nuxt-link>
-    <nuxt-link v-if="isAdmin || isKeeper"  class="nav-item nav-link link" :to="`/add`">Dodaj</nuxt-link>
     <div class="mr-auto"></div>
 
-    <b-navbar-toggle v-if="user" target="navbar-toggle-collapse">
-      <template #default="{ expanded }">
-        <div v-if="user" class="link-color float-left mr-2">
-          {{ user.username }}
-        </div>
-        <div class="float-right">
-          <b-icon v-if="expanded" icon="chevron-bar-up"></b-icon>
-          <b-icon v-else icon="chevron-bar-down"></b-icon>
-        </div>
+    <b-dropdown v-if="user" id="dropdown-1" right class="">
+      <template #button-content>
+        <span class="mr-2">Meni</span>
       </template>
-    </b-navbar-toggle>
+      <b-dropdown-item>
+        <nuxt-link v-if="isApproved" class="text-body" :to="`/wishlist`">Seznam želja</nuxt-link>
+      </b-dropdown-item>
+      <b-dropdown-divider></b-dropdown-divider>
+      <b-dropdown-item>
+        <nuxt-link v-if="isAdmin || isKeeper"  class="text-body" :to="`/add`">Dodaj</nuxt-link>
+      </b-dropdown-item>
+      <b-dropdown-item>
+        <nuxt-link v-if="isAdmin || isKeeper" class="text-body" :to="`/import`">Uvozi</nuxt-link>
+      </b-dropdown-item>
+      <b-dropdown-divider></b-dropdown-divider>
+      <b-dropdown-item>
+        <nuxt-link v-if="isAdmin" class="text-body" :to="`/tags`">Značke</nuxt-link>
+      </b-dropdown-item>
+      <b-dropdown-item>
+        <nuxt-link v-if="isAdmin" class="text-body" :to="`/categories`">Kategorije</nuxt-link>
+      </b-dropdown-item>
+      <b-dropdown-item>
+        <nuxt-link v-if="isAdmin" class="text-body" :to="`/users`">Uporabniki</nuxt-link>
+      </b-dropdown-item>
+      <b-dropdown-divider></b-dropdown-divider>
+      <b-dropdown-item>
+        <a @click="logout">Odjava</a>
+      </b-dropdown-item>
+    </b-dropdown>
+
+
+    <div v-if="user" class="ml-4">
+      <b-avatar variant="light">{{ user.username[0].toUpperCase() }}</b-avatar>
+    </div>
+
 
     <b-collapse v-if="user" id="navbar-toggle-collapse" is-nav>
       <b-navbar-nav class="ml-auto">
-        <nuxt-link v-if="isAdmin" class="nav-item nav-link link" :to="`/tags`">Značke</nuxt-link>
-        <nuxt-link v-if="isAdmin" class="nav-item nav-link link" :to="`/categories`">Kategorije</nuxt-link>
-        <nuxt-link v-if="isAdmin" class="nav-item nav-link link" :to="`/users`">Uporabniki</nuxt-link>
-        <nuxt-link v-if="isAdmin || isKeeper" class="nav-item nav-link link" :to="`/import`">Uvozi</nuxt-link>
-        <a class="nav-item nav-link link" @click="logout">Odjava</a>
       </b-navbar-nav>
     </b-collapse>
   </b-navbar>

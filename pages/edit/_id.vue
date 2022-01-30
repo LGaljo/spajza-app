@@ -2,7 +2,7 @@
   <b-container>
     <b-row>
       <b-col offset-md="3" md="6" cols="12" class=" my-3">
-        <h1>Dodaj nov predmet</h1>
+        <h1>Uredi predmet</h1>
         <b-form class="w-100" @submit.prevent="onSubmit" @reset="onReset">
 
           <!-- IME -->
@@ -27,7 +27,7 @@
             label-for="category"
           >
             <b-form-radio-group
-              v-model="form.category"
+              v-model="form.categoryId"
               id="category"
               multiple="false"
             >
@@ -166,7 +166,7 @@ export default {
     return {
       form: {
         name: '',
-        category: null,
+        categoryId: null,
         tags: [],
         count: 1,
         description: '',
@@ -197,8 +197,9 @@ export default {
     async getItem() {
       await this.$axios.$get(`/inventory/${this.$route.params.id}`)
         .then(res => {
+          this.form = res
           this.form.name = res.name
-          this.form.category = res.categoryId
+          this.form.categoryId = res.categoryId
           this.form.tags = res.tags.map(t => t._id)
           this.form.count = res.count || null
           this.form.description = res.description || null
@@ -241,7 +242,7 @@ export default {
     async onSubmit() {
 
       if (!this.form.name ||
-        !this.form.category ||
+        !this.form.categoryId ||
         !this.form.count ||
         !this.form.boughtTime ||
         !this.form.owner ||
@@ -253,7 +254,7 @@ export default {
 
       await this.$axios.$put(`/inventory/${this.$route.params.id}`, {
         ...this.form,
-        category: this.form.category
+        boughtTime: new Date(this.form.boughtTime),
       })
         .then(res => {
           this.$toast.success(`Predmet "${this.form.name}" uspešno posodobljen`, {duration: 2000});

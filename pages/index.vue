@@ -1,6 +1,6 @@
 <template>
   <b-container>
-    <b-row class="mb-2">
+    <b-row class="my-2">
       <div class="offset-md-3 col-md-6 text-center">
         <div class="input-group my-3">
           <input type="text" class="form-control" placeholder="Išči" v-model="searchQuery"
@@ -19,12 +19,12 @@
     </b-row>
     <b-row>
       <sidebar
-        class="col-md-2 col-12 mb-3"
+        class="px-md-0 col-md-2 col-12 mb-3"
         :filters="filters"
         @filterChange="onFilterChange"
       />
       <div class="col-md-10 col-12">
-        <table class="table table-hover">
+        <table v-if="viewType === 'table'" class="table table-hover">
           <thead>
             <tr>
               <th scope="col" v-if="hideOnMinWidth">Inv. št.</th>
@@ -50,6 +50,14 @@
           </tr>
           </tbody>
         </table>
+        <div v-if="viewType === 'cards'">
+          <ItemCard
+            v-for="item of items"
+            :key="item._id"
+            :item="item"
+            class="mb-4"
+          />
+        </div>
       </div>
     </b-row>
   </b-container>
@@ -64,6 +72,7 @@ export default {
   data() {
     return {
       searchQuery: null,
+      viewType: 'cards',
       selected: {
         category: null,
         tags: null,
@@ -110,6 +119,9 @@ export default {
     },
   },
   methods: {
+    async openDetails(item) {
+      await this.$router.push(`/item/${item._id}`)
+    },
     async onFilterChange(event) {
       this.selected.category = event.categories
       this.selected.tags = event.tags
@@ -170,9 +182,6 @@ export default {
           console.error(res)
           this.$toast.error('Napaka pri pridobivanju kategorij', { duration: 10000 });
         })
-    },
-    async openDetails(item) {
-      await this.$router.push(`/item/${item._id}`)
     },
     async search() {
       await this.getItems()

@@ -1,20 +1,19 @@
 <template>
   <div class="col-2">
     <div v-for="(filter, key) of filters">
-      <div class="mb-1">
-        <b-button
-          @click="filter.visible = !filter.visible"
-          variant="outline-secondary"
-          class="w-100 text-left"
-        >
+      <div
+        class="mb-1 w-100"
+        @click="filter.visible = !filter.visible"
+      >
+        <div :class="['d-flex', 'flex-row', 'justify-content-between', 'py-2', 'cursor-pointer', 'border-top', {'border-bottom': filter.visible}]">
           <span>{{ filter.name }}</span>
-<!--          <span-->
-<!--            class="material-icons icon-button"-->
-<!--          >-->
-<!--            {{ filter.visible ? 'expand_more' : 'chevron_right' }}-->
-<!--          </span>-->
-        </b-button>
-        <b-collapse v-model="filter.visible" >
+          <span
+            class="material-icons icon-button"
+          >
+            {{ filter.visible ? 'expand_more' : 'chevron_right' }}
+          </span>
+        </div>
+        <b-collapse v-model="filter.visible">
           <b-form-checkbox-group
             v-if="filter.type === 'multiple'"
             v-model="selected[key]"
@@ -86,7 +85,7 @@ export default {
       }
     }
   },
-  computed:  {
+  computed: {
     showFilterClear() {
       return this.selected.categories || this.selected.tags.length || this.selected.statuses.length
     }
