@@ -193,6 +193,17 @@ export default {
       }
     }
   },
+  watch: {
+    'cover.file': {
+      deep: true,
+      handler() {
+        if (this.cover.file) {
+          this.cover.path = URL.createObjectURL(this.cover.file)
+        }
+        this.form.cover = null;
+      }
+    },
+  },
   computed: {
     ...mapGetters({
       categories: 'categories/get',
