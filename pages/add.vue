@@ -20,6 +20,28 @@
             />
           </b-form-group>
 
+          <!-- IMAGE -->
+          <b-form-group
+            id="input-group-2"
+            label="Slika"
+            label-for="image"
+          >
+            <b-form-file
+              v-model="cover.file"
+              id="image"
+              accept="image/*"
+              :state="Boolean(cover.file)"
+              placeholder="Izberi ali spusti datoteko..."
+              drop-placeholder="Spusti datoteko..."
+            ></b-form-file>
+            <div v-if="cover.path" class="mt-3 d-flex justify-content-between flex-row align-items-center">
+              <div v-if="cover.file">Izbrana slika: {{ cover.file ? cover.file.name : '' }}</div>
+              <a @click="cover = {file: null, path: null}" href="#">Odstrani sliko</a>
+            </div>
+
+            <b-img v-if="cover.path" :src="cover.path" fluid alt="image" class="w-50"></b-img>
+          </b-form-group>
+
           <b-form-group
             id="input-group-2"
             label="Kategorija"
@@ -170,7 +192,22 @@ export default {
       },
       tags: [],
       categories: [],
+      cover: {
+        file: null,
+        path: null
+      }
     }
+  },
+  watch: {
+    'cover.file': {
+      deep: true,
+      handler() {
+        if (this.cover.file) {
+          this.cover.path = URL.createObjectURL(this.cover.file)
+        }
+        this.form.cover = null;
+      }
+    },
   },
   async created() {
     await Promise.all([
@@ -223,14 +260,24 @@ export default {
 
       await this.$axios.$post('/inventory', this.form
       )
-        .then(res => {
+        .then(async (res) => {
+          console.log(res)
+          if (this.cover.file && res._id) {
+            await this.uploadImage(res._id);
+          }
           this.$toast.success(`Predmet "${this.form.name}" uspešno dodan`, {duration: 2000});
-          this.$router.replace('/')
+          await this.$router.replace('/')
         })
         .catch(rej => {
           console.error(rej);
           this.$toast.error('Napaka pri dodajanju predmeta', {duration: 2000});
         });
+    },
+    async uploadImage(id) {
+      const formData = new FormData();
+      formData.append('file', this.cover.file);
+
+      await this.$axios.$post(`/inventory/file/${id}`, formData)
     }
   }
 }

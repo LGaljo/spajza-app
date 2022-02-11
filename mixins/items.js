@@ -56,6 +56,14 @@ export default {
           field: 'boughtTime',
           name: 'Čas pridobitve'
         },
+        {
+          field: 'file',
+          name: 'Slika'
+        },
+        {
+          field: 'cover',
+          name: 'Slika'
+        },
       ]
     }
   },

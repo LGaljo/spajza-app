@@ -20,6 +20,28 @@
             />
           </b-form-group>
 
+          <!-- IMAGE -->
+          <b-form-group
+            id="input-group-2"
+            label="Slika"
+            label-for="image"
+          >
+            <b-form-file
+              v-model="cover.file"
+              id="image"
+              accept="image/*"
+              :state="Boolean(cover.file)"
+              placeholder="Izberi ali spusti datoteko..."
+              drop-placeholder="Spusti datoteko..."
+            ></b-form-file>
+            <div v-if="cover.path" class="mt-3 d-flex justify-content-between flex-row align-items-center">
+              <div v-if="cover.file">Izbrana slika: {{ cover.file ? cover.file.name : '' }}</div>
+              <a @click="cover = {file: null, path: null}" href="#">Odstrani sliko</a>
+            </div>
+
+            <b-img v-if="cover.path" :src="cover.path" fluid alt="image" class="w-50"></b-img>
+          </b-form-group>
+
           <!-- KATEGORIJA -->
           <b-form-group
             id="input-group-2"
@@ -173,22 +195,35 @@ export default {
         location: '',
         boughtTime: null,
         owner: 'RZS',
+        cover: null,
+      },
+      cover: {
+        file: null,
+        path: null,
       },
       tags: [],
       categories: [],
     }
   },
-  // watch: {
-  //   'form.category'() {
-  //     console.log(this.form.category);
-  //   }
-  // },
+  watch: {
+    'cover.file': {
+      deep: true,
+      handler() {
+        if (this.cover.file) {
+          this.cover.path = URL.createObjectURL(this.cover.file)
+        }
+        this.form.cover = null;
+      }
+    },
+  },
   async created() {
     await Promise.all([
       this.getCategories(),
       this.getTags(),
     ])
     await this.getItem();
+  },
+  computed: {
   },
   methods: {
     setCurrentTime() {
@@ -202,6 +237,7 @@ export default {
           this.form.categoryId = res.categoryId
           this.form.tags = res.tags.map(t => t._id)
           this.form.count = res.count || null
+          this.cover.path = res.cover ? res.cover.Location : null
           this.form.description = res.description || null
           this.form.location = res.location || null
           this.form.boughtTime = DateTime.fromISO(res.boughtTime).toFormat('yyyy-MM-dd') +
@@ -252,18 +288,26 @@ export default {
         return;
       }
 
-      await this.$axios.$put(`/inventory/${this.$route.params.id}`, {
+      this.$axios.$put(`/inventory/${this.$route.params.id}`, {
         ...this.form,
         boughtTime: new Date(this.form.boughtTime),
       })
-        .then(res => {
-          this.$toast.success(`Predmet "${this.form.name}" uspešno posodobljen`, {duration: 2000});
-          this.$router.replace('/')
-        })
-        .catch(rej => {
-          console.error(rej);
-          this.$toast.error('Napaka pri dodajanju predmeta', {duration: 2000});
-        });
+      .then(async (res) => {
+        if (this.cover.file) {
+          await this.uploadImage();
+        }
+        this.$toast.success(`Predmet "${this.form.name}" uspešno posodobljen`, {duration: 2000});
+        await this.$router.replace('/')
+      })
+      .catch(rej => {
+        console.error(rej);
+      });
+    },
+    async uploadImage() {
+      const formData = new FormData();
+      formData.append('file', this.cover.file);
+
+      await this.$axios.$post(`/inventory/file/${this.$route.params.id}`, formData)
     }
   }
 }

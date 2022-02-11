@@ -6,7 +6,7 @@
   >
     <b-row no-gutters>
       <b-col cols="3">
-        <b-card-img-lazy src="~/assets/images/nopicture.png" alt="Image" class="rounded-0"/>
+        <b-card-img-lazy :src="itemCover" alt="Image" class="rounded-0"/>
         <div class="position-absolute ml-2 mt-2 inv-number" style="top: 0; left: 0">
           #{{item.code}}
         </div>
@@ -33,6 +33,8 @@
                 <b>Lokacija:</b>
                 <span>{{ item.location }}</span>
               </div>
+              <b-button @click.stop.prevent="openDialog(item)">Izposodi si</b-button>
+              <b-button @click.stop.prevent="openDialog(item)">Posodi</b-button>
             </div>
           </b-card-text>
         </b-card-body>
@@ -54,10 +56,18 @@ export default {
     }
   },
   mixins: [status, datetime],
+  computed: {
+    itemCover() {
+      return this.item.cover ? this.item.cover.Location : 'https://spajza-bucket.s3.eu-central-1.amazonaws.com/item/nopicture.png'
+    }
+  },
   methods: {
     async openDetails(item) {
       await this.$router.push(`/item/${item._id}`)
     },
+    openDialog(item) {
+      this.$emit('rent', item)
+    }
   }
 }
 </script>
