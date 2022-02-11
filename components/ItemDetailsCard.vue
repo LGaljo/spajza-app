@@ -4,10 +4,15 @@
       <nuxt-link :to="`/edit/${this.$route.params.id}`" class="btn btn-primary">Uredi</nuxt-link>
       <a @click.prevent.st.stop="deleteItem" class="btn btn-danger">Izbriši</a>
     </div>
-    <div v-if="object" class="card-body">
-      <b-badge v-if="object.category" variant="primary" class="m-1">{{ object.category.name }}</b-badge>
-      <b-badge v-if="object.status" :variant="getVariantForStatus(object.status)" class="m-1">{{ getNameForStatus(object.status) }}</b-badge>
+    <div class="card-body">
+      <b-badge v-if="object.category" variant="primary" class="">{{ object.category.name }}</b-badge>
+
       <h4 class="card-title">{{ object.name }}</h4>
+
+      <b-card-img-lazy :src="itemCover" alt="Image" class="rounded-0"/>
+
+      <b-badge v-if="object.status" :variant="getVariantForStatus(object.status)" class="mr-1">{{ getNameForStatus(object.status) }}</b-badge>
+
       <div v-if="object.description" class="mb-4">
         <span>{{ object.description }}</span>
       </div>
@@ -57,6 +62,9 @@ export default {
       isKeeper: 'user/isKeeper',
       isNormalUser: 'user/isNormalUser',
     }),
+    itemCover() {
+      return this.object.cover ? this.object.cover.Location : 'https://spajza-bucket.s3.eu-central-1.amazonaws.com/item/nopicture.png'
+    }
   },
   methods: {
     deleteItem() {

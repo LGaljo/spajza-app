@@ -1,5 +1,5 @@
 <template>
-  <b-navbar toggleable type="dark" variant="dark">
+  <b-navbar toggleable type="dark" variant="dark" class="fixed-top">
     <nuxt-link class="navbar-brand" href="/" :to="`/`">Špajza</nuxt-link>
     <div class="mr-auto"></div>
 

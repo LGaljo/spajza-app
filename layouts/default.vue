@@ -1,7 +1,7 @@
 <template>
   <div>
     <navbar/>
-    <Nuxt/>
+    <Nuxt class="margin-top bottom-padding"/>
   </div>
 </template>
 <script>
@@ -16,6 +16,9 @@ export default {
 
 <style lang="scss" scoped>
 .bottom-padding {
-  padding-top: 120px;
+  padding-bottom: 120px;
+}
+.margin-top {
+  margin-top: 60px;
 }
 </style>

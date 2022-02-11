@@ -80,7 +80,7 @@ export default {
       },
       filters: {
         categories: {
-          name: 'Kategorija',
+          name: 'Kategorije',
           values: [],
           nameKey: 'name',
           valueKey: '_id',
