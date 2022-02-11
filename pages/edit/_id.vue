@@ -3,7 +3,7 @@
     <b-row>
       <b-col offset-md="3" md="6" cols="12" class=" my-3">
         <h1>Uredi predmet</h1>
-        <b-form class="w-100" @submit.prevent="onSubmit" @reset="onReset">
+        <b-form class="w-100" @submit.prevent="onSubmit">
 
           <!-- IME -->
           <b-form-group
@@ -45,7 +45,7 @@
           <!-- KATEGORIJA -->
           <b-form-group
             id="input-group-2"
-            label="Kategorija"
+            label="Kategorije"
             label-for="category"
           >
             <b-form-radio-group
@@ -179,6 +179,7 @@
 
 import {DateTime} from "luxon";
 import status from "@/mixins/status";
+import {mapGetters} from "vuex";
 
 export default {
   name: "edit.vue",
@@ -201,8 +202,6 @@ export default {
         file: null,
         path: null,
       },
-      tags: [],
-      categories: [],
     }
   },
   watch: {
@@ -216,14 +215,18 @@ export default {
       }
     },
   },
+  computed: {
+    ...mapGetters({
+      categories: 'categories/get',
+      tags: 'tags/get',
+    })
+  },
   async created() {
     await Promise.all([
-      this.getCategories(),
-      this.getTags(),
+      this.$store.dispatch('categories/fetch'),
+      this.$store.dispatch('tags/fetch'),
     ])
     await this.getItem();
-  },
-  computed: {
   },
   methods: {
     setCurrentTime() {
@@ -249,31 +252,6 @@ export default {
           console.error(res)
           this.$toast.error('Napaka pri pridobivanju podatkov', { duration: 10000 });
         })
-    },
-    async getCategories() {
-      this.$axios.$get(`/categories`)
-        .then(res => {
-          this.categories = res;
-        })
-        .catch(res => {
-          console.error(res)
-          this.$toast.error('Napaka pri pridobivanju kategorij', {duration: 10000});
-        })
-    },
-    async getTags() {
-      this.$axios.$get(`/tags`)
-        .then(res => {
-          if (res.length) {
-            this.tags = res
-          }
-        })
-        .catch(res => {
-          console.error(res)
-          this.$toast.error('Napaka pri pridobivanju značk', {duration: 10000});
-        })
-    },
-    onReset() {
-      console.log('reset here')
     },
     async onSubmit() {
 

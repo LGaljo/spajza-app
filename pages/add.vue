@@ -5,7 +5,7 @@
         <div class="text-center">
           <h1>Dodaj nov predmet</h1>
         </div>
-        <b-form class="w-100" @submit.prevent="onSubmit" @reset="onReset">
+        <b-form class="w-100" @submit.prevent="onSubmit">
           <b-form-group
             id="input-group-1"
             label="Ime predmeta"
@@ -172,6 +172,7 @@
 
 import {DateTime} from "luxon";
 import status from "@/mixins/status";
+import {mapGetters} from "vuex";
 
 export default {
   name: "add.vue",
@@ -190,8 +191,6 @@ export default {
         owner: 'RZS',
         status: null
       },
-      tags: [],
-      categories: [],
       cover: {
         file: null,
         path: null
@@ -209,41 +208,21 @@ export default {
       }
     },
   },
+  computed: {
+    ...mapGetters({
+      categories: 'categories/get',
+      tags: 'tags/get',
+    })
+  },
   async created() {
     await Promise.all([
-      this.getCategories(),
-      this.getTags(),
+      this.$store.dispatch('categories/fetch'),
+      this.$store.dispatch('tags/fetch'),
     ])
   },
   methods: {
     setCurrentTime() {
       this.form.boughtTime = DateTime.now().toFormat('yyyy-MM-dd') + "T" + DateTime.now().toFormat('hh:mm')
-    },
-    async getCategories() {
-      this.$axios.$get(`/categories`)
-        .then(res => {
-          this.categories = res;
-
-        })
-        .catch(res => {
-          console.error(res)
-          this.$toast.error('Napaka pri pridobivanju kategorij', {duration: 10000});
-        })
-    },
-    async getTags() {
-      this.$axios.$get(`/tags`)
-        .then(res => {
-          if (res.length) {
-            this.tags = res
-          }
-        })
-        .catch(res => {
-          console.error(res)
-          this.$toast.error('Napaka pri pridobivanju značk', {duration: 10000});
-        })
-    },
-    onReset() {
-      console.log('reset here')
     },
     async onSubmit() {
 
