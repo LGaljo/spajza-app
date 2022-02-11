@@ -1,14 +1,19 @@
 <template>
   <b-card
     no-body
-    class="overflow-hidden cursor-pointer fake-button-card"
+    class="overflow-hidden cursor-pointer fake-button-card size"
     @click="openDetails(item)"
   >
-    <b-row no-gutters>
+    <b-row no-gutters class="h-100">
       <b-col cols="3">
-        <b-card-img-lazy :src="itemCover" alt="Image" class="rounded-0"/>
-        <div class="position-absolute ml-2 mt-2 inv-number" style="top: 0; left: 0">
-          #{{item.code}}
+        <div class="h-100 w-100">
+          <div class="d-flex justify-content-start align-items-center h-100">
+            <b-card-img-lazy :src="itemCover" alt="Image" class="rounded-0"/>
+          </div>
+          <div class="position-absolute ml-2 mt-2 inv-number" style="top: 0; left: 0">
+            #{{item.code}}
+          </div>
+
         </div>
       </b-col>
       <b-col cols="9">
@@ -26,15 +31,17 @@
               <div v-if="item.tags" class="">
                 <b-badge v-for="tag of item.tags" variant="secondary" :key="tag._id" class="mr-1 p-1">{{ tag.name }}</b-badge>
               </div>
-              <div v-if="item.description">
-                <span>{{ item.description }}</span>
+              <div class="d-flex flex-row justify-content-between">
+                <div class="w-100">
+                  <div v-if="item.location">
+                    <b>Lokacija:</b>
+                    <span>{{ item.location }}</span>
+                  </div>
+                  <div v-if="item.description">
+                    <span>{{ item.description }}</span>
+                  </div>
+                </div>
               </div>
-              <div v-if="item.location">
-                <b>Lokacija:</b>
-                <span>{{ item.location }}</span>
-              </div>
-              <b-button @click.stop.prevent="openDialog(item)">Izposodi si</b-button>
-              <b-button @click.stop.prevent="openDialog(item)">Posodi</b-button>
             </div>
           </b-card-text>
         </b-card-body>
@@ -65,8 +72,8 @@ export default {
     async openDetails(item) {
       await this.$router.push(`/item/${item._id}`)
     },
-    openDialog(item) {
-      this.$emit('rent', item)
+    openDialog() {
+      this.$emit('rent')
     }
   }
 }
@@ -77,5 +84,16 @@ export default {
   font-size: 20px;
   color: white;
   text-shadow: 0 0 8px black;
+}
+
+.size {
+  height: 192px;
+}
+
+.card-img {
+  height: auto !important;
+  max-height: 192px !important;
+  width: 100% !important;
+  max-width: 192px !important;
 }
 </style>
