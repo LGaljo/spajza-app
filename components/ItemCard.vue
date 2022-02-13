@@ -41,6 +41,9 @@
                     <span>{{ item.description }}</span>
                   </div>
                 </div>
+                <div v-if="item.status !== 'BORROWED'">
+                  <b-button @click.stop.prevent="openDialog">Izposodi</b-button>
+                </div>
               </div>
             </div>
           </b-card-text>

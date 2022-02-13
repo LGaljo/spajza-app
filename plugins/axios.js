@@ -19,7 +19,7 @@ const responseInterceptor = app => {
       if (error.response.status === 401) {
         localStorage.removeItem('jwt')
         await app.store.dispatch('user/unsetUser')
-        await app.router.push('/login')
+        await app.router.replace('/login')
         return
       }
 

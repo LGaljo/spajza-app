@@ -4,8 +4,8 @@
       <div class="offset-md-3 col-md-6 text-center">
         <div class="input-group my-3">
           <input type="text" class="form-control" placeholder="Išči" v-model="searchQuery"
-                 aria-describedby="basic-addon2" @keydown.enter="search">
-          <div class="input-group-append" @click="search">
+                 aria-describedby="basic-addon2" @keydown.enter.prevent="search">
+          <div class="input-group-append" @click.prevent="search">
             <span class="input-group-text fake-button" id="basic-addon2">
               <span
                 class="material-icons icon-button"
@@ -24,47 +24,25 @@
         @filterChange="onFilterChange"
       />
       <div class="col-md-10 col-12">
-        <table v-if="viewType === 'table'" class="table table-hover">
-          <thead>
-            <tr>
-              <th scope="col" v-if="hideOnMinWidth">Inv. št.</th>
-              <th scope="col" v-if="hideOnMinWidth">Kat.</th>
-              <th scope="col">Ime</th>
-              <th scope="col">Število</th>
-              <th scope="col">Stanje</th>
-              <th scope="col" v-if="hideOnMinWidth">Značke</th>
-            </tr>
-          </thead>
-          <tbody>
-          <tr
-            v-for="item of items"
-            :key="item._id"
-            @click="openDetails(item)"
-          >
-            <th v-if="hideOnMinWidth">{{ item.code }}</th>
-            <th v-if="hideOnMinWidth"><b-badge variant="primary" class="m-1">{{ item.category.name }}</b-badge></th>
-            <th>{{ item.name }}</th>
-            <td>{{ item.count }}</td>
-            <td><b-badge :variant="getVariantForStatus(item.status)">{{ getNameForStatus(item.status) }}</b-badge></td>
-            <td v-if="hideOnMinWidth"><b-badge v-for="tag of item.tags" variant="secondary" :key="tag._id" class="m-1">{{ tag.name }}</b-badge></td>
-          </tr>
-          </tbody>
-        </table>
-        <div v-if="viewType === 'cards'">
-          <ItemCard
-            v-for="item of items"
-            :key="item._id"
-            :item="item"
-            class="mb-4"
-          />
-        </div>
+        <ItemCard
+          v-for="item of items"
+          :key="item._id"
+          :item="item"
+          class="mb-4"
+          @rent="onRentItem(item)"
+        />
       </div>
+      <RentDialog
+        ref="dialog"
+        @onRented="onItemRented"
+      />
     </b-row>
   </b-container>
 </template>
 
 <script>
 import status from "@/mixins/status";
+import {mapGetters} from "vuex";
 
 export default {
   components: {},
@@ -106,7 +84,16 @@ export default {
       },
       items: [],
       innerWidth: 799,
+      rentedItem: null,
     }
+  },
+  watch: {
+    categories() {
+      this.filters.categories.values = this.categories;
+    },
+    tags() {
+      this.filters.tags.values = this.tags;
+    },
   },
   mounted() {
     window.addEventListener('resize', () => {
@@ -117,6 +104,10 @@ export default {
     hideOnMinWidth() {
       return this.innerWidth > 800;
     },
+    ...mapGetters({
+      categories: 'categories/get',
+      tags: 'tags/get',
+    })
   },
   methods: {
     async openDetails(item) {
@@ -126,20 +117,6 @@ export default {
       this.selected.category = event.categories
       this.selected.tags = event.tags
       this.selected.statuses = event.statuses
-      await this.getItems()
-    },
-    async setCategory(category) {
-      if (category._id === this.selected.category._id) {
-        this.selected.category = {};
-        const query = Object.assign({}, this.$route.query);
-        delete query.category;
-        await this.$router.replace({query});
-      } else {
-        this.selected.category = category
-        const query = Object.assign({}, this.$route.query);
-        query.category = category._id;
-        await this.$router.replace({query});
-      }
       await this.getItems()
     },
     async getItems() {
@@ -159,33 +136,16 @@ export default {
           this.$toast.error('Napaka pri pridobivanju podatkov', { duration: 10000 });
         })
     },
-    async getCategories() {
-      this.$axios.$get(`/categories`)
-        .then(res => {
-          if (res.length) {
-            this.filters.categories.values.push(...res);
-          }
-        })
-        .catch(res => {
-          console.error(res)
-          this.$toast.error('Napaka pri pridobivanju kategorij', { duration: 10000 });
-        })
-    },
-    async getTags() {
-      this.$axios.$get(`/tags`)
-        .then(res => {
-          if (res.length) {
-            this.filters.tags.values.push(...res);
-          }
-        })
-        .catch(res => {
-          console.error(res)
-          this.$toast.error('Napaka pri pridobivanju kategorij', { duration: 10000 });
-        })
-    },
     async search() {
       await this.getItems()
     },
+    onRentItem(item) {
+      this.$refs.dialog.open(item);
+    },
+    onItemRented(item) {
+      this.items.find(i => i.id === item.id).status = "BORROWED"
+      this.$toast.success(`${item.name} uspešno izposojen`, { duration: 3000 });
+    }
   },
   async created() {
     if (this.$route.query.category) {
@@ -196,10 +156,13 @@ export default {
     }
     this.filters.statuses.values = this.statuses
     await Promise.all([
-      this.getCategories(),
       this.getItems(),
-      this.getTags(),
     ])
+    await Promise.all([
+      this.$store.dispatch('categories/fetch'),
+      this.$store.dispatch('tags/fetch'),
+    ])
+
   }
 }
 </script>

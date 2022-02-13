@@ -53,7 +53,6 @@
               </b-form-group>
             </ValidationProvider>
 
-
             <ValidationProvider name="geslo" :rules="{ required: true }" v-slot="v" vid="password">
               <b-form-group
                 id="input-group-6"
