@@ -24,6 +24,11 @@
         @filterChange="onFilterChange"
       />
       <div class="col-md-10 col-12">
+        <RentDialog
+          ref="dialog"
+          @onRented="onItemRented"
+        />
+
         <ItemCard
           v-for="item of items"
           :key="item._id"
@@ -31,11 +36,18 @@
           class="mb-4"
           @rent="onRentItem(item)"
         />
+
+        <client-only>
+          <infinite-loading
+            spinner="spiral"
+            @infinite="onInfiniteLoad"
+          >
+            <div slot="no-more">Konec seznama</div>
+            <div slot="no-results">No results message</div>
+          </infinite-loading>
+        </client-only>
+
       </div>
-      <RentDialog
-        ref="dialog"
-        @onRented="onItemRented"
-      />
     </b-row>
   </b-container>
 </template>
@@ -43,9 +55,10 @@
 <script>
 import status from "@/mixins/status";
 import {mapGetters} from "vuex";
+import InfiniteLoading from 'vue-infinite-loading';
 
 export default {
-  components: {},
+  components: { InfiniteLoading },
   mixins: [status],
   data() {
     return {
@@ -85,6 +98,8 @@ export default {
       items: [],
       innerWidth: 799,
       rentedItem: null,
+      limit: 15,
+      skip: 0,
     }
   },
   watch: {
@@ -110,6 +125,31 @@ export default {
     })
   },
   methods: {
+    onInfiniteLoad($state) {
+      this.$axios.$get(`/inventory`, {
+        params: {
+          category: this.selected.category,
+          tags: this.selected.tags,
+          statuses: this.selected.statuses,
+          search: this.searchQuery,
+          limit: this.limit + this.skip,
+          skip: this.skip
+        }
+      })
+      .then(response => {
+        console.log(response)
+        if (response.length) {
+          this.items.push(...response)
+          this.skip += this.limit
+          $state.loaded();
+        } else {
+          $state.complete();
+        }
+      })
+      .catch(reason => {
+        console.error(reason)
+      })
+    },
     async openDetails(item) {
       await this.$router.push(`/item/${item._id}`)
     },
@@ -155,9 +195,9 @@ export default {
       this.selected.tag = this.$route.query.tag
     }
     this.filters.statuses.values = this.statuses
-    await Promise.all([
-      this.getItems(),
-    ])
+    // await Promise.all([
+    //   this.getItems(),
+    // ])
     await Promise.all([
       this.$store.dispatch('categories/fetch'),
       this.$store.dispatch('tags/fetch'),
