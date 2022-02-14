@@ -121,20 +121,19 @@ export default {
       return dirty || validated ? valid : null;
     },
     async onSubmit() {
-      console.log(this.form)
-      this.$axios.$post(`/rent/${this.item.id}`, this.form)
+      this.$axios.$post(`/rents/borrow/${this.item._id}`, this.form)
         .then(async res => {
           console.log(res);
+          this.$emit('onRented', res)
         })
         .catch(reason => {
           console.error(reason)
         })
-      this.$emit('onRented', this.item)
       this.close();
     },
     async onReset() {
       this.form = {
-        returnTime: null,
+        returnTime: DateTime.now().plus({days: 14}).toFormat("yyyy-MM-dd"),
         renter: 'me',
         subject: null
       };

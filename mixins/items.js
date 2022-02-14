@@ -1,5 +1,3 @@
-import {DateTime} from "luxon";
-
 export default {
   data() {
     return {
@@ -63,6 +61,14 @@ export default {
         {
           field: 'cover',
           name: 'Slika'
+        },
+        {
+          field: 'rents',
+          name: 'Izposoja'
+        },
+        {
+          field: 'renter',
+          name: 'Izposojevalec'
         },
       ]
     }

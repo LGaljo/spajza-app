@@ -5,8 +5,25 @@
         <ItemDetailsCard
           v-if="item"
           :object="item"
-          @delete="deleteItem"
+          @delete="deleteItemRequest"
+          @onRentItem="onRentItem"
         />
+
+        <b-card title="Izposoja" v-if="item && item.rents && item.renter" class="mt-3 mb-1">
+          <b-card-text>
+            <div v-if="!item.rents.subject">Predmet si je izposodil <b>{{ item.rents.renter }}</b> dne <b>{{formatDate(item.rents.borrowedAt)}}.</b></div>
+            <div v-else>Predmet je <b>{{ item.renter.username }}</b> posodil <b>{{ item.rents.subject }}</b> dne <b>{{formatDate(item.rents.borrowedAt)}}</b>.</div>
+            <div>Obljubil je, da ga vrne <b>{{ formatDate(item.rents.returnTime) }}</b>.</div>
+          </b-card-text>
+          <b-button
+            v-if="user && (user._id === item.rents.renter || isAdmin || isKeeper)"
+            href="#"
+            @click.prevent.stop="returnItem"
+            variant="primary"
+          >
+            Vrni
+          </b-button>
+        </b-card>
 
         <b-card v-if="item" no-body class="mt-3 mb-1">
           <b-card-header header-tag="header" class="p-0" role="tab">
@@ -44,6 +61,21 @@
             </b-card-body>
           </b-collapse>
         </b-card>
+
+        <RentDialog
+          ref="dialog"
+          @onRented="onItemRented"
+        />
+
+        <ModalDialog
+          v-if="item"
+          ref="deleteDialog"
+          :title="`Izbriši`"
+          action="Izbriši"
+          @first="deleteItem"
+        >
+          <div slot="body">Želiš zbrisati <b>{{ item.name }}</b>?</div>
+        </ModalDialog>
       </b-col>
     </b-row>
   </b-container>
@@ -71,6 +103,7 @@ export default {
   },
   computed: {
     ...mapGetters({
+      user: 'user/getUser',
       isAdmin: 'user/isAdmin',
       isKeeper: 'user/isKeeper',
       isNormalUser: 'user/isNormalUser',
@@ -95,6 +128,9 @@ export default {
       })
   },
   methods: {
+    deleteItemRequest() {
+      this.$refs.deleteDialog.open();
+    },
     deleteItem() {
       this.$axios.$delete(`/inventory/${this.item._id}`)
       .then(res => {
@@ -104,6 +140,23 @@ export default {
       .catch(reason => {
         this.$toast.error(`Napaka pri brisanju predmeta`, { duration: 3000 });
       })
+    },
+    returnItem() {
+      this.$axios.$post(`/rents/return/${this.item._id}`)
+        .then(res => {
+          this.item = res;
+          this.$toast.success(`Predmet "${this.item.name}" uspešno vrnjen`, { duration: 3000 });
+        })
+        .catch(reason => {
+          this.$toast.error(`Napaka pri brisanju predmeta`, { duration: 3000 });
+        })
+    },
+    onRentItem() {
+      this.$refs.dialog.open(this.item);
+    },
+    onItemRented(item) {
+      this.item = item
+      this.$toast.success(`${item.name} uspešno izposojen`, { duration: 3000 });
     }
   }
 }
