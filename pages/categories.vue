@@ -40,7 +40,6 @@
         </table>
         <div class="text-muted">Brisana kategorija ne sme vsebovati predmetov.</div>
 
-
       </b-col>
     </b-row>
   </b-container>

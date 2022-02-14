@@ -25,7 +25,8 @@
     "read-excel-file": "^5.2.26",
     "v-click-outside": "^3.1.2",
     "vee-validate": "^3.4.14",
-    "vue-infinite-loading": "^2.4.5"
+    "vue-infinite-loading": "^2.4.5",
+    "vuedraggable": "^2.24.3"
   },
   "devDependencies": {
     "@nuxt/types": "^2.15.8",
