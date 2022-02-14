@@ -20,6 +20,10 @@
               placeholder="Geslo"
               class="my-2"
             />
+            <b-form-checkbox
+              v-model="form.saveme"
+              class="mt-5 text-center"
+            >Zapomni se me</b-form-checkbox>
 
             <div class="text-center">
               <b-button type="submit" variant="success" class="w-50 mt-4">
@@ -50,6 +54,7 @@ export default {
       form: {
         username: null,
         password: null,
+        saveme: false
       },
       loading: false
     }

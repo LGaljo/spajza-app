@@ -143,7 +143,7 @@ export default {
       this.$refs.dialog.open(item);
     },
     onItemRented(item) {
-      this.items.find(i => i.id === item.id).status = "BORROWED"
+      this.items.find(i => i._id === item._id).status = "BORROWED"
       this.$toast.success(`${item.name} uspešno izposojen`, { duration: 3000 });
     }
   },

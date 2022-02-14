@@ -1,8 +1,9 @@
 <template>
   <div class="card">
-    <div v-if="isAdmin || isKeeper" class="card-header">
-      <nuxt-link :to="`/edit/${this.$route.params.id}`" class="btn btn-primary">Uredi</nuxt-link>
-      <a @click.prevent.st.stop="deleteItem" class="btn btn-danger">Izbriši</a>
+    <div class="card-header">
+      <nuxt-link v-if="isAdmin || isKeeper" :to="`/edit/${this.$route.params.id}`" class="btn btn-primary">Uredi</nuxt-link>
+      <a v-if="isAdmin || isKeeper" @click.prevent.stop="deleteItem" class="btn btn-danger">Izbriši</a>
+      <a v-if="!object.rents" @click.prevent.stop="rentItem" class="btn btn-primary">Izposodi</a>
     </div>
     <div class="card-body">
       <b-badge v-if="object.category" variant="primary" class="">{{ object.category.name }}</b-badge>
@@ -69,6 +70,9 @@ export default {
   methods: {
     deleteItem() {
       this.$emit('delete')
+    },
+    rentItem() {
+      this.$emit('onRentItem')
     }
   }
 }
