@@ -13,7 +13,6 @@
           <div class="position-absolute ml-2 mt-2 inv-number" style="top: 0; left: 0">
             #{{item.code}}
           </div>
-
         </div>
       </b-col>
       <b-col cols="9">
