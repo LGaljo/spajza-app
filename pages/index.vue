@@ -22,6 +22,7 @@
         class="px-md-0 col-md-2 col-12 mb-3"
         :filters="filters"
         @filterChange="onFilterChange"
+        @clearFilter="searchQuery = null"
       />
       <div class="col-md-10 col-12">
         <RentDialog

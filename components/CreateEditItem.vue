@@ -294,7 +294,14 @@ export default {
       const formData = new FormData();
       formData.append('file', this.cover.file);
 
-      await this.$axios.$post(`/inventory/file/${id}`, formData)
+      this.$axios.$post(`/inventory/file/${id}`, formData)
+      .then(res => {
+        console.log(res)
+      })
+      .catch(reason => {
+        console.error(reason);
+        this.$toast.error('Napaka pri dodajanju slike', {duration: 2000});
+      })
     }
   }
 }

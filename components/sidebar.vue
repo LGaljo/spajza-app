@@ -92,6 +92,7 @@ export default {
   },
   methods: {
     resetSelected() {
+      this.$emit('clearFilter')
       this.selected = {
         categories: null,
         tags: [],
