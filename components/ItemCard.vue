@@ -138,7 +138,7 @@ export default {
   }
 
   .item-name {
-    font-size: 16px;
+    font-size: 22px;
     font-weight: 500;
   }
 
