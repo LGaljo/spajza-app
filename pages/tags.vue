@@ -9,7 +9,7 @@
           <span class="d-block"><b>Dodaj</b></span>
           <b-input-group class="my-3">
             <input type="text" class="form-control" placeholder="Dodaj značko" v-model="tagNew"
-                   aria-describedby="basic-addon2">
+                   aria-describedby="basic-addon2" @click="addTag">
             <div class="input-group-append cursor-pointer" @click="addTag">
             <span class="input-group-text fake-button" id="basic-addon2">
               <span

@@ -6,7 +6,7 @@
       <a v-if="!object.rents" @click.prevent.stop="rentItem" class="btn btn-primary">Izposodi</a>
     </div>
     <div class="card-body">
-      <b-badge v-if="object.category" variant="primary" class="">{{ object.category.name }}</b-badge>
+      <b-badge v-if="object.category" variant="primary" class="p-2">{{ object.category.name }}</b-badge>
 
       <h4 class="card-title">{{ object.name }}</h4>
 

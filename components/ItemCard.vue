@@ -21,27 +21,35 @@
             <div class="d-flex flex-column">
               <div class="d-flex justify-content-between">
                 <div>
-                  <h4>{{ item.name }}</h4>
+                  <span class="item-name">{{ item.name }}</span>
                 </div>
                 <div>
-                  <b-badge v-if="item.status" :variant="getVariantForStatus(item.status)" class="p-2">{{ getNameForStatus(item.status) }}</b-badge>
+                  <b-badge v-if="item.status" :variant="getVariantForStatus(item.status)" class="item-status">{{ getNameForStatus(item.status) }}</b-badge>
                 </div>
               </div>
               <div v-if="item.tags" class="">
                 <b-badge v-for="tag of item.tags" variant="secondary" :key="tag._id" class="mr-1 p-1">{{ tag.name }}</b-badge>
               </div>
-              <div class="d-flex flex-row justify-content-between">
+              <div
+                class="d-flex flex-row justify-content-between mt-1"
+              >
                 <div class="w-100">
-                  <div v-if="item.location">
-                    <b>Lokacija:</b>
-                    <span>{{ item.location }}</span>
+                  <div>
+                    <b-badge v-if="item.status" variant="primary" class="item-status">{{ item.category.name }}</b-badge>
                   </div>
-                  <div v-if="item.description">
-                    <span>{{ item.description }}</span>
+                  <div v-if="innerWidth > 992">
+                    <div v-if="item.location">
+                      <b>Lokacija:</b>
+                      <span>{{ item.location }}</span>
+                    </div>
+                    <div v-if="item.description">
+                      <span>{{ item.description }}</span>
+                    </div>
+
                   </div>
                 </div>
                 <div v-if="item.status !== 'BORROWED'">
-                  <b-button @click.stop.prevent="openDialog">Izposodi</b-button>
+                  <b-button @click.stop.prevent="openDialog" class="item-button">Izposodi</b-button>
                 </div>
               </div>
             </div>
@@ -62,13 +70,17 @@ export default {
     item: {
       type: Object,
       required: true,
+    },
+    innerWidth: {
+      type: Number,
+      required: true
     }
   },
   mixins: [status, datetime],
   computed: {
     itemCover() {
       return this.item.cover ? this.item.cover.Location : 'https://spajza-bucket.s3.eu-central-1.amazonaws.com/item/nopicture.png'
-    }
+    },
   },
   methods: {
     async openDetails(item) {
@@ -81,21 +93,64 @@ export default {
 }
 </script>
 
-<style scoped>
+<style lang="scss" scoped>
+@import '../node_modules/bootstrap/scss/functions';
+@import '../node_modules/bootstrap/scss/variables';
+@import '../node_modules/bootstrap/scss/mixins';
+
+@include media-breakpoint-up(xs) {
+  .card-img {
+    height: auto !important;
+    max-height: 90.25px !important;
+    width: 100% !important;
+    max-width: 90.25px !important;
+  }
+
+  .size {
+    height: 90.25px;
+  }
+
+  .item-name {
+    font-size: 16px;
+    font-weight: 500;
+  }
+
+  .item-status {
+    padding: 4px 8px;
+  }
+
+  .item-button {
+    line-height: 10px;
+    padding: 8px;
+  }
+}
+
+@include media-breakpoint-up(lg) {
+  .card-img {
+    height: auto !important;
+    max-height: 192px !important;
+    width: 100% !important;
+    max-width: 192px !important;
+  }
+
+  .size {
+    height: 192px;
+  }
+
+  .item-name {
+    font-size: 16px;
+    font-weight: 500;
+  }
+
+  .item-status {
+    padding: 8px;
+  }
+}
+
 .inv-number {
   font-size: 20px;
   color: white;
   text-shadow: 0 0 8px black;
 }
 
-.size {
-  height: 192px;
-}
-
-.card-img {
-  height: auto !important;
-  max-height: 192px !important;
-  width: 100% !important;
-  max-width: 192px !important;
-}
 </style>
