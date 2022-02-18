@@ -33,8 +33,9 @@
           v-for="item of items"
           :key="item._id"
           :item="item"
-          class="mb-4"
+          class="item-card"
           @rent="onRentItem(item)"
+          :innerWidth="innerWidth"
         />
 
         <client-only>
@@ -137,7 +138,6 @@ export default {
         }
       })
       .then(response => {
-        console.log(response)
         if (response.length) {
           this.items.push(...response)
           this.skip += this.limit
@@ -208,6 +208,22 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+@import '../node_modules/bootstrap/scss/functions';
+@import '../node_modules/bootstrap/scss/variables';
+@import '../node_modules/bootstrap/scss/mixins';
+
+@include media-breakpoint-up(xs) {
+  .item-card {
+    margin-bottom: 12px;
+  }
+}
+
+@include media-breakpoint-up(lg) {
+  .item-card {
+    margin-bottom: 16px;
+  }
+}
+
 .fake-button:hover {
   background: #dcdee1;
   cursor: pointer;

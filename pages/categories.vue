@@ -9,7 +9,7 @@
           <span class="d-block"><b>Dodaj</b></span>
           <b-input-group class="my-3">
             <input type="text" class="form-control" placeholder="Dodaj kategorijo" v-model="categoryNew"
-                   aria-describedby="basic-addon2">
+                   aria-describedby="basic-addon2" @keydown.enter.prevent="addCategory">
             <div class="input-group-append cursor-pointer" @click="addCategory">
             <span class="input-group-text fake-button" id="basic-addon2">
               <span
