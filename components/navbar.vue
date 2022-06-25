@@ -58,7 +58,9 @@ export default {
     BIconChevronBarUp
   },
   async mounted() {
-    await this.$store.dispatch('user/fetchUser', localStorage.getItem('userId'));
+    if (localStorage.getItem('userId')) {
+      await this.$store.dispatch('user/fetchUser', localStorage.getItem('userId'));
+    }
   },
   computed: {
     ...mapGetters({

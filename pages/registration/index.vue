@@ -94,6 +94,7 @@
               </b-form-group>
             </ValidationProvider>
 
+            <div v-if="error" class="text-center text-danger">{{ error }}</div>
             <div class="text-center">
               <b-button type="submit" variant="primary" class="w-50 mt-3">Vpiši se</b-button>
             </div>
@@ -106,9 +107,10 @@
 
 <script>
 export default {
-  name: "register",
+  name: "registration",
   data() {
     return {
+      error: null,
       form: {
         username: null,
         email: null,
@@ -122,13 +124,21 @@ export default {
       return dirty || validated ? valid : null;
     },
     async onSubmit() {
-      this.$axios.$post('/users', {
+      await this.$axios.$post('/users', {
         username: this.form.username,
         email: this.form.email,
         password: this.form.password
       })
       .then(async res => {
-        await this.$router.replace('/login')
+        if (!res.success) {
+          if (res?.code === 11000 && res?.key?.hasOwnProperty('email')) {
+            this.error = `Uporabnik z emailom "${res?.key?.email}" že obstaja`;
+          } else if (res?.code === 11000 && res?.key?.hasOwnProperty('username')) {
+            this.error = `Uporabnik z uporabniškim imenom "${res?.key?.username}" že obstaja`;
+          }
+        } else {
+          await this.$router.replace({ name: 'complete', query: { userId: res?.user?._id }})
+        }
       })
     },
     async onReset() {

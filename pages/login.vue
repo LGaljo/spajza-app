@@ -20,13 +20,20 @@
               placeholder="Geslo"
               class="my-2"
             />
+            <div v-if="error">
+              <div class="text-center text-danger">{{ error }}</div>
+              <div v-if="resend_act" class="text-center">
+                <a class="btn-link fake-button" @click="resendActivation">Ponovno zahtevaj povezavo</a>
+                </div>
+            </div>
+
             <b-form-checkbox
               v-model="form.saveme"
-              class="mt-5 text-center"
+              class="mt-4 text-center"
             >Zapomni se me</b-form-checkbox>
 
-            <div class="text-center">
-              <b-button type="submit" variant="success" class="w-50 mt-4">
+            <div class="text-center mt-4">
+              <b-button type="submit" variant="success" class="w-50">
                 <b-spinner v-if="loading" small></b-spinner>
                 Prijava
               </b-button>
@@ -34,7 +41,7 @@
           </b-form>
 
           <div class="text-center mt-4">
-            <nuxt-link to="/register">Nimaš računa?</nuxt-link>
+            <nuxt-link to="/registration">Nimaš računa?</nuxt-link>
           </div>
 
         </div>
@@ -51,6 +58,8 @@ export default {
   name: "login",
   data() {
     return {
+      error: null,
+      resend_act: null,
       form: {
         username: null,
         password: null,
@@ -65,22 +74,41 @@ export default {
     async onSubmit() {
       this.loading = true
 
-      this.$axios.$post('/auth/login', this.form)
+      await this.$axios.$post('/auth/login', this.form)
       .then(async res => {
-        localStorage.setItem('jwt', res.access_token)
-        localStorage.setItem('userId', res.userId)
-        await this.$store.commit('user/setToken', res.access_token)
-        await this.$store.dispatch('user/fetchUser', res.userId)
-        await this.$router.push("/");
+        if (res?.success) {
+          localStorage.setItem('jwt', res?.data?.access_token)
+          localStorage.setItem('userId', res?.data?.userId)
+          await this.$store.commit('user/setToken', res?.data?.access_token)
+          await this.$store.dispatch('user/fetchUser', res?.data?.userId)
+          await this.$router.push("/")
+        } else if (!res?.success && res?.reason === 'UNAPPROVED') {
+          console.log('User unapproved')
+          this.resend_act = res?.userId
+          this.error = "Uporabnik še ni aktiviran. Najdi email s povezavo."
+        } else {
+          console.log('sth else')
+        }
       })
       .catch(reason => {
         console.error(reason)
+        this.error = "Napačni prijavni podatki"
+        this.resend_act = null;
         this.$toast.error("Napaka pri prijavi", { duration: 3000 })
       })
 
       this.loading = false
-    }
-  }
+    },
+    async resendActivation() {
+      await this.$axios.$post('/auth/resend-verification', { userId: this.resend_act})
+        .then(res => {
+          this.$toast.success("Zahteva uspešno poslana", { duration: 3000 })
+        })
+        .catch(reason => {
+          console.error(reason)
+          this.$toast.error("Napaka pri zahtevi", { duration: 3000 })
+        })
+    }  }
 }
 </script>
 
