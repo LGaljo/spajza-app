@@ -20,8 +20,6 @@
     <b-row>
       <sidebar
         class="px-md-0 col-md-2 col-12 mb-3"
-        :filters="filters"
-        @filterChange="onFilterChange"
         @clearFilter="searchQuery = null"
       />
       <div class="col-md-10 col-12">
@@ -58,45 +56,15 @@
 import status from "@/mixins/status";
 import {mapGetters} from "vuex";
 import InfiniteLoading from 'vue-infinite-loading';
+import ItemCard from "~/components/ItemCard";
 
 export default {
-  components: { InfiniteLoading },
+  components: { InfiniteLoading, ItemCard },
   mixins: [status],
   data() {
     return {
       searchQuery: null,
       viewType: 'cards',
-      selected: {
-        category: null,
-        tags: null,
-        statuses: null,
-      },
-      filters: {
-        categories: {
-          name: 'Kategorije',
-          values: [],
-          nameKey: 'name',
-          valueKey: '_id',
-          visible: false,
-          type: 'single',
-        },
-        tags: {
-          name: 'Značke',
-          values: [],
-          nameKey: 'name',
-          valueKey: '_id',
-          visible: false,
-          type: 'multiple'
-        },
-        statuses: {
-          name: 'Status',
-          values: [],
-          nameKey: 'text',
-          valueKey: 'value',
-          visible: false,
-          type: 'multiple'
-        },
-      },
       items: [],
       innerWidth: 799,
       rentedItem: null,
@@ -105,12 +73,12 @@ export default {
     }
   },
   watch: {
-    categories() {
-      this.filters.categories.values = this.categories;
-    },
-    tags() {
-      this.filters.tags.values = this.tags;
-    },
+    selected: {
+      deep: true,
+      async handler() {
+        await this.getItems()
+      }
+    }
   },
   mounted() {
     window.addEventListener('resize', () => {
@@ -122,8 +90,8 @@ export default {
       return this.innerWidth > 800;
     },
     ...mapGetters({
-      categories: 'categories/get',
-      tags: 'tags/get',
+      selected: 'filters/get_selected',
+      filters: 'filters/get_filters'
     })
   },
   methods: {
@@ -154,12 +122,6 @@ export default {
     async openDetails(item) {
       await this.$router.push(`/item/${item._id}`)
     },
-    async onFilterChange(event) {
-      this.selected.category = event.categories
-      this.selected.tags = event.tags
-      this.selected.statuses = event.statuses
-      await this.getItems()
-    },
     async getItems() {
       this.$axios.$get(`/inventory`, {
         params: {
@@ -189,21 +151,13 @@ export default {
     }
   },
   async created() {
-    if (this.$route.query.category) {
-      this.selected.category._id = this.$route.query.category
-    }
-    if (this.$route.query.tag) {
-      this.selected.tag = this.$route.query.tag
-    }
-    this.filters.statuses.values = this.statuses
-    // await Promise.all([
-    //   this.getItems(),
-    // ])
-    await Promise.all([
-      this.$store.dispatch('categories/fetch'),
-      this.$store.dispatch('tags/fetch'),
-    ])
-
+    await this.$store.dispatch('filters/fetch');
+    // if (this.$route.query.category) {
+    //   this.selected.category._id = this.$route.query.category
+    // }
+    // if (this.$route.query.tag) {
+    //   this.selected.tag = this.$route.query.tag
+    // }
   }
 }
 </script>

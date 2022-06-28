@@ -29,11 +29,9 @@ export default function (context) {
 }
 
 export async function checkAuth(context) {
-  console.log(context.route)
   if (
     !unprotectedPaths.find(path => decodeURI(context.route.path).startsWith(path))
   ) {
-    console.log('jwt required');
     if (localStorage.getItem('jwt')) {
       const decoded = jwt.decode(localStorage.getItem('jwt'), {complete: false})
       if (

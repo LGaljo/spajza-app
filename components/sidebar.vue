@@ -3,7 +3,7 @@
     <div v-for="(filter, key) of filters">
       <div
         class="mb-1 w-100"
-        @click="filter.visible = !filter.visible"
+        @click="changeVisibility(filter, key)"
       >
         <div :class="['d-flex', 'flex-row', 'justify-content-between', 'py-2', 'cursor-pointer', 'border-top', {'border-bottom': filter.visible}]">
           <span>{{ filter.name }}</span>
@@ -16,7 +16,8 @@
         <b-collapse v-model="filter.visible">
           <b-form-checkbox-group
             v-if="filter.type === 'multiple'"
-            v-model="selected[key]"
+            :value="selected[key]"
+            @input="updateValue($event, key)"
             class="ml-2 mt-2 d-block"
           >
             <b-form-checkbox
@@ -30,7 +31,8 @@
           </b-form-checkbox-group>
           <b-form-radio-group
             v-else
-            v-model="selected[key]"
+            :value="selected[key]"
+            @input="updateValue($event, key)"
             class="ml-2 mt-2 d-block"
           >
             <b-form-radio
@@ -45,7 +47,7 @@
         </b-collapse>
       </div>
     </div>
-    <div v-if="showFilterClear">
+    <div v-if="isClear">
       <b-button
         size="sm"
         variant="outline-info"
@@ -55,53 +57,51 @@
         Počisti filtre
       </b-button>
     </div>
+    <div>
+    </div>
   </div>
 </template>
 
 <script>
 
+import {mapGetters, mapState} from "vuex";
+
 export default {
   name: "sidebar",
-  props: {
-    filters: {
-      type: Object,
-      required: true,
-    }
-  },
-  data() {
-    return {
-      selected: {
-        categories: null,
-        tags: [],
-        statuses: [],
-      }
-    }
-  },
-  watch: {
-    selected: {
-      deep: true,
-      handler() {
-        this.$emit('filterChange', this.selected)
-      }
-    }
-  },
   computed: {
-    showFilterClear() {
-      return this.selected.categories || this.selected.tags.length || this.selected.statuses.length
-    }
+    ...mapGetters({
+      selected: 'filters/get_selected',
+      filters: 'filters/get_filters',
+      isClear: 'filters/is_clear',
+    }),
+    ...mapState({
+      selectedMapped: 'filters/selected',
+   }),
   },
+  // data() {
+  //   return {
+  //   }
+  // },
+  // watch: {
+  //   selectedMapped: {
+  //     deep: true,
+  //     async handler() {
+  //       console.log('change')
+  //       this.showFilterClear = true
+  //     }
+  //   }
+  // },
   methods: {
-    resetSelected() {
+    async resetSelected() {
       this.$emit('clearFilter')
-      this.selected = {
-        categories: null,
-        tags: [],
-        statuses: []
-      }
+      await this.$store.dispatch('filters/unset');
     },
-    activeCategory(category) {
-      return this.$route.query.category === category._id;
+    async updateValue(value, key) {
+      await this.$store.commit('filters/set', { key, value })
     },
+    async changeVisibility(filter, key) {
+      await this.$store.commit('filters/set_visibility', key);
+    }
   }
 }
 </script>

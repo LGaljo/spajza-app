@@ -1,26 +1,4 @@
 export default {
-  data() {
-    return {
-      statuses: [
-        {
-          text: "Novo",
-          value: "NEW"
-        },
-        {
-          text: "Izposojeno",
-          value: "BORROWED"
-        },
-        {
-          text: "Na voljo",
-          value: "STORED"
-        },
-        {
-          text: "Odpisano",
-          value: "WRITTEN_OFF"
-        },
-      ],
-    }
-  },
   methods: {
     getVariantForStatus(status) {
       switch(status) {
