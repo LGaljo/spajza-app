@@ -43,6 +43,9 @@
           <div class="text-center mt-4">
             <nuxt-link to="/registration">Nimaš računa?</nuxt-link>
           </div>
+          <div class="text-center mt-4">
+            <nuxt-link to="/forgotten-password">Pozabljeno geslo?</nuxt-link>
+          </div>
 
         </div>
 
