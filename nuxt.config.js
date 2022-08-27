@@ -10,6 +10,10 @@ export default {
     ]
   },
 
+  loading: false,
+
+  ssr: false,
+
   env: {
     apiUrl: process.env.API_URL || 'http://localhost:4500'
   },

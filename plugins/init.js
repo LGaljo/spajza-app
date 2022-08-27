@@ -5,6 +5,8 @@ const unprotectedPaths = [
   '/registration',
   '/registration/complete',
   '/registration/verify',
+  '/forgotten-password',
+  '/change-password',
 ]
 
 const adminOnlyPaths = [

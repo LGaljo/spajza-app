@@ -28,14 +28,17 @@
           @onRented="onItemRented"
         />
 
-        <ItemCard
+        <nuxt-link
           v-for="item of items"
+          :to="`/item/${item._id}`" class="size"
           :key="item._id"
-          :item="item"
-          class="item-card"
-          @rent="onRentItem(item)"
-          :innerWidth="innerWidth"
-        />
+        >
+          <ItemCard
+            :item="item"
+            class="item-card mb-3"
+            @rent="onRentItem(item)"
+          />
+        </nuxt-link>
 
         <client-only>
           <infinite-loading
@@ -56,17 +59,18 @@
 import status from "@/mixins/status";
 import {mapGetters} from "vuex";
 import InfiniteLoading from 'vue-infinite-loading';
-import ItemCard from "~/components/ItemCard";
+import ItemCard from "../components/ItemCard";
+import sidebar from "../components/sidebar";
+import RentDialog from "../components/RentDialog";
 
 export default {
-  components: { InfiniteLoading, ItemCard },
+  components: { InfiniteLoading, ItemCard, sidebar, RentDialog },
   mixins: [status],
   data() {
     return {
       searchQuery: null,
       viewType: 'cards',
       items: [],
-      innerWidth: 799,
       rentedItem: null,
       limit: 15,
       skip: 0,
@@ -80,15 +84,7 @@ export default {
       }
     }
   },
-  mounted() {
-    window.addEventListener('resize', () => {
-      this.innerWidth = window.innerWidth
-    })
-  },
   computed: {
-    hideOnMinWidth() {
-      return this.innerWidth > 800;
-    },
     ...mapGetters({
       selected: 'filters/get_selected',
       filters: 'filters/get_filters'
@@ -169,13 +165,13 @@ export default {
 
 @include media-breakpoint-up(xs) {
   .item-card {
-    margin-bottom: 12px;
+    margin-bottom: 12px !important;
   }
 }
 
 @include media-breakpoint-up(lg) {
   .item-card {
-    margin-bottom: 16px;
+    margin-bottom: 16px !important;
   }
 }
 
@@ -183,4 +179,13 @@ export default {
   background: #dcdee1;
   cursor: pointer;
 }
+
+a {
+  color: #212529;
+}
+
+a:hover {
+  text-decoration: none !important;
+}
+
 </style>

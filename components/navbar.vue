@@ -29,6 +29,9 @@
       </b-dropdown-item>
       <b-dropdown-divider></b-dropdown-divider>
       <b-dropdown-item>
+        <nuxt-link class="text-body" :to="`/profile`">Profil</nuxt-link>
+      </b-dropdown-item>
+      <b-dropdown-item>
         <a @click="logout">Odjava</a>
       </b-dropdown-item>
     </b-dropdown>

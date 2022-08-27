@@ -1,8 +1,7 @@
 <template>
   <b-card
     no-body
-    class="overflow-hidden cursor-pointer fake-button-card size"
-    @click="openDetails(item)"
+    class="overflow-hidden"
   >
     <b-row no-gutters class="h-100">
       <b-col cols="3">
@@ -37,7 +36,11 @@
                   <div>
                     <b-badge v-if="item.status" variant="primary" class="item-status">{{ item.category.name }}</b-badge>
                   </div>
-                  <div v-if="innerWidth > 992">
+                  <div class="details">
+                    <div v-if="item.count > 1">
+                      <b>Število:</b>
+                      <span>{{ item.count }}</span>
+                    </div>
                     <div v-if="item.location">
                       <b>Lokacija:</b>
                       <span>{{ item.location }}</span>
@@ -71,10 +74,6 @@ export default {
       type: Object,
       required: true,
     },
-    innerWidth: {
-      type: Number,
-      required: true
-    }
   },
   mixins: [status, datetime],
   computed: {
@@ -97,6 +96,18 @@ export default {
 @import '../node_modules/bootstrap/scss/functions';
 @import '../node_modules/bootstrap/scss/variables';
 @import '../node_modules/bootstrap/scss/mixins';
+
+@include media-breakpoint-up(md) {
+  .details {
+    display: block;
+  }
+}
+
+@include media-breakpoint-down(sm) {
+  .details {
+    display: none;
+  }
+}
 
 @include media-breakpoint-up(xs) {
   .card-img {
