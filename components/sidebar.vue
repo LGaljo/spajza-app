@@ -13,7 +13,9 @@
             {{ filter.visible ? 'expand_more' : 'chevron_right' }}
           </span>
         </div>
-        <b-collapse v-model="filter.visible">
+        <b-collapse
+          v-model="filters[key].visible"
+        >
           <b-form-checkbox-group
             v-if="filter.type === 'multiple'"
             :value="selected[key]"
@@ -64,43 +66,36 @@
 
 <script>
 
-import {mapGetters, mapState} from "vuex";
+import {mapGetters} from "vuex";
+import filters from "../mixins/filters";
 
 export default {
   name: "sidebar",
-  computed: {
-    ...mapGetters({
-      selected: 'filters/get_selected',
-      filters: 'filters/get_filters',
-      isClear: 'filters/is_clear',
-    }),
-    ...mapState({
-      selectedMapped: 'filters/selected',
-   }),
-  },
-  // data() {
-  //   return {
-  //   }
-  // },
-  // watch: {
-  //   selectedMapped: {
-  //     deep: true,
-  //     async handler() {
-  //       console.log('change')
-  //       this.showFilterClear = true
-  //     }
-  //   }
-  // },
+  mixins: [filters],
   methods: {
     async resetSelected() {
-      this.$emit('clearFilter')
-      await this.$store.dispatch('filters/unset');
+      // await this.$store.dispatch('filters/unset');
+      // await this.$store.commit('filters/clear_items');
+      this.unset();
+      await this.clear_items();
+      // await this.$store.commit('filters/set_search', null);
+      this.params.search = null;
+      // await this.$store.dispatch('filters/fetch');
+      await this.fetch();
     },
     async updateValue(value, key) {
-      await this.$store.commit('filters/set', { key, value })
+      console.log(value, key)
+      // await this.$store.commit('filters/set', { key, value })
+      this.selected[key] = value
+      // await this.$store.commit('filters/clear_items');
+      await this.clear_items();
+      // await this.$store.dispatch('filters/fetch');
+      await this.fetch();
     },
     async changeVisibility(filter, key) {
-      await this.$store.commit('filters/set_visibility', key);
+      console.log(key)
+      // await this.$store.commit('filters/set_visibility', key);
+      this.filters[key].visible = !this.filters[key].visible
     }
   }
 }

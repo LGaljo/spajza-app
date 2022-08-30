@@ -3,8 +3,8 @@
     <b-row class="my-2">
       <div class="offset-md-3 col-md-6 text-center">
         <div class="input-group my-3">
-          <input type="text" class="form-control" placeholder="Išči" v-model="searchQuery"
-                 aria-describedby="basic-addon2" @keydown.enter.prevent="search">
+          <input type="text" class="form-control" placeholder="Išči" v-model="params.search"
+                 aria-describedby="basic-addon2" @input="search" @keydown.enter.prevent="search">
           <div class="input-group-append" @click.prevent="search">
             <span class="input-group-text fake-button" id="basic-addon2">
               <span
@@ -20,7 +20,6 @@
     <b-row>
       <sidebar
         class="px-md-0 col-md-2 col-12 mb-3"
-        @clearFilter="searchQuery = null"
       />
       <div class="col-md-10 col-12">
         <RentDialog
@@ -44,6 +43,8 @@
           <infinite-loading
             spinner="spiral"
             @infinite="onInfiniteLoad"
+            :identifier="infiniteId"
+            ref="infiniteLoading"
           >
             <div slot="no-more">Konec seznama</div>
             <div slot="no-results">No results message</div>
@@ -56,87 +57,62 @@
 </template>
 
 <script>
-import status from "@/mixins/status";
+import status from "../mixins/status";
 import {mapGetters} from "vuex";
 import InfiniteLoading from 'vue-infinite-loading';
 import ItemCard from "../components/ItemCard";
 import sidebar from "../components/sidebar";
 import RentDialog from "../components/RentDialog";
+import filters from "../mixins/filters";
 
 export default {
   components: { InfiniteLoading, ItemCard, sidebar, RentDialog },
-  mixins: [status],
+  mixins: [status, filters],
   data() {
     return {
-      searchQuery: null,
       viewType: 'cards',
-      items: [],
       rentedItem: null,
-      limit: 15,
-      skip: 0,
+      infiniteId: 1,
     }
   },
   watch: {
+    items: {
+      deep: true,
+      async handler() {
+        // await this.$router.replace({ name: '', query: { abc: 1 }})
+      }
+    },
     selected: {
       deep: true,
       async handler() {
-        await this.getItems()
+        await this.$router.replace({ name: '', query: this.selected})
       }
-    }
+    },
   },
   computed: {
     ...mapGetters({
-      selected: 'filters/get_selected',
-      filters: 'filters/get_filters'
+      items: 'items/get',
     })
   },
   methods: {
-    onInfiniteLoad($state) {
-      this.$axios.$get(`/inventory`, {
-        params: {
-          category: this.selected.category,
-          tags: this.selected.tags,
-          statuses: this.selected.statuses,
-          search: this.searchQuery,
-          limit: this.limit + this.skip,
-          skip: this.skip
-        }
-      })
-      .then(response => {
-        if (response.length) {
-          this.items.push(...response)
-          this.skip += this.limit
-          $state.loaded();
-        } else {
-          $state.complete();
-        }
-      })
-      .catch(reason => {
-        console.error(reason)
-      })
-    },
-    async openDetails(item) {
-      await this.$router.push(`/item/${item._id}`)
-    },
-    async getItems() {
-      this.$axios.$get(`/inventory`, {
-        params: {
-          category: this.selected.category,
-          tags: this.selected.tags,
-          statuses: this.selected.statuses,
-          search: this.searchQuery
-        }
-      })
-        .then(res => {
-          this.items = res;
-        })
-        .catch(res => {
-          console.error(res)
-          this.$toast.error('Napaka pri pridobivanju podatkov', { duration: 10000 });
+    async onInfiniteLoad($state) {
+      await this.fetch()
+        .then(response => {
+          if (response > 0) {
+            $state.loaded();
+          } else {
+            $state.complete();
+          }
         })
     },
-    async search() {
-      await this.getItems()
+    async search(event) {
+      // await this.$store.commit('filters/set_search', this.searchQuery)
+      await this.clear_items();
+      await this.fetch();
+      await this.$refs.infiniteLoading.reset();
+      this.infiniteId++;
+      // await this.$store.commit('filters/clear_items')
+      // await this.$store.dispatch('filters/fetch')
     },
     onRentItem(item) {
       this.$refs.dialog.open(item);
@@ -147,13 +123,17 @@ export default {
     }
   },
   async created() {
-    await this.$store.dispatch('filters/fetch');
-    // if (this.$route.query.category) {
-    //   this.selected.category._id = this.$route.query.category
-    // }
-    // if (this.$route.query.tag) {
-    //   this.selected.tag = this.$route.query.tag
-    // }
+    // await this.$store.dispatch('filters/init_filters');
+    await this.init();
+  },
+  async mounted() {
+    for (const key in this.$route.query) {
+      // this.$store.commit('filters/set_visibility', key)
+      this.filters[key].visible = !this.filters[key].visible
+      this.selected[key] = this.$route.query[key]
+
+      // this.$store.commit('filters/set', { key, value: this.$route.query[key] })
+    }
   }
 }
 </script>
