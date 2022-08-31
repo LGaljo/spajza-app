@@ -21,8 +21,8 @@
       <sidebar
         class="px-md-0 col-md-2 col-12 mb-3"
         :filters="filters"
-        @filterChange="onFilterChange"
-        @clearFilter="searchQuery = null"
+        @change="onFilterChange"
+        v-model="selected"
       />
       <div class="col-md-10 col-12">
         <RentDialog
@@ -46,6 +46,7 @@
           <infinite-loading
             spinner="spiral"
             @infinite="onInfiniteLoad"
+            :identifier="infiniteId"
           >
             <div slot="no-more">Konec seznama</div>
             <div slot="no-results">No results message</div>
@@ -70,15 +71,16 @@ export default {
   mixins: [status],
   data() {
     return {
+      infiniteId: 0,
       searchQuery: null,
       viewType: 'cards',
       selected: {
         category: null,
-        tags: null,
-        statuses: null,
+        tags: [],
+        statuses: [],
       },
       filters: {
-        categories: {
+        category: {
           name: 'Kategorije',
           values: [],
           nameKey: 'name',
@@ -111,7 +113,7 @@ export default {
   },
   watch: {
     categories() {
-      this.filters.categories.values = this.categories;
+      this.filters.category.values = this.categories;
     },
     tags() {
       this.filters.tags.values = this.tags;
@@ -131,7 +133,7 @@ export default {
           tags: this.selected.tags,
           statuses: this.selected.statuses,
           search: this.searchQuery,
-          limit: this.limit + this.skip,
+          limit: this.limit,
           skip: this.skip
         }
       })
@@ -151,31 +153,29 @@ export default {
     async openDetails(item) {
       await this.$router.push(`/item/${item._id}`)
     },
-    async onFilterChange(event) {
-      this.selected.category = event.categories
-      this.selected.tags = event.tags
-      this.selected.statuses = event.statuses
-      await this.getItems()
+    async onFilterChange() {
+      this.resetInfLoader();
+      const query = {};
+      if (this.selected.category) query['category'] = this.selected.category
+      if (this.selected.tags.length) query['tags'] = this.selected.tags
+      if (this.selected.statuses.length) query['statuses'] = this.selected.statuses
+      let encoded = '?' + this.encodeQueryData(query)
+      encoded = encoded.length > 1 ? encoded : '';
+      history.pushState(
+        {},
+        null,
+        `${this.$route.path}${encoded}`
+      );
     },
-    async getItems() {
-      this.$axios.$get(`/inventory`, {
-        params: {
-          category: this.selected.category,
-          tags: this.selected.tags,
-          statuses: this.selected.statuses,
-          search: this.searchQuery
-        }
-      })
-        .then(res => {
-          this.items = res;
-        })
-        .catch(res => {
-          console.error(res)
-          this.$toast.error('Napaka pri pridobivanju podatkov', { duration: 10000 });
-        })
+    encodeQueryData(data) {
+      const ret = [];
+      for (let d in data)
+        ret.push(encodeURIComponent(d) + '=' + encodeURIComponent(data[d]));
+      return ret.join('&');
     },
+
     async search() {
-      await this.getItems()
+      this.resetInfLoader();
     },
     onRentItem(item) {
       this.$refs.dialog.open(item);
@@ -183,24 +183,33 @@ export default {
     onItemRented(item) {
       this.items.find(i => i._id === item._id).status = "BORROWED"
       this.$toast.success(`${item.name} uspešno izposojen`, { duration: 3000 });
+    },
+    resetInfLoader() {
+      this.infiniteId++;
+      this.items = [];
+      this.skip = 0;
     }
   },
   async created() {
-    if (this.$route.query.category) {
-      this.selected.category._id = this.$route.query.category
-    }
-    if (this.$route.query.tag) {
-      this.selected.tag = this.$route.query.tag
-    }
-    this.filters.statuses.values = this.statuses
-    // await Promise.all([
-    //   this.getItems(),
-    // ])
+    console.log(this.$route.query)
     await Promise.all([
       this.$store.dispatch('categories/fetch'),
       this.$store.dispatch('tags/fetch'),
     ])
+    this.filters.statuses.values = this.statuses
 
+    if (this.$route.query.category) {
+      this.selected.category = this.$route.query.category
+      this.filters.category.visible = true;
+    }
+    if (this.$route.query.tags) {
+      this.selected.tags = this.$route.query.tags.split(',')
+      this.filters.tags.visible = true;
+    }
+    if (this.$route.query.statuses) {
+      this.selected.statuses = this.$route.query.statuses.split(',')
+      this.filters.statuses.visible = true;
+    }
   }
 }
 </script>

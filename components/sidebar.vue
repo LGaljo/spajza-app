@@ -16,7 +16,7 @@
         <b-collapse v-model="filter.visible">
           <b-form-checkbox-group
             v-if="filter.type === 'multiple'"
-            v-model="selected[key]"
+            v-model="value[key]"
             class="ml-2 mt-2 d-block"
           >
             <b-form-checkbox
@@ -30,7 +30,7 @@
           </b-form-checkbox-group>
           <b-form-radio-group
             v-else
-            v-model="selected[key]"
+            v-model="value[key]"
             class="ml-2 mt-2 d-block"
           >
             <b-form-radio
@@ -66,38 +66,36 @@ export default {
     filters: {
       type: Object,
       required: true,
+    },
+    value: {
+      type: Object,
     }
   },
   data() {
     return {
-      selected: {
-        categories: null,
-        tags: [],
-        statuses: [],
-      }
     }
   },
   watch: {
-    selected: {
+    value: {
       deep: true,
       handler() {
-        this.$emit('filterChange', this.selected)
+        this.$emit('change')
       }
     }
   },
   computed: {
     showFilterClear() {
-      return this.selected.categories || this.selected.tags.length || this.selected.statuses.length
+      return this.value.category || this.value.tags?.length || this.value.statuses?.length
     }
   },
   methods: {
     resetSelected() {
-      this.$emit('clearFilter')
-      this.selected = {
-        categories: null,
+      this.$emit('input', {
+        category: null,
         tags: [],
         statuses: []
-      }
+      })
+      this.$emit('change')
     },
     activeCategory(category) {
       return this.$route.query.category === category._id;

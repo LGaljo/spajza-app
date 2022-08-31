@@ -246,7 +246,6 @@ export default {
         })
     },
     async onSubmit() {
-      console.log(this.form)
       if (!this.form.name ||
         !this.form.category ||
         !this.form.count ||
@@ -277,7 +276,6 @@ export default {
         await this.$axios.$post('/inventory', this.form
         )
           .then(async (res) => {
-            console.log(res)
             if (this.cover.file && res._id) {
               await this.uploadImage(res._id);
             }
@@ -296,7 +294,6 @@ export default {
 
       this.$axios.$post(`/inventory/file/${id}`, formData)
       .then(res => {
-        console.log(res)
       })
       .catch(reason => {
         console.error(reason);
