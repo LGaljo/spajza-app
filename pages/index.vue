@@ -64,7 +64,7 @@ import {mapGetters} from "vuex";
 import InfiniteLoading from 'vue-infinite-loading';
 import ItemCard from "../components/ItemCard";
 import sidebar from "../components/sidebar";
-import RentDialog from "../components/RentDialog";
+import RentDialog from "../components/modals/RentDialog";
 
 export default {
   components: { InfiniteLoading, ItemCard, sidebar, RentDialog },

@@ -1,3 +1,7 @@
+const CONFIG = {
+  // API_URL: 'https://spajza-api.kanglca.com',
+  API_URL: 'http://localhost:4500',
+}
 export default {
   server: {
     host: process.env.HOST || 'localhost',
@@ -15,7 +19,8 @@ export default {
   ssr: false,
 
   env: {
-    apiUrl: process.env.API_URL || 'http://localhost:4500'
+    apiUrl: process.env.API_URL || CONFIG.API_URL,
+    TENT_ID: '61ed89c91ee6e6c74ee985d5'
   },
 
   // Global page headers: https://go.nuxtjs.dev/config-head
@@ -30,7 +35,8 @@ export default {
       { hid: 'description', name: 'description', content: '' }
     ],
     link: [
-      { rel: 'icon', type: 'image/x-icon', href: '/favicon.ico' },
+      // { rel: 'icon', type: 'image/x-icon', href: '/favicon.ico' },
+      { rel: 'icon', type: 'image/x-icon', href: '/icon.png' },
       {
         rel: 'stylesheet',
         href:
@@ -52,6 +58,7 @@ export default {
     '~/plugins/click-outside.js',
     '~/plugins/axios.js',
     '~/plugins/veevalidate.js',
+    '~/plugins/bootstrap-icons.js'
   ],
 
   // Auto import components: https://go.nuxtjs.dev/config-components
@@ -76,8 +83,8 @@ export default {
 
   axios: {
     https: false,
-    // baseURL: process.env.base_url || 'http://192.168.34.217:4500'
-    baseURL: process.env.API_URL || 'http://localhost:4500'
+    // baseURL: process.env.base_url
+    baseURL: process.env.API_URL || CONFIG.API_URL
   },
 
   toast: {

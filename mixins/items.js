@@ -70,6 +70,11 @@ export default {
           field: 'renter',
           name: 'Izposojevalec'
         },
+        {
+          field: 'extras',
+          name: 'Dodatno',
+          ignore: true
+        }
       ]
     }
   },

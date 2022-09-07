@@ -4,9 +4,10 @@
       <b-col offset-md="2" md="8" cols="12" class=" my-3">
         <ItemDetailsCard
           v-if="item"
-          :object="item"
+          v-model="item"
           @delete="deleteItemRequest"
           @onRentItem="onRentItem"
+          @updateItem="updateItem"
         />
 
         <b-card title="Izposoja" v-if="item && item.rents && item.renter" class="mt-3 mb-1">
@@ -29,6 +30,7 @@
           <b-card-header header-tag="header" class="p-0" role="tab">
             <b-button block v-b-toggle.accordion-2 variant="outline" class="py-3">Spremembe</b-button>
           </b-card-header>
+          <!-- Changes -->
           <b-collapse id="accordion-2" accordion="my-accordion" role="tabpanel">
             <b-card-body>
               <b-card-text>
@@ -83,17 +85,20 @@
 
 <script>
 import status from "@/mixins/status";
-import {DateTime} from "luxon";
 import {mapGetters} from "vuex";
-import ItemDetailsCard from "@/components/ItemDetailsCard";
 import datetime from "@/mixins/datetime";
 import items from "@/mixins/items";
+import RentDialog from "../../components/modals/RentDialog";
+import ModalDialog from "../../components/modals/ModalDialog";
+import ItemDetailsCard from "../../components/ItemDetailsCard";
 
 export default {
   name: "Item",
   mixins: [status, datetime, items],
   components: {
-    ItemDetailsCard
+    RentDialog,
+    ModalDialog,
+    ItemDetailsCard,
   },
   data() {
     return {
@@ -157,6 +162,17 @@ export default {
     onItemRented(item) {
       this.item = item
       this.$toast.success(`${item.name} uspešno izposojen`, { duration: 3000 });
+    },
+    async updateItem() {
+      await this.$axios.$put(`/inventory/${this.item._id}`, {
+        ...this.item,
+      })
+        .then(async (res) => {
+          this.$toast.success(`Predmet "${this.item.name}" uspešno posodobljen`, {duration: 2000});
+        })
+        .catch(rej => {
+          console.error(rej);
+        });
     }
   }
 }

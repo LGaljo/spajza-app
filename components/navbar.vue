@@ -1,6 +1,11 @@
 <template>
   <b-navbar toggleable type="dark" variant="dark" class="fixed-top">
-    <nuxt-link class="navbar-brand" href="/" :to="`/`">Špajza</nuxt-link>
+    <nuxt-link class="navbar-brand py-0" href="/" :to="`/`">
+      <div class="d-flex justify-content-center align-content-center">
+        <b-img src="/icon.png" style="height: 40px; width: auto;"></b-img>
+        <div class="ml-3" style="line-height: 2.25rem">Špajza</div>
+      </div>
+    </nuxt-link>
     <div class="mr-auto"></div>
 
     <b-dropdown v-if="user" id="dropdown-1" right class="">
