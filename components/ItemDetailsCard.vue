@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="modal-fullscr">
     <b-card>
       <b-card-header>
         <nuxt-link v-if="isAdmin || isKeeper" :to="`/edit/${this.$route.params.id}`" class="btn btn-primary">Uredi</nuxt-link>
@@ -52,31 +52,40 @@
       :size="'xl'"
     >
       <div slot="body">
-        <div v-if="value.extras && value.extras.faults">
-          <div
-            v-for="marker in value.extras.faults" class="marker"
-            :key="marker.key"
-            :style="{ 'top': marker.top + 'px', 'left': marker.left + 'px' }"
-            v-b-popover.hover.top="marker.text"
-          />
-        </div>
-        <div class="d-flex">
-          <b-img
-            ref="image"
-            src="~/assets/images/TabornikServis.png"
-            class=""
-            style="height: 80vh; width: auto"
-            @click="setFault"
-            @input="setFault"
-          ></b-img>
-          <div
-            v-if="value.extras && value.extras.faults"
-            class="flex-grow-1"
+        <b-row>
+          <b-col cols="12" md="12" lg="7" class="ml-0 pl-0">
+            <div class="m-0 p-0">
+              <div v-if="value.extras && value.extras.faults" :key="counter">
+                <div
+                  v-for="marker in value.extras.faults" class="marker"
+                  :key="marker.key"
+                  :style="{ 'top': relativeMarker(marker).top + 'px', 'left': relativeMarker(marker).left + 'px' }"
+                  v-b-popover.hover.top="marker.text"
+                />
+                <div
+                  v-if="nMarker.top && nMarker.left"
+                  class="marker-tmp"
+                  :style="{ 'top': relativeMarker(nMarker).top + 'px', 'left': relativeMarker(nMarker).left + 'px' }"
+                />
+                </div>
+              <b-img
+                ref="image"
+                src="~/assets/images/TabornikServis.png"
+                class="h-auto w-100"
+                @click="setFault"
+                @input="setFault"
+                @load="counter++"
+              ></b-img>
+            </div>
+          </b-col>
+          <b-col cols="12" md="12" lg="5"
+           v-if="value.extras && value.extras.faults"
+           class=""
           >
             <div
               v-for="marker in value.extras.faults"
               :key="marker.key"
-              class="w-100 bg-info m-2 p-2 rounded text-white"
+              class="bg-info m-2 p-2 rounded text-white"
             >
               <div class="d-flex align-content-center justify-content-between">
                 <div class="d-flex flex-column">
@@ -84,17 +93,17 @@
                   <div>{{ marker.text }}</div>
                 </div>
                 <div>
-                  <span
-                    class="material-icons icon-button cursor-pointer"
-                    @click="removeMarker(marker)"
-                  >
-                    close
-                  </span>
+                <span
+                  class="material-icons icon-button cursor-pointer"
+                  @click="removeMarker(marker)"
+                >
+                  close
+                </span>
                 </div>
               </div>
             </div>
-          </div>
-        </div>
+          </b-col>
+        </b-row>
       </div>
     </ModalDialog>
     <ModalDialog
@@ -104,7 +113,7 @@
       :action="'Shrani'"
       @first="saveMarker">
         <div slot="body">
-          <b-input v-model="nMarker.text" placeholder="Besedilo"></b-input>
+          <b-input ref="descInput" v-model="nMarker.text" placeholder="Besedilo" autofocus></b-input>
         </div>
     </ModalDialog>
   </div>
@@ -130,6 +139,7 @@ export default {
   },
   data() {
     return {
+      counter: 0,
       nMarker: {
         top: 0,
         left: 0,
@@ -138,6 +148,9 @@ export default {
         key: 0,
       },
     }
+  },
+  mounted() {
+    window.addEventListener('resize', () => this.counter++);
   },
   computed: {
     ...mapGetters({
@@ -162,11 +175,12 @@ export default {
     setFault(event) {
       const similar = this.value?.extras?.faults?.find((m) => m.top === event.offsetY + 11 && m.left === event.offsetX + 11)
       if (!similar) {
-        this.nMarker.top = event.offsetY + 8;
-        this.nMarker.left = event.offsetX + 8;
+        this.nMarker.top = (event.offsetY - 8) / this.$refs.image.offsetHeight
+        this.nMarker.left = (event.offsetX - 8) / this.$refs.image.offsetWidth
         this.nMarker.date = DateTime.now();
         this.nMarker.key = crypto.randomUUID();
         this.$refs.markerDialog.open();
+        this.counter++;
       }
     },
     saveMarker() {
@@ -192,6 +206,12 @@ export default {
     },
     updateItem() {
       this.$emit('updateItem')
+    },
+    relativeMarker(marker) {
+      return {
+        top: marker.top * this.$refs.image?.offsetHeight,
+        left: marker.left * this.$refs.image?.offsetWidth,
+      }
     }
   }
 }
@@ -203,6 +223,14 @@ export default {
   width: 16px;
   height: 16px;
   background-color: red;
+  border-radius: 50%;
+}
+
+.marker-tmp {
+  position: absolute;
+  width: 16px;
+  height: 16px;
+  background-color: greenyellow;
   border-radius: 50%;
 }
 </style>
