@@ -29,6 +29,7 @@
                 v-model="form.old_pass"
                 aria-describedby="input-1-live-feedback"
                 :state="getValidationState(v)"
+                autocomplete="current-password"
               />
               <b-form-invalid-feedback id="input-1-live-feedback">{{
                   v.errors[0]
@@ -50,6 +51,7 @@
                 v-model="form.new_pass"
                 :state="getValidationState(v)"
                 aria-describedby="input-3-live-feedback"
+                autocomplete="new-password"
               />
               <b-form-invalid-feedback id="input-3-live-feedback">{{
                   v.errors[0]
@@ -70,6 +72,7 @@
                 v-model="form.new_pass_rep"
                 :state="getValidationState(v)"
                 aria-describedby="input-4-live-feedback"
+                autocomplete="new-password"
               />
               <b-form-invalid-feedback id="input-4-live-feedback">{{
                   v.errors[0]
