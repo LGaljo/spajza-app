@@ -22,7 +22,7 @@
             </b-button>
           </div>
 
-          <b-dropdown v-if="isAdmin || isKeeper" text="Dejanja" class="ml-auto">
+          <b-dropdown v-if="isAdmin || isKeeper" text="Dejanja" class="ml-auto" right>
             <b-dropdown-item :to="`/edit/${$route.params.id}`">Uredi</b-dropdown-item>
             <b-dropdown-item href="#" @click.prevent.stop="deleteItem">Izbriši</b-dropdown-item>
           </b-dropdown>

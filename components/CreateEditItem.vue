@@ -43,7 +43,7 @@
         label-for="category"
       >
         <b-form-select
-          v-model="form.category"
+          v-model="form.categoryId"
           id="category"
           :options="optionsCats"
         >
@@ -62,6 +62,7 @@
       >
         <b-form-select
           v-model="form.tags"
+          multiple
           id="tags"
           :options="optionsTags"
         >
@@ -189,7 +190,7 @@ export default {
     return {
       form: {
         name: '',
-        category: null,
+        categoryId: null,
         tags: null,
         count: 1,
         description: '',
