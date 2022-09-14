@@ -1,21 +1,43 @@
 <template>
   <div class="modal-fullscr">
     <b-card>
-      <b-card-header>
-        <nuxt-link v-if="isAdmin || isKeeper" :to="`/edit/${this.$route.params.id}`" class="btn btn-primary">Uredi</nuxt-link>
-        <a v-if="isAdmin || isKeeper" @click.prevent.stop="deleteItem" class="btn btn-danger">Izbriši</a>
-        <a v-if="!value.rents" @click.prevent.stop="rentItem" class="btn btn-primary">Izposodi</a>
-        <a v-if="isTent" @click.prevent.stop="$refs.faultsDialog.open();" class="btn btn-warning">Pomanjkljivosti</a>
-      </b-card-header>
-      <b-card-body>
-        <b-badge v-if="value.category" variant="primary" class="p-2">{{ value.category.name }}</b-badge>
+      <template #header>
+        <div class="d-flex w-100 flex-wrap justify-content-start">
+          <b-button
+            variant="primary"
+            v-if="!value.rents"
+            @click.prevent.stop="rentItem"
+          >
+            Izposodi
+          </b-button>
 
-        <b-card-title>{{ value.name }}</b-card-title>
+          <div class="mx-2">
+            <b-button
+              variant="warning"
+              v-if="isTent"
+              :disabled="!(isAdmin || isKeeper)"
+              @click.prevent.stop="$refs.faultsDialog.open();"
+            >
+              Pomanjkljivosti
+            </b-button>
+          </div>
 
-        <b-badge v-if="value.status" :variant="getVariantForStatus(value.status)" class="mr-1">{{ getNameForStatus(value.status) }}</b-badge>
-        <b-badge v-if="value.extras && value.extras.faults" :variant="'danger'" class="mr-1">Šotor z defekti</b-badge>
+          <b-dropdown v-if="isAdmin || isKeeper" text="Dejanja" class="ml-auto">
+            <b-dropdown-item :to="`/edit/${$route.params.id}`">Uredi</b-dropdown-item>
+            <b-dropdown-item href="#" @click.prevent.stop="deleteItem">Izbriši</b-dropdown-item>
+          </b-dropdown>
+        </div>
+      </template>
+      <b-card-body class="p-0">
+        <b-badge v-if="value.category" variant="primary" class="p-2 mb-2">{{ value.category.name }}</b-badge>
+        <b-card-title>
+          {{ value.name }}
+        </b-card-title>
 
-        <b-card-img-lazy :src="itemCover" alt="Image" class="rounded-0"/>
+        <b-badge v-if="value.status" :variant="getVariantForStatus(value.status)" class="my-1">{{ getNameForStatus(value.status) }}</b-badge>
+        <b-badge v-if="value.extras && value.extras.faults" :variant="'danger'" class="my-1">Šotor z defekti</b-badge>
+
+        <b-card-img-lazy :src="itemCover" alt="Image" class="rounded-0 mt-1"/>
 
         <div v-if="value.description" class="mb-4">
           <span>{{ value.description }}</span>

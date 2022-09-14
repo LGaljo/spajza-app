@@ -15,14 +15,34 @@ export const getters = {
   get(state) {
     return state.categories
   },
+  getOptions(state) {
+    return state.categories.map((c) => {
+      return {
+        text: c.name,
+        value: c._id,
+      }
+    })
+  }
 }
 
 export const actions = {
-  async fetch({ commit }) {
-    this.$axios.$get(`/categories`)
+  async fetch({ commit }, filters) {
+    this.$axios.$get(`/categories`, {
+      params: {
+        filters
+      }
+    })
       .then(res => {
         commit('set', res)
+        return res
       })
+      .catch(res => {
+        console.error(res)
+      })
+  },
+  async remove({ commit }, id) {
+    this.$axios.$delete(`/categories/${id}`)
+      .then(res => {})
       .catch(res => {
         console.error(res)
       })

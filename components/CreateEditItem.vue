@@ -42,19 +42,17 @@
         label="Kategorija"
         label-for="category"
       >
-        <b-form-radio-group
+        <b-form-select
           v-model="form.category"
           id="category"
-          multiple="false"
+          :options="optionsCats"
         >
-          <b-form-radio
-            v-for="category of categories"
-            :key="category.name"
-            :value="category._id"
-          >
-            {{ category.name }}
-          </b-form-radio>
-        </b-form-radio-group>
+          <b-form-select-option
+            :value="null"
+            disabled>
+            -- Izberi kategorijo --
+          </b-form-select-option>
+        </b-form-select>
       </b-form-group>
 
       <b-form-group
@@ -62,25 +60,39 @@
         label="Značke"
         label-for="tags"
       >
-        <b-form-checkbox-group
+        <b-form-select
           v-model="form.tags"
           id="tags"
+          :options="optionsTags"
         >
-          <b-form-checkbox
-            v-for="tag of tags"
-            :key="tag.name"
-            :value="tag._id"
-          >
-            {{ tag.name }}
-          </b-form-checkbox>
-
-        </b-form-checkbox-group>
+          <b-form-select-option
+            :value="null"
+            disabled>
+            -- Izberi značke (neobvezno) --
+          </b-form-select-option>
+        </b-form-select>
       </b-form-group>
 
       <!-- STATUS -->
-      <b-form-select v-model="form.status" :options="statuses" aria-placeholder="Stanje" class="mb-2">
-        <b-form-select-option :value="null" disabled>-- Izberi stanje predmeta --</b-form-select-option>
-      </b-form-select>
+      <b-form-group
+        id="input-group-3"
+        label="Status"
+        label-for="status"
+      >
+        <b-form-select
+          v-model="form.status"
+          :options="statuses"
+          id="status"
+          aria-placeholder="Stanje"
+          class="mb-2"
+        >
+          <b-form-select-option
+            :value="null"
+            disabled>
+            -- Izberi stanje predmeta --
+          </b-form-select-option>
+        </b-form-select>
+      </b-form-group>
 
       <b-form-group
         id="input-group-4"
@@ -92,7 +104,6 @@
           v-model="form.boughtTime"
           class="form-control"
           id="boughtTime"
-          placeholder="Povezava do pesmi"
         />
         <b-badge pill @click="setCurrentTime">Nastavi danes</b-badge>
       </b-form-group>
@@ -179,10 +190,10 @@ export default {
       form: {
         name: '',
         category: null,
-        tags: [],
+        tags: null,
         count: 1,
         description: '',
-        location: '',
+        location: 'Plac',
         boughtTime: null,
         owner: 'RZS',
         status: 'NEW'
@@ -207,15 +218,16 @@ export default {
   computed: {
     ...mapGetters({
       categories: 'categories/get',
+      optionsCats: 'categories/getOptions',
       tags: 'tags/get',
-    })
+      optionsTags: 'tags/getOptions',
+    }),
   },
   async created() {
     this.setCurrentTime()
-    await Promise.all([
-      this.$store.dispatch('categories/fetch'),
-      this.$store.dispatch('tags/fetch'),
-    ])
+    await this.$store.dispatch('categories/fetch');
+    await this.$store.dispatch('tags/fetch');
+
     if (this.id) {
       await this.getItem()
     }

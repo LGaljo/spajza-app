@@ -103,8 +103,10 @@
 export default {
   name: "ChangePass",
   props: {
-    type: String,
-    default: 'int'
+    type: {
+      type: String,
+      default: 'int'
+    }
   },
   data() {
     return {

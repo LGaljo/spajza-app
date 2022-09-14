@@ -1,6 +1,6 @@
 const CONFIG = {
-  API_URL: 'https://spajza-api.kanglca.com',
-  // API_URL: 'http://localhost:4500',
+  // API_URL: 'https://spajza-api.kanglca.com',
+  API_URL: 'http://localhost:4500',
 }
 export default {
   server: {

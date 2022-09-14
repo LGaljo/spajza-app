@@ -191,7 +191,6 @@ export default {
     }
   },
   async created() {
-    console.log(this.$route.query)
     await Promise.all([
       this.$store.dispatch('categories/fetch'),
       this.$store.dispatch('tags/fetch'),

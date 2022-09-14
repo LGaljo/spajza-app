@@ -2,10 +2,8 @@
   <b-container>
     <b-row>
       <b-col offset-md="3" md="6" cols="12" class="my-3">
-        <div class="text-center">
-          <h1>Dodaj nov predmet</h1>
-        </div>
-        <CreateEditItem/>
+        <h1>Dodaj nov predmet</h1>
+        <CreateEditItem />
       </b-col>
     </b-row>
   </b-container>
