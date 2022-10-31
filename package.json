@@ -1,16 +1,17 @@
 {
   "name": "spajza",
-  "version": "1.2.0",
+  "version": "1.2.1",
   "private": true,
   "engines": {
     "node": "^16.3.2"
   },
   "scripts": {
-    "dev": "nuxt",
-    "build": "nuxt build",
+    "dev": "npx cross-env NODE_ENV=development nuxt",
+    "build:dev": "npx cross-env NODE_ENV=development nuxt build",
+    "build:prod": "npx cross-env NODE_ENV=production nuxt build",
     "start": "nuxt start",
     "generate": "nuxt generate",
-    "heroku-postbuild": "npm run build"
+    "heroku-postbuild": "npm run build:prod"
   },
   "dependencies": {
     "@nuxtjs/axios": "^5.13.1",

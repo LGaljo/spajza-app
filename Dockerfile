@@ -7,7 +7,7 @@ COPY --chown=node:node . .
 
 RUN npm ci
 
-RUN npm run build
+RUN npm run build:prod
 
 RUN rm -rf node_modules && \
   NODE_ENV=production npm ci

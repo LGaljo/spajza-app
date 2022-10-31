@@ -137,7 +137,7 @@ export default {
             this.error = `Uporabnik z uporabniškim imenom "${res?.key?.username}" že obstaja`;
           }
         } else {
-          await this.$router.replace({ name: 'complete', query: { userId: res?.user?._id }})
+          await this.$router.replace({ path: '/registration/complete', query: { userId: res?.user?._id }})
         }
       })
     },

@@ -1,11 +1,9 @@
-const CONFIG = {
-  // API_URL: 'https://spajza-api.kanglca.com',
-  API_URL: 'http://localhost:4500',
-}
+const CONFIG = require(`./config/${process.env.NODE_ENV}`)
+
 export default {
   server: {
-    host: process.env.HOST || 'localhost',
-    port: process.env.PORT || 3100
+    host: CONFIG.HOST || 'localhost',
+    port: CONFIG.PORT || 3100
   },
 
   router: {
@@ -19,8 +17,8 @@ export default {
   ssr: false,
 
   env: {
-    apiUrl: process.env.API_URL || CONFIG.API_URL,
-    TENT_ID: '61ed89c91ee6e6c74ee985d5'
+    TENT_ID: '61ed89c91ee6e6c74ee985d5',
+    ...CONFIG
   },
 
   // Global page headers: https://go.nuxtjs.dev/config-head
@@ -46,7 +44,7 @@ export default {
         rel: 'stylesheet',
         href: 'https://fonts.googleapis.com/icon?family=Material+Icons'
       }
-    ],
+    ]
   },
 
   // Global CSS: https://go.nuxtjs.dev/config-css
@@ -83,8 +81,7 @@ export default {
 
   axios: {
     https: false,
-    // baseURL: process.env.base_url
-    baseURL: process.env.API_URL || CONFIG.API_URL
+    baseURL: CONFIG.API_URL
   },
 
   toast: {

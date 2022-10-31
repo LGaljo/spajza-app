@@ -191,7 +191,7 @@ export default {
       form: {
         name: '',
         categoryId: null,
-        tags: null,
+        tags: [],
         count: 1,
         description: '',
         location: 'Plac',
@@ -260,7 +260,7 @@ export default {
     },
     async onSubmit() {
       if (!this.form.name ||
-        !this.form.category ||
+        !this.form.categoryId ||
         !this.form.count ||
         !this.form.boughtTime ||
         !this.form.owner ||
@@ -273,6 +273,7 @@ export default {
       if (this.id) {
         this.$axios.$put(`/inventory/${this.id}`, {
           ...this.form,
+          category: this.form.categoryId,
           boughtTime: new Date(this.form.boughtTime),
         })
           .then(async (res) => {
@@ -286,7 +287,11 @@ export default {
             console.error(rej);
           });
       } else {
-        await this.$axios.$post('/inventory', this.form
+        await this.$axios.$post('/inventory', {
+            ...this.form,
+            category: this.form.categoryId,
+            boughtTime: new Date(this.form.boughtTime),
+          }
         )
           .then(async (res) => {
             if (this.cover.file && res._id) {

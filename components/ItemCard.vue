@@ -34,7 +34,7 @@
               >
                 <div class="w-100">
                   <div>
-                    <b-badge v-if="item.status" variant="primary" class="item-status">{{ item.category.name }}</b-badge>
+                    <b-badge v-if="item.status && item.category" variant="primary" class="item-status">{{ item.category.name }}</b-badge>
                   </div>
                   <div class="details">
                     <div v-if="item.count > 1">
