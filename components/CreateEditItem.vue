@@ -281,7 +281,7 @@ export default {
               await this.uploadImage(this.id);
             }
             this.$toast.success(`Predmet "${this.form.name}" uspešno posodobljen`, {duration: 2000});
-            await this.$router.replace('/')
+            await this.$router.replace(`/item/${this.id}`)
           })
           .catch(rej => {
             console.error(rej);
@@ -298,7 +298,7 @@ export default {
               await this.uploadImage(res._id);
             }
             this.$toast.success(`Predmet "${this.form.name}" uspešno dodan`, {duration: 2000});
-            await this.$router.replace('/')
+            await this.$router.replace(`/item/${this.id}`)
           })
           .catch(rej => {
             console.error(rej);
