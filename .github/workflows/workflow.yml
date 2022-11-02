@@ -36,7 +36,4 @@ jobs:
           context: .
           file: ./Dockerfile
           push: true
-          tags: |
-            ${{ secrets.DOCKERHUB_USERNAME }}/spajza-app:latest
-            ${{ secrets.DOCKERHUB_USERNAME }}/spajza-app:${{ steps.time.outputs.time }}
-            ${{ secrets.DOCKERHUB_USERNAME }}/spajza-app:${{ steps.package-version.outputs.current-version }}
+          tags: ${{ secrets.DOCKERHUB_USERNAME }}/spajza-app:latest, ${{ secrets.DOCKERHUB_USERNAME }}/spajza-app:${{ steps.time.outputs.time }}, ${{ secrets.DOCKERHUB_USERNAME }}/spajza-app:${{ steps.package-version.outputs.current-version }}
