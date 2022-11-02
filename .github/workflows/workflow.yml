@@ -12,10 +12,15 @@ jobs:
         uses: actions/checkout@v3
       - name: Get Time
         id: time
-        uses: nanzm/get-time-action@v1.0
+        uses: nanzm/get-time-action@v1.1
         with:
           timeZone: 1
           format: 'YYYY-MM-DD-HH-mm-ss'
+      - name: get-npm-version
+        id: package-version
+        uses: martinbeentjes/npm-get-version-action@main
+        with:
+          path: ./package.json
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v2
       - name: Set up Docker Buildx
@@ -31,4 +36,7 @@ jobs:
           context: .
           file: ./Dockerfile
           push: true
-          tags: ${{ secrets.DOCKERHUB_USERNAME }}/spajza-app:latest, ${{ secrets.DOCKERHUB_USERNAME }}/spajza-app:${{ steps.time.outputs.time }}
+          tags: |
+            ${{ secrets.DOCKERHUB_USERNAME }}/spajza-app:latest
+            ${{ secrets.DOCKERHUB_USERNAME }}/spajza-app:${{ steps.time.outputs.time }}
+            ${{ secrets.DOCKERHUB_USERNAME }}/spajza-app:${{ steps.package-version.outputs.current-version }}
