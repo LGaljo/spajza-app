@@ -136,7 +136,6 @@
           id="location"
           placeholder="Lokacija predmeta"
           v-model="form.location"
-          required
         />
       </b-form-group>
 
@@ -151,7 +150,6 @@
           id="owner"
           placeholder="Lastnik predmeta"
           v-model="form.owner"
-          required
         />
       </b-form-group>
 
@@ -262,9 +260,7 @@ export default {
       if (!this.form.name ||
         !this.form.categoryId ||
         !this.form.count ||
-        !this.form.boughtTime ||
-        !this.form.owner ||
-        !this.form.location
+        !this.form.boughtTime
       ) {
         this.$toast.error('Napaka v vnosnih poljih', {duration: 2000});
         return;
@@ -298,7 +294,7 @@ export default {
               await this.uploadImage(res._id);
             }
             this.$toast.success(`Predmet "${this.form.name}" uspešno dodan`, {duration: 2000});
-            await this.$router.replace(`/item/${this.id}`)
+            await this.$router.replace(`/item/${res._id}`)
           })
           .catch(rej => {
             console.error(rej);
