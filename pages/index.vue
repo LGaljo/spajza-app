@@ -1,22 +1,61 @@
 <template>
   <b-container>
     <b-row class="my-2">
-      <div class="offset-md-3 col-md-6 text-center">
-        <div class="input-group my-3">
-          <input type="text" class="form-control" placeholder="Išči" v-model="searchQuery"
-                 aria-describedby="basic-addon2" @keydown.enter.prevent="search">
+      <b-form class="offset-md-3 col-md-6 text-center">
+        <b-input-group class="mt-3">
+          <!-- Search box -->
+          <b-form-input
+            type="text"
+            placeholder="Išči"
+            v-model="searchQuery"
+            aria-describedby="basic-addon2"
+            @keydown.enter.prevent="search"
+          />
           <div class="input-group-append" @click.prevent="search">
             <span class="input-group-text fake-button" id="basic-addon2">
-              <span
-                class="material-icons icon-button"
-              >
+              <span class="material-icons icon-button">
                 search
               </span>
             </span>
           </div>
-        </div>
+        </b-input-group>
+      </b-form>
+    </b-row>
+
+    <b-row class="my-3">
+      <!-- Sort boxes -->
+      <div class="d-flex flex-row justify-content-end w-100 pr-3">
+        <b-form-select
+          v-model="sort.field"
+          :options="sort.options"
+          no-caret
+          size="sm"
+          class="mr-2"
+          style="width: 250px;"
+          @change="onFilterChange()"
+        />
+        <b-button
+          v-if="sort.dir === 'asc'"
+          size="sm"
+          variant="light"
+          @click="sort.dir = 'desc'; onFilterChange()"
+          style="width: 40px;"
+        >
+          <b-icon-arrow-up/>
+        </b-button>
+        <b-button
+          v-else
+          size="sm"
+          variant="light"
+          @click="sort.dir = 'asc'; onFilterChange()"
+          style="width: 40px;"
+        >
+          <b-icon-arrow-down/>
+        </b-button>
       </div>
     </b-row>
+
+    <!-- Sidebar filters -->
     <b-row>
       <sidebar
         class="px-md-0 col-md-2 col-12 mb-3"
@@ -71,6 +110,16 @@ export default {
   mixins: [status],
   data() {
     return {
+      sort: {
+        field: 'name',
+        dir: 'asc',
+        options: [
+          { text: 'Ime', value: 'name' },
+          { text: 'Čas zadnje posodobitve', value: '_createdAt' },
+          { text: 'Čas vnosa', value: '_updatedAt' },
+          { text: 'ID', value: '_id' },
+        ]
+      },
       infiniteId: 0,
       searchQuery: null,
       viewType: 'cards',
@@ -134,7 +183,9 @@ export default {
           statuses: this.selected.statuses,
           search: this.searchQuery,
           limit: this.limit,
-          skip: this.skip
+          skip: this.skip,
+          sort: this.sort.field,
+          sort_dir: this.sort.dir
         }
       })
       .then(response => {
@@ -154,11 +205,14 @@ export default {
       await this.$router.push(`/item/${item._id}`)
     },
     async onFilterChange() {
+      console.log('changed')
       this.resetInfLoader();
       const query = {};
       if (this.selected.category) query['category'] = this.selected.category
       if (this.selected.tags.length) query['tags'] = this.selected.tags
       if (this.selected.statuses.length) query['statuses'] = this.selected.statuses
+      if (this.sort.field) query['sort'] = this.sort.field
+      if (this.sort.field) query['dir'] = this.sort.dir
       let encoded = '?' + this.encodeQueryData(query)
       encoded = encoded.length > 1 ? encoded : '';
       history.pushState(

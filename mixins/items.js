@@ -8,7 +8,11 @@ export default {
         },
         {
           field: '_createdAt',
-          name: 'Ime'
+          name: 'Čas pridobitve'
+        },
+        {
+          field: '_updatedAt',
+          name: 'Čas posodobitve'
         },
         {
           field: 'code',
