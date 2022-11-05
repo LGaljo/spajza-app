@@ -10,10 +10,10 @@
           @updateItem="updateItem"
         />
 
-        <b-card title="Izposoja" v-if="item && item.rents && item.renter" class="mt-3 mb-1">
+        <b-card title="Izposoja" v-if="item && item.rents && item.rents.renter" class="mt-3 mb-1">
           <b-card-text>
-            <div v-if="!item.rents.subject">Predmet si je izposodil <b>{{ item.renter.username }}</b> dne <b>{{formatDate(item.rents.borrowedAt)}}.</b></div>
-            <div v-else>Predmet je <b>{{ item.renter.username }}</b> posodil <b>{{ item.rents.subject }}</b> dne <b>{{formatDate(item.rents.borrowedAt)}}</b>.</div>
+            <div v-if="!item.rents.subject">Predmet si je izposodil <b>{{ item.rents.renter.username }}</b> dne <b>{{formatDate(item.rents.borrowedAt)}}.</b></div>
+            <div v-else>Predmet je <b>{{ item.rents.renter.username }}</b> posodil <b>{{ item.rents.subject }}</b> dne <b>{{formatDate(item.rents.borrowedAt)}}</b>.</div>
             <div>Obljubil je, da ga vrne <b>{{ formatDate(item.rents.returnTime) }}</b>.</div>
           </b-card-text>
           <b-button

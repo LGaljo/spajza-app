@@ -22,37 +22,38 @@
       </b-form>
     </b-row>
 
+    <!-- Sort boxes -->
     <b-row class="my-3">
-      <!-- Sort boxes -->
-      <div class="d-flex flex-row justify-content-end w-100 pr-3">
-        <b-form-select
-          v-model="sort.field"
-          :options="sort.options"
-          no-caret
-          size="sm"
-          class="mr-2"
-          style="width: 250px;"
-          @change="onFilterChange()"
-        />
-        <b-button
-          v-if="sort.dir === 'asc'"
-          size="sm"
-          variant="light"
-          @click="sort.dir = 'desc'; onFilterChange()"
-          style="width: 40px;"
-        >
-          <b-icon-arrow-up/>
-        </b-button>
-        <b-button
-          v-else
-          size="sm"
-          variant="light"
-          @click="sort.dir = 'asc'; onFilterChange()"
-          style="width: 40px;"
-        >
-          <b-icon-arrow-down/>
-        </b-button>
-      </div>
+      <b-col class="col-12 col-md-4 offset-md-8 col-lg-3 offset-lg-9">
+        <div class="d-flex flex-row justify-content-end">
+          <b-form-select
+            v-model="sort.field"
+            :options="sort.options"
+            no-caret
+            size="sm"
+            class="mr-2"
+            @change="onFilterChange()"
+          />
+          <b-button
+            v-if="sort.dir === 'asc'"
+            size="sm"
+            variant="light"
+            @click="sort.dir = 'desc'; onFilterChange()"
+            style="width: 40px;"
+          >
+            <b-icon-arrow-up/>
+          </b-button>
+          <b-button
+            v-else
+            size="sm"
+            variant="light"
+            @click="sort.dir = 'asc'; onFilterChange()"
+            style="width: 40px;"
+          >
+            <b-icon-arrow-down/>
+          </b-button>
+        </div>
+      </b-col>
     </b-row>
 
     <!-- Sidebar filters -->
@@ -114,10 +115,10 @@ export default {
         field: 'name',
         dir: 'asc',
         options: [
-          { text: 'Ime', value: 'name' },
-          { text: 'Čas zadnje posodobitve', value: '_createdAt' },
-          { text: 'Čas vnosa', value: '_updatedAt' },
-          { text: 'ID', value: '_id' },
+          { text: 'Ime predmeta', value: 'name' },
+          { text: 'Čas zadnje posodobitve', value: '_updatedAt' },
+          { text: 'Čas vnosa', value: '_createdAt' },
+          { text: 'Identifikator', value: '_id' },
         ]
       },
       infiniteId: 0,
