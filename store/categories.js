@@ -7,7 +7,7 @@ export const mutations = {
     state.categories = value
   },
   unset(state) {
-    state.user = null
+    state.categories = null
   },
 }
 

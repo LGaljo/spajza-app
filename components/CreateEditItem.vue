@@ -238,9 +238,9 @@ export default {
     async getItem() {
       await this.$axios.$get(`/inventory/${this.$route.params.id}`)
         .then(res => {
-          this.form = res
           this.form.name = res.name
-          this.form.category = res.categoryId
+          this.form.category = res?.category?.name
+          this.form.categoryId = res?.category?._id
           this.form.tags = res.tags.map(t => t._id)
           this.form.count = res.count || null
           this.cover.path = res.cover ? res.cover.Location : null
