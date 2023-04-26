@@ -306,13 +306,12 @@ export default {
       const formData = new FormData();
       formData.append('file', this.cover.file);
 
-      this.$axios.$post(`/inventory/file/${id}`, formData)
-      .then(res => {
-      })
-      .catch(reason => {
+      try {
+        await this.$axios.$post(`/inventory/file/${id}`, formData)
+      } catch (reason) {
         console.error(reason);
         this.$toast.error('Napaka pri dodajanju slike', {duration: 2000});
-      })
+      }
     }
   }
 }
