@@ -84,7 +84,7 @@ export default {
   },
   methods: {
     getFieldName(field) {
-      return this.fields.find(f => f.field === field).name
+      return this.fields.find(f => f.field === field)?.name
     },
   }
 }

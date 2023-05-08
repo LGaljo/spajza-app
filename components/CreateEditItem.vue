@@ -166,7 +166,10 @@
         ></b-form-textarea>
       </b-form-group>
 
-      <b-button type="submit" class="btn-primary">{{ id ? 'Shrani' : 'Dodaj' }}</b-button>
+      <b-button type="submit" class="btn-primary">
+        {{ id ? 'Shrani' : 'Dodaj' }}
+        <b-spinner v-if="loading" variant="light" small />
+      </b-button>
     </b-form>
   </div>
 </template>
@@ -200,7 +203,8 @@ export default {
       cover: {
         file: null,
         path: null
-      }
+      },
+      loading: false,
     }
   },
   watch: {
@@ -257,6 +261,7 @@ export default {
         })
     },
     async onSubmit() {
+      this.loading = true;
       if (!this.form.name ||
         !this.form.categoryId ||
         !this.form.count ||
