@@ -119,6 +119,7 @@ export default {
           { text: 'Čas zadnje posodobitve', value: '_updatedAt' },
           { text: 'Čas vnosa', value: '_createdAt' },
           { text: 'Identifikator', value: '_id' },
+          { text: 'Vsebuje sliko', value: 'cover' },
         ]
       },
       infiniteId: 0,

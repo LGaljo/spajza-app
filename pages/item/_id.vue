@@ -26,8 +26,6 @@
           </b-button>
         </b-card>
 
-        <b-card v-if="item" no-body class="mt-3 mb-1">
-          <b-card-header header-tag="header" class="p-0" role="tab">
         <ChangesList v-if="item && changes" :changes="changes" />
 
         <RentDialog
