@@ -245,7 +245,7 @@ export default {
           this.form.name = res.name
           this.form.category = res?.category?.name
           this.form.categoryId = res?.category?._id
-          this.form.tags = res.tags.map(t => t._id)
+          this.form.tags = res.tags?.map(t => t._id)
           this.form.count = res.count || null
           this.cover.path = res.cover ? res.cover.Location : null
           this.form.description = res.description || null
