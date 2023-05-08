@@ -26,8 +26,8 @@
           </b-button>
         </b-card>
 
-        <b-card v-if="item" no-body class="mt-3 mb-1">
-          <b-card-header header-tag="header" class="p-0" role="tab">
+<!--        <Comments v-if="item" :comments="comments" />-->
+
         <ChangesList v-if="item && changes" :changes="changes" />
 
         <RentDialog
@@ -69,6 +69,32 @@ export default {
     return {
       item: null,
       changes: [],
+      comments: [
+        {
+          parent_comment_id: null,
+          message: 'Ta šotor je bil enkrat pobruhan',
+          _createdAt: '2022-09-08T15:09:40.021Z',
+          user: {
+            _id: '12312312312ab23b123675',
+            username: 'lukag',
+            firstName: 'Luka',
+            lastName: 'Galjot',
+          },
+          replies: [
+            {
+              parent_comment_id: '82374982374928374',
+              message: 'Nik ga je',
+              _createdAt: '2022-09-08T15:10:40.021Z',
+              user: {
+                _id: '12312312312ab23b123675',
+                username: 'lukag',
+                firstName: 'Luka',
+                lastName: 'Galjot',
+              },
+            }
+          ]
+        }
+      ],
     }
   },
   computed: {
