@@ -4,15 +4,16 @@
       <b-col offset-md="2" md="8" cols="12" class=" my-3">
         <ItemDetailsCard
           v-if="item"
-          :object="item"
+          v-model="item"
           @delete="deleteItemRequest"
           @onRentItem="onRentItem"
+          @updateItem="updateItem"
         />
 
-        <b-card title="Izposoja" v-if="item && item.rents && item.renter" class="mt-3 mb-1">
+        <b-card title="Izposoja" v-if="item && item.rents && item.rents.renter" class="mt-3 mb-1">
           <b-card-text>
-            <div v-if="!item.rents.subject">Predmet si je izposodil <b>{{ item.renter.username }}</b> dne <b>{{formatDate(item.rents.borrowedAt)}}.</b></div>
-            <div v-else>Predmet je <b>{{ item.renter.username }}</b> posodil <b>{{ item.rents.subject }}</b> dne <b>{{formatDate(item.rents.borrowedAt)}}</b>.</div>
+            <div v-if="!item.rents.subject">Predmet si je izposodil <b>{{ item.rents.renter.username }}</b> dne <b>{{formatDate(item.rents.borrowedAt)}}.</b></div>
+            <div v-else>Predmet je <b>{{ item.rents.renter.username }}</b> posodil <b>{{ item.rents.subject }}</b> dne <b>{{formatDate(item.rents.borrowedAt)}}</b>.</div>
             <div>Obljubil je, da ga vrne <b>{{ formatDate(item.rents.returnTime) }}</b>.</div>
           </b-card-text>
           <b-button
@@ -25,42 +26,7 @@
           </b-button>
         </b-card>
 
-        <b-card v-if="item" no-body class="mt-3 mb-1">
-          <b-card-header header-tag="header" class="p-0" role="tab">
-            <b-button block v-b-toggle.accordion-2 variant="outline" class="py-3">Spremembe</b-button>
-          </b-card-header>
-          <b-collapse id="accordion-2" accordion="my-accordion" role="tabpanel">
-            <b-card-body>
-              <b-card-text>
-                <div
-                  v-if="changes.length !== 0"
-                  v-for="(change, key) of changes"
-                  :key="change.id"
-                  :class="['d-flex', 'flex-column', 'py-3', { 'border-bottom': key !== changes.length - 1}]"
-                >
-                  <div class="d-flex justify-content-between mb-2">
-                    <b-badge variant="dark" class="p-2">{{ formatDateTime(change._createdAt) }}</b-badge>
-                    <span v-if="change.user">Avtor: <b>{{ change.user.username }}</b></span>
-                  </div>
-                  <div
-                    v-if="change.changes"
-                    v-for="(field, key) of change.changes"
-                    class="my-1"
-                  >
-                    <div v-if="field.type === 'changed'">Spremenjeno polje: <b>{{ getFieldName(field.key) }}</b></div>
-                    <div v-else-if="field.type === 'added'">Dodano polje: <b>{{ getFieldName(field.key) }}</b></div>
-                    <div v-else-if="field.type === 'removed'">Odstranjeno polje: <b>{{ getFieldName(field.key) }}</b></div>
-                    <div v-if="field.valueBefore">Pretekla vrednost: <b>{{ field.valueBefore }}</b></div>
-                    <div v-if="field.valueNow">Nova vrednost: <b>{{ field.valueNow }}</b></div>
-                  </div>
-                </div>
-                <div v-if="changes.length === 0" class="text-center">
-                  <b>Ni sprememb</b>
-                </div>
-              </b-card-text>
-            </b-card-body>
-          </b-collapse>
-        </b-card>
+        <ChangesList v-if="item && changes" :changes="changes" />
 
         <RentDialog
           ref="dialog"
@@ -82,18 +48,20 @@
 </template>
 
 <script>
-import status from "@/mixins/status";
-import {DateTime} from "luxon";
 import {mapGetters} from "vuex";
-import ItemDetailsCard from "@/components/ItemDetailsCard";
-import datetime from "@/mixins/datetime";
-import items from "@/mixins/items";
+import status from "../../mixins/status";
+import datetime from "../../mixins/datetime";
+import RentDialog from "../../components/modals/RentDialog";
+import ModalDialog from "../../components/modals/ModalDialog";
+import ItemDetailsCard from "../../components/ItemDetailsCard";
 
 export default {
   name: "Item",
-  mixins: [status, datetime, items],
+  mixins: [status, datetime],
   components: {
-    ItemDetailsCard
+    RentDialog,
+    ModalDialog,
+    ItemDetailsCard,
   },
   data() {
     return {
@@ -157,6 +125,17 @@ export default {
     onItemRented(item) {
       this.item = item
       this.$toast.success(`${item.name} uspešno izposojen`, { duration: 3000 });
+    },
+    async updateItem() {
+      await this.$axios.$put(`/inventory/${this.item._id}`, {
+        ...this.item,
+      })
+        .then(async (res) => {
+          this.$toast.success(`Predmet "${this.item.name}" uspešno posodobljen`, {duration: 2000});
+        })
+        .catch(rej => {
+          console.error(rej);
+        });
     }
   }
 }

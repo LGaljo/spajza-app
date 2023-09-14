@@ -123,7 +123,6 @@ export default {
     async onSubmit() {
       this.$axios.$post(`/rents/borrow/${this.item._id}`, this.form)
         .then(async res => {
-          console.log(res);
           this.$emit('onRented', res)
         })
         .catch(reason => {

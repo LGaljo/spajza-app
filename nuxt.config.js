@@ -1,7 +1,9 @@
+const CONFIG = require(`./config/${process.env.NODE_ENV}`)
+
 export default {
   server: {
-    host: process.env.HOST || 'localhost',
-    port: process.env.PORT || 3100
+    host: CONFIG.HOST || 'localhost',
+    port: CONFIG.PORT || 3100
   },
 
   router: {
@@ -10,8 +12,13 @@ export default {
     ]
   },
 
+  loading: false,
+
+  ssr: false,
+
   env: {
-    apiUrl: process.env.API_URL || 'http://localhost:4500'
+    TENT_ID: '61ed89c91ee6e6c74ee985d5',
+    ...CONFIG
   },
 
   // Global page headers: https://go.nuxtjs.dev/config-head
@@ -26,7 +33,8 @@ export default {
       { hid: 'description', name: 'description', content: '' }
     ],
     link: [
-      { rel: 'icon', type: 'image/x-icon', href: '/favicon.ico' },
+      // { rel: 'icon', type: 'image/x-icon', href: '/favicon.ico' },
+      { rel: 'icon', type: 'image/x-icon', href: '/icon.png' },
       {
         rel: 'stylesheet',
         href:
@@ -36,7 +44,7 @@ export default {
         rel: 'stylesheet',
         href: 'https://fonts.googleapis.com/icon?family=Material+Icons'
       }
-    ],
+    ]
   },
 
   // Global CSS: https://go.nuxtjs.dev/config-css
@@ -48,6 +56,7 @@ export default {
     '~/plugins/click-outside.js',
     '~/plugins/axios.js',
     '~/plugins/veevalidate.js',
+    '~/plugins/bootstrap-icons.js'
   ],
 
   // Auto import components: https://go.nuxtjs.dev/config-components
@@ -72,8 +81,7 @@ export default {
 
   axios: {
     https: false,
-    // baseURL: process.env.base_url || 'http://192.168.34.217:4500'
-    baseURL: process.env.API_URL || 'http://localhost:4500'
+    baseURL: CONFIG.API_URL
   },
 
   toast: {

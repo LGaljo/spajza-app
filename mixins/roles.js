@@ -37,7 +37,7 @@ export default {
       }
     },
     getNameForRole(role) {
-      return this.roles.find(r => r.value === role).text
+      return this.roles.find(r => r.value === role)?.text
     },
   }
 }

@@ -8,7 +8,11 @@ export default {
         },
         {
           field: '_createdAt',
-          name: 'Ime'
+          name: 'Čas pridobitve'
+        },
+        {
+          field: '_updatedAt',
+          name: 'Čas posodobitve'
         },
         {
           field: 'code',
@@ -70,12 +74,17 @@ export default {
           field: 'renter',
           name: 'Izposojevalec'
         },
+        {
+          field: 'extras',
+          name: 'Dodatno',
+          ignore: true
+        }
       ]
     }
   },
   methods: {
     getFieldName(field) {
-      return this.fields.find(f => f.field === field).name
+      return this.fields.find(f => f.field === field)?.name
     },
   }
 }

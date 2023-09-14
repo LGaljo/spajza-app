@@ -42,19 +42,17 @@
         label="Kategorija"
         label-for="category"
       >
-        <b-form-radio-group
-          v-model="form.category"
+        <b-form-select
+          v-model="form.categoryId"
           id="category"
-          multiple="false"
+          :options="optionsCats"
         >
-          <b-form-radio
-            v-for="category of categories"
-            :key="category.name"
-            :value="category._id"
-          >
-            {{ category.name }}
-          </b-form-radio>
-        </b-form-radio-group>
+          <b-form-select-option
+            :value="null"
+            disabled>
+            -- Izberi kategorijo --
+          </b-form-select-option>
+        </b-form-select>
       </b-form-group>
 
       <b-form-group
@@ -62,25 +60,40 @@
         label="Značke"
         label-for="tags"
       >
-        <b-form-checkbox-group
+        <b-form-select
           v-model="form.tags"
+          multiple
           id="tags"
+          :options="optionsTags"
         >
-          <b-form-checkbox
-            v-for="tag of tags"
-            :key="tag.name"
-            :value="tag._id"
-          >
-            {{ tag.name }}
-          </b-form-checkbox>
-
-        </b-form-checkbox-group>
+          <b-form-select-option
+            :value="null"
+            disabled>
+            -- Izberi značke (neobvezno) --
+          </b-form-select-option>
+        </b-form-select>
       </b-form-group>
 
       <!-- STATUS -->
-      <b-form-select v-model="form.status" :options="statuses" aria-placeholder="Stanje" class="mb-2">
-        <b-form-select-option :value="null" disabled>-- Izberi stanje predmeta --</b-form-select-option>
-      </b-form-select>
+      <b-form-group
+        id="input-group-3"
+        label="Status"
+        label-for="status"
+      >
+        <b-form-select
+          v-model="form.status"
+          :options="statuses"
+          id="status"
+          aria-placeholder="Stanje"
+          class="mb-2"
+        >
+          <b-form-select-option
+            :value="null"
+            disabled>
+            -- Izberi stanje predmeta --
+          </b-form-select-option>
+        </b-form-select>
+      </b-form-group>
 
       <b-form-group
         id="input-group-4"
@@ -92,7 +105,6 @@
           v-model="form.boughtTime"
           class="form-control"
           id="boughtTime"
-          placeholder="Povezava do pesmi"
         />
         <b-badge pill @click="setCurrentTime">Nastavi danes</b-badge>
       </b-form-group>
@@ -124,7 +136,6 @@
           id="location"
           placeholder="Lokacija predmeta"
           v-model="form.location"
-          required
         />
       </b-form-group>
 
@@ -139,7 +150,6 @@
           id="owner"
           placeholder="Lastnik predmeta"
           v-model="form.owner"
-          required
         />
       </b-form-group>
 
@@ -156,7 +166,10 @@
         ></b-form-textarea>
       </b-form-group>
 
-      <b-button type="submit" class="btn-primary">{{ id ? 'Shrani' : 'Dodaj' }}</b-button>
+      <b-button type="submit" class="btn-primary">
+        {{ id ? 'Shrani' : 'Dodaj' }}
+        <b-spinner v-if="loading" variant="light" small />
+      </b-button>
     </b-form>
   </div>
 </template>
@@ -178,11 +191,11 @@ export default {
     return {
       form: {
         name: '',
-        category: null,
+        categoryId: null,
         tags: [],
         count: 1,
         description: '',
-        location: '',
+        location: 'Plac',
         boughtTime: null,
         owner: 'RZS',
         status: 'NEW'
@@ -190,7 +203,8 @@ export default {
       cover: {
         file: null,
         path: null
-      }
+      },
+      loading: false,
     }
   },
   watch: {
@@ -207,15 +221,16 @@ export default {
   computed: {
     ...mapGetters({
       categories: 'categories/get',
+      optionsCats: 'categories/getOptions',
       tags: 'tags/get',
-    })
+      optionsTags: 'tags/getOptions',
+    }),
   },
   async created() {
     this.setCurrentTime()
-    await Promise.all([
-      this.$store.dispatch('categories/fetch'),
-      this.$store.dispatch('tags/fetch'),
-    ])
+    await this.$store.dispatch('categories/fetch');
+    await this.$store.dispatch('tags/fetch');
+
     if (this.id) {
       await this.getItem()
     }
@@ -227,10 +242,10 @@ export default {
     async getItem() {
       await this.$axios.$get(`/inventory/${this.$route.params.id}`)
         .then(res => {
-          this.form = res
           this.form.name = res.name
-          this.form.category = res.categoryId
-          this.form.tags = res.tags.map(t => t._id)
+          this.form.category = res?.category?.name
+          this.form.categoryId = res?.category?._id
+          this.form.tags = res.tags?.map(t => t._id)
           this.form.count = res.count || null
           this.cover.path = res.cover ? res.cover.Location : null
           this.form.description = res.description || null
@@ -246,13 +261,11 @@ export default {
         })
     },
     async onSubmit() {
-      console.log(this.form)
+      this.loading = true;
       if (!this.form.name ||
-        !this.form.category ||
+        !this.form.categoryId ||
         !this.form.count ||
-        !this.form.boughtTime ||
-        !this.form.owner ||
-        !this.form.location
+        !this.form.boughtTime
       ) {
         this.$toast.error('Napaka v vnosnih poljih', {duration: 2000});
         return;
@@ -261,6 +274,7 @@ export default {
       if (this.id) {
         this.$axios.$put(`/inventory/${this.id}`, {
           ...this.form,
+          category: this.form.categoryId,
           boughtTime: new Date(this.form.boughtTime),
         })
           .then(async (res) => {
@@ -268,21 +282,24 @@ export default {
               await this.uploadImage(this.id);
             }
             this.$toast.success(`Predmet "${this.form.name}" uspešno posodobljen`, {duration: 2000});
-            await this.$router.replace('/')
+            await this.$router.replace(`/item/${this.id}`)
           })
           .catch(rej => {
             console.error(rej);
           });
       } else {
-        await this.$axios.$post('/inventory', this.form
+        await this.$axios.$post('/inventory', {
+            ...this.form,
+            category: this.form.categoryId,
+            boughtTime: new Date(this.form.boughtTime),
+          }
         )
           .then(async (res) => {
-            console.log(res)
             if (this.cover.file && res._id) {
               await this.uploadImage(res._id);
             }
             this.$toast.success(`Predmet "${this.form.name}" uspešno dodan`, {duration: 2000});
-            await this.$router.replace('/')
+            await this.$router.replace(`/item/${res._id}`)
           })
           .catch(rej => {
             console.error(rej);
@@ -294,14 +311,12 @@ export default {
       const formData = new FormData();
       formData.append('file', this.cover.file);
 
-      this.$axios.$post(`/inventory/file/${id}`, formData)
-      .then(res => {
-        console.log(res)
-      })
-      .catch(reason => {
+      try {
+        await this.$axios.$post(`/inventory/file/${id}`, formData)
+      } catch (reason) {
         console.error(reason);
         this.$toast.error('Napaka pri dodajanju slike', {duration: 2000});
-      })
+      }
     }
   }
 }

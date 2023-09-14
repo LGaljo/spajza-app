@@ -86,11 +86,8 @@ export default {
           await this.$store.dispatch('user/fetchUser', res?.data?.userId)
           await this.$router.push("/")
         } else if (!res?.success && res?.reason === 'UNAPPROVED') {
-          console.log('User unapproved')
           this.resend_act = res?.userId
           this.error = "Uporabnik še ni aktiviran. Najdi email s povezavo."
-        } else {
-          console.log('sth else')
         }
       })
       .catch(reason => {

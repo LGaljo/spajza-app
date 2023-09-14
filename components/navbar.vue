@@ -1,38 +1,43 @@
 <template>
   <b-navbar toggleable type="dark" variant="dark" class="fixed-top">
-    <nuxt-link class="navbar-brand" href="/" :to="`/`">Špajza</nuxt-link>
+    <nuxt-link class="navbar-brand py-0" href="/" :to="`/`">
+      <div class="d-flex justify-content-center align-content-center">
+        <b-img src="/icon.png" style="height: 40px; width: auto;"></b-img>
+        <div class="ml-3" style="line-height: 2.25rem">Špajza</div>
+      </div>
+    </nuxt-link>
     <div class="mr-auto"></div>
 
     <b-dropdown v-if="user" id="dropdown-1" right class="">
       <template #button-content>
         <span class="mr-2">Meni</span>
       </template>
-      <b-dropdown-item>
-        <nuxt-link v-if="isApproved" class="text-body" :to="`/wishlist`">Seznam želja</nuxt-link>
+      <b-dropdown-item v-if="isApproved" class="text-body" :to="`/wishlist`">
+        Seznam želja
       </b-dropdown-item>
       <b-dropdown-divider></b-dropdown-divider>
-      <b-dropdown-item>
-        <nuxt-link v-if="isAdmin || isKeeper"  class="text-body" :to="`/add`">Dodaj</nuxt-link>
+      <b-dropdown-item v-if="isAdmin || isKeeper"  class="text-body" :to="`/admin/add`">
+        Dodaj
       </b-dropdown-item>
-      <b-dropdown-item>
-        <nuxt-link v-if="isAdmin || isKeeper" class="text-body" :to="`/import`">Uvozi</nuxt-link>
-      </b-dropdown-item>
-      <b-dropdown-divider></b-dropdown-divider>
-      <b-dropdown-item>
-        <nuxt-link v-if="isAdmin" class="text-body" :to="`/tags`">Značke</nuxt-link>
-      </b-dropdown-item>
-      <b-dropdown-item>
-        <nuxt-link v-if="isAdmin" class="text-body" :to="`/categories`">Kategorije</nuxt-link>
-      </b-dropdown-item>
-      <b-dropdown-item>
-        <nuxt-link v-if="isAdmin" class="text-body" :to="`/users`">Uporabniki</nuxt-link>
+      <b-dropdown-item v-if="isAdmin || isKeeper" class="text-body" :to="`/admin/import`">
+        Uvozi
       </b-dropdown-item>
       <b-dropdown-divider></b-dropdown-divider>
-      <b-dropdown-item>
-        <nuxt-link class="text-body" :to="`/profile`">Profil</nuxt-link>
+      <b-dropdown-item v-if="isAdmin" class="text-body" :to="`/admin/tags`">
+        Značke
       </b-dropdown-item>
-      <b-dropdown-item>
-        <a @click="logout">Odjava</a>
+      <b-dropdown-item v-if="isAdmin" class="text-body" :to="`/admin/categories`">
+        Kategorije
+      </b-dropdown-item>
+      <b-dropdown-item v-if="isAdmin" class="text-body" :to="`/admin/users`">
+        Uporabniki
+      </b-dropdown-item>
+      <b-dropdown-divider></b-dropdown-divider>
+      <b-dropdown-item class="text-body" :to="`/profile`">
+        Profil
+      </b-dropdown-item>
+      <b-dropdown-item @click="logout">
+        Odjava
       </b-dropdown-item>
     </b-dropdown>
 

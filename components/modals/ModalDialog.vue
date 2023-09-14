@@ -1,10 +1,11 @@
 <template>
-  <b-modal ref="dialog" :title="title">
+  <b-modal ref="dialog" :title="title" :size="size">
     <div :slot="'default'">
       <slot name="body"></slot>
     </div>
     <div :slot="'modal-footer'">
       <b-button
+        v-if="action"
         variant="success"
         @click="onFirst"
       >
@@ -35,11 +36,13 @@ export default {
     },
     action: {
       type: String,
-      required: true
     },
     secAction: {
       type: String,
     },
+    size: {
+      type: String,
+    }
   },
   methods: {
     open() {

@@ -1,7 +1,7 @@
 <template>
   <b-container>
     <b-row>
-      <b-col offset-md="2" md="8" cols="12" class="my-3">
+      <b-col offset-md="1" md="10" cols="12" class="my-3">
         <div class="text-center">
           <h1>Uporabniki</h1>
         </div>
@@ -11,7 +11,7 @@
             <th scope="col">Up. ime</th>
             <th scope="col" v-if="hideOnMinWidth">Email</th>
             <th scope="col">Vloga</th>
-            <th scope="col" class="d-none">Akcije</th>
+            <th scope="col">Akcije</th>
           </tr>
           </thead>
           <tbody>
@@ -39,23 +39,41 @@
                 </b-dropdown-item>
               </b-dropdown>
             </td>
-            <td class="d-none">Akcije</td>
+            <td class="">
+                <b-button
+                  variant="warning"
+                  class="material-icons"
+                  @click="actionId = user._id; $refs.dialog.open()"
+                >
+                  close
+                </b-button>
+            </td>
           </tr>
           </tbody>
         </table>
       </b-col>
     </b-row>
+    <ModalDialog
+      ref="dialog"
+      title="Želiš onemogočiti uporabnika?"
+      :action="'Onemogoči'"
+      @first="removeUser">
+      <template #body>Uporabniku boš onemogočil dostop do portala</template>
+    </ModalDialog>
   </b-container>
 </template>
 
 <script>
 import roles from "@/mixins/roles";
+import ModalDialog from "@/components/modals/ModalDialog.vue";
 
 export default {
   name: "users",
+  components: {ModalDialog},
   mixins: [roles],
   data() {
     return {
+      actionId: null,
       users: [],
       innerWidth: 799,
     }
@@ -98,7 +116,17 @@ export default {
           console.error(reason)
           this.$toast.error('Napaka pri pridobivanju uporabnikov', { duration: 3000 });
         })
-
+    },
+    removeUser() {
+      this.$axios.delete(`/users/${this.actionId}`)
+        .then(async () => {
+          this.$toast.success('Uporabnik onemogočen', { duration: 3000 });
+          await this.getUsers();
+        })
+        .catch(reason => {
+          console.error(reason)
+          this.$toast.error('Napaka', { duration: 3000 });
+        })
     }
   }
 }
