@@ -1,47 +1,43 @@
 export const state = () => ({
-  categories: [],
+  item: [],
 })
 
 export const mutations = {
   set(state, value) {
-    state.categories = value
+    state.item = value
   },
   unset(state) {
-    state.categories = null
+    state.item = null
   },
 }
 
 export const getters = {
   get(state) {
-    return state.categories
+    return state.item
   },
-  getOptions(state) {
-    return state.categories.map((c) => {
-      return {
-        text: c.name,
-        value: c._id,
-      }
-    })
-  }
 }
 
 export const actions = {
-  async fetch({ commit }, filters) {
-    this.$axios.$get(`/categories`, {
-      params: {
-        ...filters
-      }
-    })
+  async fetch({ commit }, id) {
+    this.$axios.$get(`/inventory/${id}`)
       .then(res => {
         commit('set', res)
-        return res
+      })
+      .catch(res => {
+        console.error(res)
+      })
+  },
+  async update({ commit }, id, data) {
+    await this.$axios.$put(`/inventory/${id}`, data)
+      .then(res => {
+        commit('set', res)
       })
       .catch(res => {
         console.error(res)
       })
   },
   async remove({ commit }, id) {
-    this.$axios.$delete(`/categories/${id}`)
+    this.$axios.$delete(`/inventory/${id}`)
       .then(res => {})
       .catch(res => {
         console.error(res)

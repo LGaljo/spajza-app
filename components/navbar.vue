@@ -29,6 +29,9 @@
       <b-dropdown-item v-if="isAdmin" class="text-body" :to="`/admin/categories`">
         Kategorije
       </b-dropdown-item>
+      <b-dropdown-item v-if="isAdmin" class="text-body" :to="`/admin/templates`">
+        Predloge slik kategorij
+      </b-dropdown-item>
       <b-dropdown-item v-if="isAdmin" class="text-body" :to="`/admin/users`">
         Uporabniki
       </b-dropdown-item>

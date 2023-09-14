@@ -8,12 +8,14 @@
         v-if="action"
         variant="success"
         @click="onFirst"
+        :disabled="disableAction"
       >
         {{ action }}
       </b-button>
       <b-button
         v-if="secAction"
         @click="onSecond"
+        :disabled="disableSecAction"
       >
         {{ secAction }}
       </b-button>
@@ -37,8 +39,16 @@ export default {
     action: {
       type: String,
     },
+    disableAction: {
+      type: Boolean,
+      default: false,
+    },
     secAction: {
       type: String,
+    },
+    disableSecAction: {
+      type: Boolean,
+      default: false,
     },
     size: {
       type: String,

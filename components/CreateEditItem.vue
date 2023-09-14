@@ -1,6 +1,7 @@
 <template>
   <div>
     <b-form class="w-100" @submit.prevent="onSubmit">
+      <!-- Ime predmeta  -->
       <b-form-group
         id="input-group-1"
         label="Ime predmeta"
@@ -24,7 +25,7 @@
         <b-form-file
           v-model="cover.file"
           id="image"
-          accept="image/*"
+          accept="image/*, image/heic"
           :state="Boolean(cover.file)"
           placeholder="Izberi ali spusti datoteko..."
           drop-placeholder="Spusti datoteko..."
@@ -37,6 +38,7 @@
         <b-img v-if="cover.path" :src="cover.path" fluid alt="image" class="w-50"></b-img>
       </b-form-group>
 
+      <!-- Kategorija -->
       <b-form-group
         id="input-group-2"
         label="Kategorija"
@@ -55,6 +57,7 @@
         </b-form-select>
       </b-form-group>
 
+      <!-- Značke -->
       <b-form-group
         id="input-group-3"
         label="Značke"
@@ -68,7 +71,7 @@
         >
           <b-form-select-option
             :value="null"
-            disabled>
+          >
             -- Izberi značke (neobvezno) --
           </b-form-select-option>
         </b-form-select>
@@ -95,6 +98,7 @@
         </b-form-select>
       </b-form-group>
 
+      <!-- Čas pridobitve  -->
       <b-form-group
         id="input-group-4"
         label="Čas pridobitve"
@@ -109,6 +113,7 @@
         <b-badge pill @click="setCurrentTime">Nastavi danes</b-badge>
       </b-form-group>
 
+      <!-- Število kosov  -->
       <b-form-group
         id="input-group-5"
         label="Število kosov"
@@ -125,10 +130,11 @@
         />
       </b-form-group>
 
+      <!-- Lokacija  -->
       <b-form-group
         id="input-group-5"
         label="Lokacija"
-        label-for="boughtTime"
+        label-for="location"
       >
         <b-form-input
           type="text"
@@ -139,6 +145,7 @@
         />
       </b-form-group>
 
+      <!-- Lastnik  -->
       <b-form-group
         id="input-group-6"
         label="Lastnik"
@@ -153,6 +160,7 @@
         />
       </b-form-group>
 
+      <!-- Opis  -->
       <b-form-group
         label="Opis"
         label-for="description"
