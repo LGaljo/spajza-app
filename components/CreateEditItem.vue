@@ -223,7 +223,7 @@ export default {
   computed: {
     ...mapGetters({
       item: 'item/get',
-      categories: 'categories/get',
+      categories: 'categories/getList',
       optionsCats: 'categories/getOptions',
       tags: 'tags/get',
       optionsTags: 'tags/getOptions',

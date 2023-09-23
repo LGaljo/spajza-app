@@ -7,8 +7,21 @@ export const mutations = {
   set(state, value) {
     state.item = value
   },
+  setList(state, value) {
+    state.list = value
+  },
   unset(state) {
     state.item = null
+  },
+  async addDefect(state, marker) {
+    if (!state.item.hasOwnProperty('extras')) {
+      state.item.extras = {defects: []};
+    }
+    state.item.extras.defects.push(marker);
+  },
+  async removeDefect(state, key) {
+    const idx = state.item?.extras?.defects.findIndex((m) => m.key === key);
+    state.item?.extras?.defects.splice(idx, 1);
   },
 }
 
@@ -16,6 +29,9 @@ export const getters = {
   get(state) {
     return state.item
   },
+  getList(state) {
+    return state.list
+  }
 }
 
 export const actions = {
@@ -33,10 +49,11 @@ export const actions = {
         return Promise.reject(err)
       })
   },
-  async update({ commit }, id, data) {
-    return this.$axios.$put(`/inventory/${id}`, data)
+  async update({ commit }, data) {
+    return this.$axios.$put(`/inventory/${data._id}`, data)
       .then(res => {
         commit('set', res)
+        this.$toast.success(`Predmet uspešno posodobljen`, {duration: 2000});
         return Promise.resolve(res)
       })
       .catch(err => {
@@ -48,7 +65,7 @@ export const actions = {
   async remove({ commit }, id) {
     return this.$axios.$delete(`/inventory/${id}`)
       .then(res => {
-        this.$toast.success(`Predmet "${this.item.name}" uspešno izbrisan`, { duration: 3000 });
+        this.$toast.success(`Predmet uspešno izbrisan`, { duration: 3000 });
         Promise.resolve(res)
       })
       .catch(err => {
@@ -58,7 +75,7 @@ export const actions = {
       })
   },
   async rent({ commit }, id) {
-    return this.$axios.$post(`/rents/borrow/${this.item._id}`, this.form)
+    return this.$axios.$post(`/rents/borrow/${id}`, this.form)
       .then((res) => {
         commit('set', res)
         this.$toast.success(`Predmet uspešno izposojen`, { duration: 3000 });
@@ -69,10 +86,10 @@ export const actions = {
 
   },
   async returnItem({ commit }, id) {
-    return this.$axios.$post(`/rents/return/${this.item._id}`)
+    return this.$axios.$post(`/rents/return/${_id}`)
       .then(res => {
         commit('set', res)
-        this.$toast.success(`Predmet "${this.item.name}" uspešno vrnjen`, { duration: 3000 });
+        this.$toast.success(`Predmet uspešno vrnjen`, { duration: 3000 });
         return Promise.resolve(res)
       })
       .catch((err) => {
@@ -80,7 +97,14 @@ export const actions = {
         return Promise.reject(err)
       })
   },
-
+  async addDefect(context, marker) {
+    context.commit('addDefect', marker)
+    await context.dispatch('update', context.state.item)
+  },
+  async removeDefect(context, key) {
+    context.commit('removeDefect', key)
+    await context.dispatch('update', context.state.item)
+  },
   unset({ commit }) {
     commit('unset')
   },

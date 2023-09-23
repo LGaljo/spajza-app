@@ -14,23 +14,30 @@
     </b-row>
     <b-row>
       <b-col cols="12" class="mt-2">
-        <h3>Dodane predloge po kategorijah</h3>
+        <h3>Predloge po kategorijah</h3>
       </b-col>
-      <template v-if="filterCategories.length > 0">
-        <b-col
-          v-for="category of filterCategories"
-          :key="category._id"
-          cols="3"
-          class="mb-3"
+      <b-col v-if="filterCategories.length > 0">
+        <b-card-group deck
         >
           <b-card
-            :title="category.name"
-            :img-src="category.url"
+            v-for="category of filterCategories"
+            :key="category._id"
+            :img-src="category.templateImage.Location"
+            class="mb-3"
           >
-            <b-button @click="remove(category)" variant="primary">Odstrani predlogo</b-button>
+            <b-card-title class="h-100">
+              <div class="d-flex h-100">
+                <div class="align-self-end">
+                  {{ category.name }}
+                </div>
+              </div>
+            </b-card-title>
+            <template #footer>
+              <b-button @click="remove(category)" variant="primary">Odstrani predlogo</b-button>
+            </template>
           </b-card>
-        </b-col>
-      </template>
+        </b-card-group>
+      </b-col>
       <b-col v-else cols="12">
         <div>Ni dodanih predlog</div>
       </b-col>
@@ -74,7 +81,7 @@
 </template>
 
 <script>
-import {mapGetters} from "vuex";
+import {mapActions, mapGetters} from "vuex";
 import ModalDialog from "~/components/modals/ModalDialog.vue";
 
 export default {
@@ -89,10 +96,10 @@ export default {
   },
   computed: {
     ...mapGetters({
-      categories: 'categories/get'
+      categories: 'categories/getList'
     }),
     filterCategories() {
-      return this.categories.filter((c) => !!c.url)
+      return this.categories.filter((c) => !!c.templateImage)
     }
   },
   watch: {
@@ -103,52 +110,54 @@ export default {
     }
   },
   async created() {
-    await this.$store.dispatch('categories/fetch');
+    await this.fetch();
   },
   methods: {
+    ...mapActions({
+      fetch: 'categories/fetch',
+    }),
     async remove(category) {
-      // TODO: remove image
-      // await this.$store.dispatch('categories/update', category._id);
-      // await this.$store.dispatch('categories/fetch');
-    },
-    update(category) {
-      this.selectedCategory = category?.name;
-      this.id = category?._id;
+      await this.$axios.$post(`/categories/remove_file/${category._id}`)
+        .then(() => {
+          this.$toast.success(`Predloga uspešno izbrisana`, {duration: 3000});
+        })
+        .catch((err) => {
+          console.error(err)
+          this.$toast.error('Napaka pri dodajanju predloge', {duration: 3000});
+        })
+        .finally(async () => (await this.fetch()))
     },
     openAddTemplate() {
+      this.selectedCategory = null;
+      this.templateImage = null;
       this.$refs.addTemplate.open()
     },
-    addTemplate() {
-      this.$refs.addTemplate.close()
-    },
-    async addUpdate() {
-      if (!this.category) {
+    async addTemplate() {
+      if (!this.selectedCategory) {
         this.$toast.error('Polje ne sme biti prazno', {duration: 3000});
+        return
+      }
+      if (!this.templateImage) {
+        this.$toast.error('Izberi sliko', {duration: 3000});
+        return
       }
 
-      if (this.id) {
-        this.$axios.$post(`/categories/${this.id}`, {name: this.category})
-          .then(async res => {
-            this.$toast.success(`Obdobje "${this.category}" uspešno posodobljeno`, {duration: 3000});
-            this.category = null;
-            await this.$store.dispatch('categories/fetch');
-          })
-          .catch(res => {
-            console.error(res)
-            this.$toast.error('Napaka pri posodabljanju obdobja', {duration: 3000});
-          })
-      } else {
-        this.$axios.$post(`/categories`, {name: this.category})
-          .then(async res => {
-            this.$toast.success(`Obdobje "${this.category}" uspešno dodano`, {duration: 3000});
-            this.category = null;
-            await this.$store.dispatch('categories/fetch');
-          })
-          .catch(res => {
-            console.error(res)
-            this.$toast.error('Napaka pri dodajanje obdobja', {duration: 3000});
-          })
-      }
+      const formData = new FormData();
+      formData.append('file', this.templateImage);
+
+      await this.$axios.$post(`/categories/file/${this.selectedCategory}`, formData)
+        .then(() => {
+          this.$toast.success(`Predloga uspešno dodana`, {duration: 3000});
+        })
+        .catch((err) => {
+          console.error(err)
+          this.$toast.error('Napaka pri dodajanju predloge', {duration: 3000});
+        })
+        .finally(() => {
+          this.fetch()
+          this.category = null
+          this.$refs.addTemplate.close()
+        })
     }
   }
 }

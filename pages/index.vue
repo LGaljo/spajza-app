@@ -168,7 +168,7 @@ export default {
   },
   computed: {
     ...mapGetters({
-      categories: 'categories/get',
+      categories: 'categories/getList',
       tags: 'tags/get',
     })
   },

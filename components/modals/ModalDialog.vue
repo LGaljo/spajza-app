@@ -1,5 +1,5 @@
 <template>
-  <b-modal ref="dialog" :title="title" :size="size">
+  <b-modal ref="dialog" :title="title" :size="size" @hidden="$emit('close')">
     <div :slot="'default'">
       <slot name="body"></slot>
     </div>
@@ -60,6 +60,7 @@ export default {
     },
     close() {
       this.$refs.dialog.hide()
+      this.$emit('close')
     },
     onFirst() {
       this.$emit('first')

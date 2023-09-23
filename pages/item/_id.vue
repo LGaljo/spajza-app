@@ -74,14 +74,18 @@ export default {
   },
   async created() {
     await this.fetchItem(this.$route.params.id)
-    await this.fetchTracing(this.$route.params.id)
+    await Promise.all([
+      await this.fetchCategory(this.item?.category?._id),
+      await this.fetchTracing(this.$route.params.id)
+    ])
   },
   methods: {
     ...mapActions({
       fetchItem: 'item/fetch',
       removeItem: 'item/remove',
       returnItem: 'item/returnItem',
-      fetchTracing: 'tracing/fetch'
+      fetchTracing: 'tracing/fetch',
+      fetchCategory: 'categories/fetchOne',
     }),
     async deleteItem() {
       await this.removeItem(this.item._id)

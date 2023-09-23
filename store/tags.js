@@ -30,16 +30,24 @@ export const actions = {
     this.$axios.$get(`/tags`, { params: filters })
       .then(res => {
         commit('set', res)
+        return Promise.resolve(res)
       })
       .catch(res => {
         console.error(res)
+        this.$toast.error('Napaka pri pridobivanju značk', { duration: 2500 })
+        return Promise.reject(res)
       })
   },
   async remove({ commit }, id) {
     this.$axios.$delete(`/tags/${id}`)
-      .then(res => {})
+      .then(res => {
+        this.$toast.success('Značka izbrisana', { duration: 2500 })
+        return Promise.resolve(res)
+      })
       .catch(res => {
         console.error(res)
+        this.$toast.error('Napaka pri brisanju', { duration: 2500 })
+        return Promise.reject(res)
       })
   },
   unset({ commit }) {
