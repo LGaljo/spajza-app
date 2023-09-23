@@ -1,5 +1,5 @@
 <template>
-  <b-modal ref="dialog" :title="title" :size="size">
+  <b-modal ref="dialog" :title="title" :size="size" @hidden="$emit('close')">
     <div :slot="'default'">
       <slot name="body"></slot>
     </div>
@@ -8,12 +8,14 @@
         v-if="action"
         variant="success"
         @click="onFirst"
+        :disabled="disableAction"
       >
         {{ action }}
       </b-button>
       <b-button
         v-if="secAction"
         @click="onSecond"
+        :disabled="disableSecAction"
       >
         {{ secAction }}
       </b-button>
@@ -37,8 +39,16 @@ export default {
     action: {
       type: String,
     },
+    disableAction: {
+      type: Boolean,
+      default: false,
+    },
     secAction: {
       type: String,
+    },
+    disableSecAction: {
+      type: Boolean,
+      default: false,
     },
     size: {
       type: String,
@@ -50,6 +60,7 @@ export default {
     },
     close() {
       this.$refs.dialog.hide()
+      this.$emit('close')
     },
     onFirst() {
       this.$emit('first')

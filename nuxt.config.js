@@ -18,6 +18,7 @@ export default {
 
   env: {
     TENT_ID: '61ed89c91ee6e6c74ee985d5',
+    NO_IMAGE: 'https://spajza-bucket.s3.eu-central-1.amazonaws.com/item/nopicture.png',
     ...CONFIG
   },
 

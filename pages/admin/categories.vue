@@ -37,7 +37,7 @@
           <tr v-for="object of categories">
             <td>{{object.name}}</td>
             <td class="text-right">
-              <b @click="remove(object)" class="text-danger cursor-pointer mr-2">Izbriši</b>
+              <b @click="removeCategory(object)" class="text-danger cursor-pointer mr-2">Izbriši</b>
               <b @click="update(object)" class="text-info cursor-pointer">Uredi</b>
             </td>
           </tr>
@@ -52,7 +52,7 @@
 </template>
 
 <script>
-import {mapGetters} from "vuex";
+import {mapActions, mapGetters} from "vuex";
 
 export default {
   name: "categories",
@@ -64,7 +64,7 @@ export default {
   },
   computed: {
     ...mapGetters({
-      categories: 'categories/get'
+      categories: 'categories/getList'
     })
   },
   watch: {
@@ -78,9 +78,13 @@ export default {
     await this.$store.dispatch('categories/fetch');
   },
   methods: {
-    async remove(category) {
-      await this.$store.dispatch('categories/remove', category._id);
-      await this.$store.dispatch('categories/fetch');
+    ...mapActions({
+      remove: 'categories/remove',
+      fetch: 'categories/fetch',
+    }),
+    async removeCategory(category) {
+      await this.remove(category._id);
+      await this.fetch();
     },
     update(category) {
       this.category = category?.name;

@@ -55,7 +55,7 @@
 </template>
 
 <script>
-import { mapMutations, mapActions } from "vuex";
+import { mapActions } from "vuex";
 
 export default {
   name: "login",
@@ -72,40 +72,30 @@ export default {
     }
   },
   methods: {
-    ...mapMutations(["user/setUser", "user/setToken"]),
-    ...mapActions(["user/fetchUser", "user/unsetUser"]),
+    ...mapActions({
+      login: 'user/login'
+    }),
     async onSubmit() {
       this.loading = true
-
-      await this.$axios.$post('/auth/login', this.form)
-      .then(async res => {
-        if (res?.success) {
-          localStorage.setItem('jwt', res?.data?.access_token)
-          localStorage.setItem('userId', res?.data?.userId)
-          await this.$store.commit('user/setToken', res?.data?.access_token)
-          await this.$store.dispatch('user/fetchUser', res?.data?.userId)
-          await this.$router.push("/")
-        } else if (!res?.success && res?.reason === 'UNAPPROVED') {
-          this.resend_act = res?.userId
-          this.error = "Uporabnik še ni aktiviran. Najdi email s povezavo."
-        }
-      })
-      .catch(reason => {
-        console.error(reason)
-        this.error = "Napačni prijavni podatki"
-        this.resend_act = null;
-        this.$toast.error("Napaka pri prijavi", { duration: 3000 })
-      })
-
+      await this.login(this.form)
+        .then(async (res) => {
+          this.error = res?.error
+          this.resend_act = res?.resend_act
+          await this.$router.replace("/")
+        })
+        .catch((err) => {
+          this.error = err?.error
+          this.resend_act = err?.resend_act
+        })
       this.loading = false
     },
     async resendActivation() {
       await this.$axios.$post('/auth/resend-verification', { userId: this.resend_act})
-        .then(res => {
+        .then(() => {
           this.$toast.success("Zahteva uspešno poslana", { duration: 3000 })
         })
-        .catch(reason => {
-          console.error(reason)
+        .catch(err => {
+          console.error(err)
           this.$toast.error("Napaka pri zahtevi", { duration: 3000 })
         })
     }  }

@@ -1,6 +1,7 @@
 <template>
   <div>
     <b-form class="w-100" @submit.prevent="onSubmit">
+      <!-- Ime predmeta  -->
       <b-form-group
         id="input-group-1"
         label="Ime predmeta"
@@ -24,7 +25,7 @@
         <b-form-file
           v-model="cover.file"
           id="image"
-          accept="image/*"
+          accept="image/jpeg, image/png"
           :state="Boolean(cover.file)"
           placeholder="Izberi ali spusti datoteko..."
           drop-placeholder="Spusti datoteko..."
@@ -37,6 +38,7 @@
         <b-img v-if="cover.path" :src="cover.path" fluid alt="image" class="w-50"></b-img>
       </b-form-group>
 
+      <!-- Kategorija -->
       <b-form-group
         id="input-group-2"
         label="Kategorija"
@@ -55,6 +57,7 @@
         </b-form-select>
       </b-form-group>
 
+      <!-- Značke -->
       <b-form-group
         id="input-group-3"
         label="Značke"
@@ -68,7 +71,7 @@
         >
           <b-form-select-option
             :value="null"
-            disabled>
+          >
             -- Izberi značke (neobvezno) --
           </b-form-select-option>
         </b-form-select>
@@ -95,6 +98,7 @@
         </b-form-select>
       </b-form-group>
 
+      <!-- Čas pridobitve  -->
       <b-form-group
         id="input-group-4"
         label="Čas pridobitve"
@@ -109,6 +113,7 @@
         <b-badge pill @click="setCurrentTime">Nastavi danes</b-badge>
       </b-form-group>
 
+      <!-- Število kosov  -->
       <b-form-group
         id="input-group-5"
         label="Število kosov"
@@ -125,10 +130,11 @@
         />
       </b-form-group>
 
+      <!-- Lokacija  -->
       <b-form-group
         id="input-group-5"
         label="Lokacija"
-        label-for="boughtTime"
+        label-for="location"
       >
         <b-form-input
           type="text"
@@ -139,6 +145,7 @@
         />
       </b-form-group>
 
+      <!-- Lastnik  -->
       <b-form-group
         id="input-group-6"
         label="Lastnik"
@@ -153,6 +160,7 @@
         />
       </b-form-group>
 
+      <!-- Opis  -->
       <b-form-group
         label="Opis"
         label-for="description"
@@ -167,7 +175,7 @@
       </b-form-group>
 
       <b-button type="submit" class="btn-primary">
-        {{ id ? 'Shrani' : 'Dodaj' }}
+        {{ $route.params.id ? 'Shrani' : 'Dodaj' }}
         <b-spinner v-if="loading" variant="light" small />
       </b-button>
     </b-form>
@@ -175,18 +183,12 @@
 </template>
 
 <script>
-import {mapGetters} from "vuex";
+import {mapActions, mapGetters} from "vuex";
 import status from "@/mixins/status";
 import {DateTime} from "luxon";
 
 export default {
   mixins: [status],
-  props: {
-    id: {
-      type: String,
-      default: null
-    }
-  },
   data() {
     return {
       form: {
@@ -220,7 +222,8 @@ export default {
   },
   computed: {
     ...mapGetters({
-      categories: 'categories/get',
+      item: 'item/get',
+      categories: 'categories/getList',
       optionsCats: 'categories/getOptions',
       tags: 'tags/get',
       optionsTags: 'tags/getOptions',
@@ -231,34 +234,30 @@ export default {
     await this.$store.dispatch('categories/fetch');
     await this.$store.dispatch('tags/fetch');
 
-    if (this.id) {
-      await this.getItem()
+    if (this.$route.params.id) {
+      this.fetchItem(this.$route.params.id)
+        .then(() => {
+          this.form = {
+            ...this.item,
+            tags: this.item?.tags?.map(t => t?._id),
+            boughtTime: DateTime.fromISO(this.item?.boughtTime).toFormat(`yyyy-MM-dd'T'hh:mm`),
+            categoryId: this.item?.category?._id,
+            category: this.item?.category?.name
+          }
+          this.cover.path = this.item?.cover?.Location
+        })
+        .catch(err => {
+          console.error(err)
+          this.$toast.error('Napaka pri pridobivanju podatkov', { duration: 10000 });
+        })
     }
   },
   methods: {
+    ...mapActions({
+      fetchItem: 'item/fetch',
+    }),
     setCurrentTime() {
-      this.form.boughtTime = DateTime.now().toFormat('yyyy-MM-dd') + "T" + DateTime.now().toFormat('hh:mm')
-    },
-    async getItem() {
-      await this.$axios.$get(`/inventory/${this.$route.params.id}`)
-        .then(res => {
-          this.form.name = res.name
-          this.form.category = res?.category?.name
-          this.form.categoryId = res?.category?._id
-          this.form.tags = res.tags?.map(t => t._id)
-          this.form.count = res.count || null
-          this.cover.path = res.cover ? res.cover.Location : null
-          this.form.description = res.description || null
-          this.form.location = res.location || null
-          this.form.boughtTime = DateTime.fromISO(res.boughtTime).toFormat('yyyy-MM-dd') +
-            "T" + DateTime.fromISO(res.boughtTime).toFormat('hh:mm')
-          this.form.owner = res.owner || null
-          this.form.status = res.status || null
-        })
-        .catch(res => {
-          console.error(res)
-          this.$toast.error('Napaka pri pridobivanju podatkov', { duration: 10000 });
-        })
+      this.form.boughtTime = DateTime.fromISO(this.item?.boughtTime).toFormat(`yyyy-MM-dd'T'hh:mm`)
     },
     async onSubmit() {
       this.loading = true;
@@ -271,18 +270,18 @@ export default {
         return;
       }
 
-      if (this.id) {
-        this.$axios.$put(`/inventory/${this.id}`, {
+      if (this.$route.params.id) {
+        this.$axios.$put(`/inventory/${this.$route.params.id}`, {
           ...this.form,
           category: this.form.categoryId,
           boughtTime: new Date(this.form.boughtTime),
         })
           .then(async (res) => {
             if (this.cover.file) {
-              await this.uploadImage(this.id);
+              await this.uploadImage(this.$route.params.id);
             }
             this.$toast.success(`Predmet "${this.form.name}" uspešno posodobljen`, {duration: 2000});
-            await this.$router.replace(`/item/${this.id}`)
+            await this.$router.replace(`/item/${this.$route.params.id}`)
           })
           .catch(rej => {
             console.error(rej);
