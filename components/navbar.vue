@@ -70,7 +70,7 @@ export default {
   },
   async mounted() {
     if (localStorage.getItem('userId')) {
-      await this.$store.dispatch('user/fetchUser', localStorage.getItem('userId'));
+      await this.fetchUser(localStorage.getItem('userId'))
     }
   },
   computed: {
@@ -81,13 +81,16 @@ export default {
       isApproved: 'user/isApproved',
       isNormalUser: 'user/isNormalUser',
     }),
-    ...mapActions(['user/unsetUser', 'user/fetchUser'])
   },
   methods: {
+    ...mapActions({
+      unsetUser: 'user/unsetUser',
+      fetchUser: 'user/fetchUser'
+    }),
     async logout() {
       localStorage.removeItem('jwt');
       localStorage.removeItem('userId');
-      await this.$store.dispatch('user/unsetUser');
+      await this.unsetUser();
       await this.$router.replace('/login')
     }
   }

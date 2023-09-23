@@ -96,7 +96,7 @@ export default {
       isNormalUser: 'user/isNormalUser',
     }),
     itemCover() {
-      return this.value.cover ? this.value.cover.Location : 'https://spajza-bucket.s3.eu-central-1.amazonaws.com/item/nopicture.png'
+      return this.value.cover ? this.value.cover.Location : process.env.NO_IMAGE
     },
     isTent() {
       return this.value?.category?._id === process.env.TENT_ID
@@ -108,9 +108,6 @@ export default {
     },
     rentItem() {
       this.$emit('onRentItem')
-    },
-    updateItem() {
-      this.$emit('updateItem')
     },
   }
 }

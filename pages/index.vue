@@ -56,20 +56,17 @@
       </b-col>
     </b-row>
 
-    <!-- Sidebar filters -->
     <b-row>
+      <!-- Sidebar filters -->
       <sidebar
         class="px-md-0 col-md-2 col-12 mb-3"
         :filters="filters"
         @change="onFilterChange"
         v-model="selected"
       />
-      <div class="col-md-10 col-12">
-        <RentDialog
-          ref="dialog"
-          @onRented="onItemRented"
-        />
 
+      <!-- List -->
+      <div class="col-md-10 col-12">
         <nuxt-link
           v-for="item of items"
           :to="`/item/${item._id}`" class="size"
@@ -82,19 +79,18 @@
           />
         </nuxt-link>
 
-        <client-only>
-          <infinite-loading
-            spinner="spiral"
-            @infinite="onInfiniteLoad"
-            :identifier="infiniteId"
-          >
-            <div slot="no-more">Konec seznama</div>
-            <div slot="no-results">No results message</div>
-          </infinite-loading>
-        </client-only>
-
+        <infinite-loading
+          spinner="spiral"
+          @infinite="onInfiniteLoad"
+          :identifier="infiniteId"
+        >
+          <div slot="no-more">Konec seznama</div>
+          <div slot="no-results">Ni rezultatov iskanja</div>
+        </infinite-loading>
       </div>
     </b-row>
+
+    <RentDialog ref="dialog" />
   </b-container>
 </template>
 
@@ -207,7 +203,7 @@ export default {
       await this.$router.push(`/item/${item._id}`)
     },
     async onFilterChange() {
-      console.log('changed')
+      // console.log('changed')
       this.resetInfLoader();
       const query = {};
       if (this.selected.category) query['category'] = this.selected.category
@@ -236,10 +232,6 @@ export default {
     onRentItem(item) {
       this.$refs.dialog.open(item);
     },
-    onItemRented(item) {
-      this.items.find(i => i._id === item._id).status = "BORROWED"
-      this.$toast.success(`${item.name} uspešno izposojen`, { duration: 3000 });
-    },
     resetInfLoader() {
       this.infiniteId++;
       this.items = [];
@@ -265,6 +257,8 @@ export default {
       this.selected.statuses = this.$route.query.statuses.split(',')
       this.filters.statuses.visible = true;
     }
+    this.sort.dir = this.$route.query?.dir ?? 'asc';
+    this.sort.field = this.$route.query?.name ?? 'name';
   }
 }
 </script>

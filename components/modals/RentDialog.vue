@@ -98,6 +98,7 @@
 
 <script>
 import {DateTime} from "luxon";
+import {mapActions} from "vuex";
 
 export default {
   props: {},
@@ -117,17 +118,14 @@ export default {
     this.form.returnTime = DateTime.now().plus({days: 14}).toFormat("yyyy-MM-dd")
   },
   methods: {
+    ...mapActions({
+      borrow: 'item/rent',
+    }),
     getValidationState({dirty, validated, valid = null}) {
       return dirty || validated ? valid : null;
     },
     async onSubmit() {
-      this.$axios.$post(`/rents/borrow/${this.item._id}`, this.form)
-        .then(async res => {
-          this.$emit('onRented', res)
-        })
-        .catch(reason => {
-          console.error(reason)
-        })
+      await this.borrow();
       this.close();
     },
     async onReset() {
