@@ -110,7 +110,7 @@
           class="form-control"
           id="boughtTime"
         />
-        <b-badge pill @click="setCurrentTime" class="fake-button">Nastavi danes</b-badge>
+        <b-badge pill @click="setCurrentTime" href="#">Nastavi danes</b-badge>
       </b-form-group>
 
       <!-- Število kosov  -->
@@ -258,7 +258,6 @@ export default {
     }),
     setCurrentTime() {
       this.form.boughtTime = DateTime.now().toFormat(`yyyy-MM-dd'T'hh:mm`)
-      console.log('set time', this.form.boughtTime)
     },
     async onSubmit() {
       this.loading = true;
