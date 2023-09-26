@@ -280,11 +280,6 @@ export default {
   }
 }
 
-.fake-button:hover {
-  background: #dcdee1;
-  cursor: pointer;
-}
-
 a {
   color: #212529;
 }

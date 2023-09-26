@@ -110,7 +110,7 @@
           class="form-control"
           id="boughtTime"
         />
-        <b-badge pill @click="setCurrentTime">Nastavi danes</b-badge>
+        <b-badge pill @click="setCurrentTime" class="fake-button">Nastavi danes</b-badge>
       </b-form-group>
 
       <!-- Število kosov  -->
@@ -198,7 +198,7 @@ export default {
         count: 1,
         description: '',
         location: 'Plac',
-        boughtTime: null,
+        boughtTime: DateTime.now().toFormat(`yyyy-MM-dd'T'hh:mm`),
         owner: 'RZS',
         status: 'NEW'
       },
@@ -257,7 +257,8 @@ export default {
       fetchItem: 'item/fetch',
     }),
     setCurrentTime() {
-      this.form.boughtTime = DateTime.fromISO(this.item?.boughtTime).toFormat(`yyyy-MM-dd'T'hh:mm`)
+      this.form.boughtTime = DateTime.now().toFormat(`yyyy-MM-dd'T'hh:mm`)
+      console.log('set time', this.form.boughtTime)
     },
     async onSubmit() {
       this.loading = true;
