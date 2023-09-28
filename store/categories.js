@@ -34,7 +34,7 @@ export const getters = {
 
 export const actions = {
   async fetchOne({ commit }, id) {
-    this.$axios.$get(`/categories/${id}`)
+    await this.$axios.$get(`/categories/${id}`)
       .then(res => {
         commit('setOne', res)
         return Promise.resolve(res)
@@ -46,7 +46,7 @@ export const actions = {
       })
   },
   async fetch({ commit }, filters) {
-    this.$axios.$get(`/categories`, {
+    await this.$axios.$get(`/categories`, {
       params: {
         ...filters
       }

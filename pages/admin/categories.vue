@@ -75,7 +75,7 @@ export default {
     }
   },
   async created() {
-    await this.$store.dispatch('categories/fetch');
+    await this.fetch();
   },
   methods: {
     ...mapActions({
