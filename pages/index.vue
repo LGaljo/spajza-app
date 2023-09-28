@@ -108,8 +108,8 @@ export default {
   data() {
     return {
       sort: {
-        field: 'name',
-        dir: 'asc',
+        field: '_updatedAt',
+        dir: 'desc',
         options: [
           { text: 'Ime predmeta', value: 'name' },
           { text: 'Čas zadnje posodobitve', value: '_updatedAt' },
