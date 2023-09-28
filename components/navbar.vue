@@ -12,30 +12,39 @@
       <template #button-content>
         <span class="mr-2">Meni</span>
       </template>
-      <b-dropdown-item v-if="isApproved" class="text-body" :to="`/wishlist`">
-        Seznam želja
-      </b-dropdown-item>
-      <b-dropdown-divider></b-dropdown-divider>
-      <b-dropdown-item v-if="isAdmin || isKeeper"  class="text-body" :to="`/admin/add`">
-        Dodaj
-      </b-dropdown-item>
-      <b-dropdown-item v-if="isAdmin || isKeeper" class="text-body" :to="`/admin/import`">
-        Uvozi
-      </b-dropdown-item>
-      <b-dropdown-divider></b-dropdown-divider>
-      <b-dropdown-item v-if="isAdmin" class="text-body" :to="`/admin/tags`">
-        Značke
-      </b-dropdown-item>
-      <b-dropdown-item v-if="isAdmin" class="text-body" :to="`/admin/categories`">
-        Kategorije
-      </b-dropdown-item>
-      <b-dropdown-item v-if="isAdmin" class="text-body" :to="`/admin/templates`">
-        Predloge slik kategorij
-      </b-dropdown-item>
-      <b-dropdown-item v-if="isAdmin" class="text-body" :to="`/admin/users`">
-        Uporabniki
-      </b-dropdown-item>
-      <b-dropdown-divider></b-dropdown-divider>
+      <template v-if="isApproved">
+        <b-dropdown-item class="text-body" :to="`/wishlist`">
+          Seznam želja
+        </b-dropdown-item>
+        <b-dropdown-divider></b-dropdown-divider>
+      </template>
+
+      <template v-if="isAdmin || isKeeper">
+        <b-dropdown-item  class="text-body" :to="`/admin/add`">
+          Dodaj
+        </b-dropdown-item>
+        <b-dropdown-item class="text-body" :to="`/admin/import`">
+          Uvozi
+        </b-dropdown-item>
+        <b-dropdown-divider></b-dropdown-divider>
+      </template>
+
+      <template v-if="isAdmin">
+        <b-dropdown-item v-if="isAdmin" class="text-body" :to="`/admin/tags`">
+          Značke
+        </b-dropdown-item>
+        <b-dropdown-item v-if="isAdmin" class="text-body" :to="`/admin/categories`">
+          Kategorije
+        </b-dropdown-item>
+        <b-dropdown-item v-if="isAdmin" class="text-body" :to="`/admin/templates`">
+          Predloge slik kategorij
+        </b-dropdown-item>
+        <b-dropdown-item v-if="isAdmin" class="text-body" :to="`/admin/users`">
+          Uporabniki
+        </b-dropdown-item>
+        <b-dropdown-divider></b-dropdown-divider>
+      </template>
+
       <b-dropdown-item class="text-body" :to="`/profile`">
         Profil
       </b-dropdown-item>

@@ -132,7 +132,7 @@ export default {
           values: [],
           nameKey: 'name',
           valueKey: '_id',
-          visible: false,
+          visible: true,
           type: 'single',
         },
         tags: {
