@@ -257,8 +257,8 @@ export default {
       this.selected.statuses = this.$route.query.statuses.split(',')
       this.filters.statuses.visible = true;
     }
-    this.sort.dir = this.$route.query?.dir ?? 'asc';
-    this.sort.field = this.$route.query?.name ?? 'name';
+    this.sort.dir = this.$route.query?.dir ?? 'desc';
+    this.sort.field = this.$route.query?.name ?? '_updatedAt';
   }
 }
 </script>
