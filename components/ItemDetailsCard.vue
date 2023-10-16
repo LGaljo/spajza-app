@@ -1,7 +1,7 @@
 <template>
   <div class="modal-fullscr">
     <b-card>
-      <template #header>
+      <template #header v-if="item">
         <div class="d-flex w-100 flex-wrap justify-content-start">
           <b-button
             variant="primary"
@@ -28,8 +28,8 @@
           </b-dropdown>
         </div>
       </template>
-      <b-card-body class="p-0">
-        <b-badge v-if="item.category" variant="primary" class="p-2 mb-2">{{ item.category.name }}</b-badge>
+      <b-card-body class="p-0" v-if="item">
+        <b-badge v-if="item && item.category" variant="primary" class="p-2 mb-2">{{ item.category.name }}</b-badge>
         <b-card-title>
           {{ item.name }}
         </b-card-title>
@@ -37,7 +37,12 @@
         <b-badge v-if="item.status" :variant="getVariantForStatus(item.status)" class="my-1">{{ getNameForStatus(item.status) }}</b-badge>
         <b-badge v-if="item.extras && item.extras.defects" :variant="'danger'" class="my-1">Šotor z defekti</b-badge>
 
-        <b-card-img-lazy :src="itemCover" alt="Image" class="rounded-0 mt-1"/>
+        <div v-if="item.cover && item.cover.length">
+          <b-card-img-lazy v-for="im in item.cover" :src="im.Location" :key="im.key" alt="Image" class="rounded-0 mt-1"/>
+        </div>
+        <div v-else>
+          <b-card-img-lazy :src="noImage" alt="Image" class="rounded-0 mt-1"/>
+        </div>
 
         <div v-if="item.description" class="mb-4">
           <span>{{ item.description }}</span>
@@ -74,7 +79,7 @@ import datetime from "~/mixins/datetime";
 import ModalDialog from "./modals/ModalDialog";
 
 export default {
-  name: "ItemCard",
+  name: "ItemDetailsCard",
   mixins: [status, datetime],
   components: { ModalDialog },
   data() {
@@ -91,7 +96,10 @@ export default {
       isNormalUser: 'user/isNormalUser',
     }),
     itemCover() {
-      return this.item.cover ? this.item.cover.Location : process.env.NO_IMAGE
+      return this.item?.cover?.length ?? process.env.NO_IMAGE
+    },
+    noImage() {
+      return process.env.NO_IMAGE;
     },
     hasTemplateImage() {
       return !!this.category?.templateImage

@@ -78,7 +78,7 @@ export default {
   mixins: [status, datetime],
   computed: {
     itemCover() {
-      return this.item.cover ? this.item.cover.Location : 'https://spajza-bucket.s3.eu-central-1.amazonaws.com/item/nopicture.png'
+      return this.item?.cover?.length ? this.item?.cover[0]?.Location : process.env.NO_IMAGE
     },
   },
   methods: {

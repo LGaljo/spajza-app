@@ -3,8 +3,6 @@
     <b-row>
       <b-col offset-md="2" md="8" cols="12" class=" my-3">
         <ItemDetailsCard
-          v-if="item"
-          v-model="item"
           @delete="$refs.deleteDialog.open()"
           @onRentItem="$refs.dialog.open(item)"
         />
@@ -72,12 +70,10 @@ export default {
       isNormalUser: 'user/isNormalUser',
     }),
   },
-  async created() {
+  async mounted() {
     await this.fetchItem(this.$route.params.id)
-    await Promise.all([
-      await this.fetchCategory(this.item?.category?._id),
-      await this.fetchTracing(this.$route.params.id)
-    ])
+    await this.fetchCategory(this.item?.category?._id)
+    await this.fetchTracing(this.$route.params.id)
   },
   methods: {
     ...mapActions({

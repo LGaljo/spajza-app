@@ -28,7 +28,7 @@ export const setter = {
 
 export const actions = {
   async fetch({ commit }) {
-    this.$axios.$get(`/wishlist`)
+    return await this.$axios.$get(`/wishlist`)
       .then(res => {
         commit('set', res)
       })
@@ -37,7 +37,7 @@ export const actions = {
       })
   },
   async addItem({ commit, state }, item) {
-    this.$axios.$post(`/wishlist`, { name: item, order: state.items.length + 1 })
+    return await this.$axios.$post(`/wishlist`, { name: item, order: state.items.length + 1 })
       .then(res => {
         commit('add', res)
       })
