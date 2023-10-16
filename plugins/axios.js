@@ -16,7 +16,7 @@ const responseInterceptor = app => {
   app.$axios.interceptors.response.use(
     config => config,
     async error => {
-      if (error.response.status === 401) {
+      if ([401, 403].includes(error.response.status)) {
         localStorage.removeItem('jwt')
         await app.store.dispatch('user/unsetUser')
         await app.router.replace('/login')

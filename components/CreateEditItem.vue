@@ -110,7 +110,7 @@
           class="form-control"
           id="boughtTime"
         />
-        <b-badge pill @click="setCurrentTime">Nastavi danes</b-badge>
+        <b-badge pill @click="setCurrentTime" href="#">Nastavi danes</b-badge>
       </b-form-group>
 
       <!-- Število kosov  -->
@@ -176,7 +176,7 @@
 
       <b-button type="submit" class="btn-primary">
         {{ $route.params.id ? 'Shrani' : 'Dodaj' }}
-        <b-spinner v-if="loading" variant="light" small />
+        <b-spinner v-if="loading" variant="light" small/>
       </b-button>
     </b-form>
   </div>
@@ -198,7 +198,7 @@ export default {
         count: 1,
         description: '',
         location: 'Plac',
-        boughtTime: null,
+        boughtTime: DateTime.now().toFormat(`yyyy-MM-dd'T'hh:mm`),
         owner: 'RZS',
         status: 'NEW'
       },
@@ -248,7 +248,7 @@ export default {
         })
         .catch(err => {
           console.error(err)
-          this.$toast.error('Napaka pri pridobivanju podatkov', { duration: 10000 });
+          this.$toast.error('Napaka pri pridobivanju podatkov', {duration: 10000});
         })
     }
   },
@@ -257,7 +257,7 @@ export default {
       fetchItem: 'item/fetch',
     }),
     setCurrentTime() {
-      this.form.boughtTime = DateTime.fromISO(this.item?.boughtTime).toFormat(`yyyy-MM-dd'T'hh:mm`)
+      this.form.boughtTime = DateTime.now().toFormat(`yyyy-MM-dd'T'hh:mm`)
     },
     async onSubmit() {
       this.loading = true;
@@ -267,6 +267,7 @@ export default {
         !this.form.boughtTime
       ) {
         this.$toast.error('Napaka v vnosnih poljih', {duration: 2000});
+        this.loading = false;
         return;
       }
 
@@ -281,11 +282,15 @@ export default {
               await this.uploadImage(this.$route.params.id);
             }
             this.$toast.success(`Predmet "${this.form.name}" uspešno posodobljen`, {duration: 2000});
-            await this.$router.replace(`/item/${this.$route.params.id}`)
+            // await this.$router.replace(`/item/${this.$route.params.id}`)
+            await this.$router.back()
           })
           .catch(rej => {
             console.error(rej);
-          });
+          })
+          .finally(() => {
+            this.loading = false;
+          })
       } else {
         await this.$axios.$post('/inventory', {
             ...this.form,
@@ -298,12 +303,16 @@ export default {
               await this.uploadImage(res._id);
             }
             this.$toast.success(`Predmet "${this.form.name}" uspešno dodan`, {duration: 2000});
+            // await this.$router.back()
             await this.$router.replace(`/item/${res._id}`)
           })
           .catch(rej => {
             console.error(rej);
             this.$toast.error('Napaka pri dodajanju predmeta', {duration: 2000});
-          });
+          })
+          .finally(() => {
+            this.loading = false;
+          })
       }
     },
     async uploadImage(id) {

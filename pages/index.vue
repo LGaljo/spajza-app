@@ -108,8 +108,8 @@ export default {
   data() {
     return {
       sort: {
-        field: 'name',
-        dir: 'asc',
+        field: '_updatedAt',
+        dir: 'desc',
         options: [
           { text: 'Ime predmeta', value: 'name' },
           { text: 'Čas zadnje posodobitve', value: '_updatedAt' },
@@ -132,7 +132,7 @@ export default {
           values: [],
           nameKey: 'name',
           valueKey: '_id',
-          visible: false,
+          visible: true,
           type: 'single',
         },
         tags: {
@@ -257,8 +257,8 @@ export default {
       this.selected.statuses = this.$route.query.statuses.split(',')
       this.filters.statuses.visible = true;
     }
-    this.sort.dir = this.$route.query?.dir ?? 'asc';
-    this.sort.field = this.$route.query?.name ?? 'name';
+    this.sort.dir = this.$route.query?.dir ?? 'desc';
+    this.sort.field = this.$route.query?.name ?? '_updatedAt';
   }
 }
 </script>
@@ -278,11 +278,6 @@ export default {
   .item-card {
     margin-bottom: 16px !important;
   }
-}
-
-.fake-button:hover {
-  background: #dcdee1;
-  cursor: pointer;
 }
 
 a {

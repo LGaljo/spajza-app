@@ -1,7 +1,7 @@
 <template>
   <b-container>
     <b-row>
-      <b-col offset-md="3" md="6" cols="12" class=" my-3">
+      <b-col offset-md="3" md="6" cols="12" class="my-3">
         <h1>Značke</h1>
 
         <!-- ADD NEW -->
@@ -37,11 +37,12 @@
           <tr v-for="object of tags">
             <td>{{ object.name }}</td>
             <td class="text-right">
-              <b @click="remove(object)" class="text-danger cursor-pointer mr-2">Izbriši</b>
+              <b @click="removeTag(object)" class="text-danger cursor-pointer mr-2">Izbriši</b>
               <b @click="update(object)" class="text-info cursor-pointer">Uredi</b>
             </td>
           </tr>
         </table>
+        <div v-if="!tags.length" class="text-center my-4">Ni značk</div>
         <div class="text-muted">Brisana značka ne sme vsebovati predmetov.</div>
       </b-col>
     </b-row>
@@ -50,7 +51,7 @@
 
 <script>
 
-import {mapGetters} from "vuex";
+import {mapActions, mapGetters} from "vuex";
 
 export default {
   name: "tags",
@@ -73,12 +74,16 @@ export default {
     }
   },
   async created() {
-    await this.$store.dispatch('tags/fetch');
+    await this.fetch();
   },
   methods: {
-    async remove(category) {
-      await this.$store.dispatch('tags/remove', category._id);
-      await this.$store.dispatch('tags/fetch');
+    ...mapActions({
+      remove: 'tags/remove',
+      fetch: 'tags/fetch',
+    }),
+    async removeTag(tag) {
+      await this.remove(tag?._id);
+      await this.fetch();
     },
     update(category) {
       this.tag = category?.name;
