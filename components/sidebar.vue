@@ -85,21 +85,21 @@ export default {
   },
   computed: {
     showFilterClear() {
-      return this.value.category || this.value.tags?.length || this.value.statuses?.length
+      return this.value?.category?.length || this.value?.tags?.length || this.value?.statuses?.length
     }
   },
   methods: {
     resetSelected() {
       this.$emit('input', {
-        category: null,
+        category: [],
         tags: [],
         statuses: []
       })
       this.$emit('change')
     },
-    activeCategory(category) {
-      return this.$route.query.category === category._id;
-    },
+    // activeCategory(category) {
+    //   return this.$route.query.category === category._id;
+    // },
   }
 }
 </script>
