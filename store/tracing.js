@@ -19,7 +19,7 @@ export const getters = {
 
 export const actions = {
   async fetch({ commit }, id) {
-    return this.$axios.$get(`/tracing/${id}`)
+    return await this.$axios.$get(`/tracing/${id}`)
       .then(res => {
         commit('set', res)
         return Promise.resolve(res)

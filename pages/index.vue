@@ -122,7 +122,7 @@ export default {
       searchQuery: null,
       viewType: 'cards',
       selected: {
-        category: null,
+        category: [],
         tags: [],
         statuses: [],
       },
@@ -132,8 +132,8 @@ export default {
           values: [],
           nameKey: 'name',
           valueKey: '_id',
-          visible: true,
-          type: 'single',
+          visible: false,
+          type: 'multiple',
         },
         tags: {
           name: 'Značke',
@@ -203,10 +203,9 @@ export default {
       await this.$router.push(`/item/${item._id}`)
     },
     async onFilterChange() {
-      // console.log('changed')
       this.resetInfLoader();
       const query = {};
-      if (this.selected.category) query['category'] = this.selected.category
+      if (this.selected.category.length) query['category'] = this.selected.category
       if (this.selected.tags.length) query['tags'] = this.selected.tags
       if (this.selected.statuses.length) query['statuses'] = this.selected.statuses
       if (this.sort.field) query['sort'] = this.sort.field
@@ -259,6 +258,9 @@ export default {
     }
     this.sort.dir = this.$route.query?.dir ?? 'desc';
     this.sort.field = this.$route.query?.name ?? '_updatedAt';
+    if (window.innerWidth > 767) {
+      this.filters.category.visible = true;
+    }
   }
 }
 </script>

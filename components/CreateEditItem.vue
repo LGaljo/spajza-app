@@ -25,18 +25,35 @@
         <b-form-file
           v-model="cover.file"
           id="image"
+          multiple
           accept="image/jpeg, image/png"
           :state="Boolean(cover.file)"
           placeholder="Izberi ali spusti datoteko..."
           drop-placeholder="Spusti datoteko..."
-        ></b-form-file>
-        <div v-if="cover.path" class="mt-3 d-flex justify-content-between flex-row align-items-center">
-          <div v-if="cover.file">Izbrana slika: {{ cover.file ? cover.file.name : '' }}</div>
-          <a @click="cover = {file: null, path: null}" href="#">Odstrani sliko</a>
-        </div>
-
-        <b-img v-if="cover.path" :src="cover.path" fluid alt="image" class="w-50"></b-img>
+        />
       </b-form-group>
+      <div v-if="cover.path" class="my-3">
+        <div>Izbrane slike:</div>
+        <div class="d-flex flex-row flex-wrap justify-content-center" :key="counter">
+          <div v-for="(im, idx) in cover.path" :key="im.path" class="p-2 d-flex flex-column">
+            <small v-if="im.file && im.file.name" class="mb-1">{{ im.file.name }}</small>
+            <div class="position-relative">
+              <b-btn variant="light" @click="popImage(im)" class="position-absolute" href="#">
+                <b-icon icon="x-circle-fill"></b-icon>
+              </b-btn>
+              <b-btn-group class="position-absolute" style="right: 0">
+                <b-btn :disabled="idx === 0" variant="light" @click="moveUp(im, idx)" class="">
+                  <b-icon icon="arrow-up"></b-icon>
+                </b-btn>
+                <b-btn :disabled="idx === cover.path.length - 1" variant="light" @click="moveDown(im, idx)" class="">
+                  <b-icon icon="arrow-down"></b-icon>
+                </b-btn>
+              </b-btn-group>
+              <b-img :src="im.path" fluid alt="image" width="250"></b-img>
+            </div>
+          </div>
+        </div>
+      </div>
 
       <!-- Kategorija -->
       <b-form-group
@@ -189,6 +206,7 @@ import {DateTime} from "luxon";
 
 export default {
   mixins: [status],
+  name: 'CreateEditItem',
   data() {
     return {
       form: {
@@ -203,10 +221,12 @@ export default {
         status: 'NEW'
       },
       cover: {
-        file: null,
+        file: [],
         path: null
       },
       loading: false,
+      imagesToRemove: [],
+      counter: 0,
     }
   },
   watch: {
@@ -214,7 +234,12 @@ export default {
       deep: true,
       handler() {
         if (this.cover.file) {
-          this.cover.path = URL.createObjectURL(this.cover.file)
+          this.cover.path = [
+            ...this.cover.path,
+            ...this.cover.file.map(f => ({
+              path: URL.createObjectURL(f),
+              file: f,
+            }))]
         }
         this.form.cover = null;
       }
@@ -244,7 +269,14 @@ export default {
             categoryId: this.item?.category?._id,
             category: this.item?.category?.name
           }
-          this.cover.path = this.item?.cover?.Location
+          // this.cover.path = this.item?.cover?.Location
+          this.cover.path = this.item?.cover.map(c => ({
+            path: c?.Location,
+            file: {
+              name: c?.Location.split('/').slice(-1)[0]
+            },
+            obj: c
+          }))
         })
         .catch(err => {
           console.error(err)
@@ -255,9 +287,23 @@ export default {
   methods: {
     ...mapActions({
       fetchItem: 'item/fetch',
+      removeImage: 'item/removeImage',
+      uploadImage: 'item/addImage'
     }),
     setCurrentTime() {
       this.form.boughtTime = DateTime.now().toFormat(`yyyy-MM-dd'T'hh:mm`)
+    },
+    moveUp(im, idx) {
+      const tmp = Object.assign({}, this.cover.path[idx])
+      this.cover.path[idx] = this.cover.path[idx-1]
+      this.cover.path[idx-1] = tmp
+      this.counter++
+    },
+    moveDown(im, idx) {
+      const tmp = Object.assign({}, this.cover.path[idx])
+      this.cover.path[idx] = this.cover.path[idx+1]
+      this.cover.path[idx+1] = tmp
+      this.counter++
     },
     async onSubmit() {
       this.loading = true;
@@ -276,10 +322,21 @@ export default {
           ...this.form,
           category: this.form.categoryId,
           boughtTime: new Date(this.form.boughtTime),
+          cover: this.cover?.path?.map(c => c.obj).filter(c => !!c)
         })
           .then(async (res) => {
-            if (this.cover.file) {
-              await this.uploadImage(this.$route.params.id);
+            if (this.cover.path) {
+              for (const im of this.cover?.path) {
+                // Check if new
+                if (!Object.hasOwn(im, 'obj') && !im?.obj?.key) {
+                  await this.uploadImage({file: im.file, id: this.$route.params.id});
+                }
+              }
+            }
+            if (this.imagesToRemove.length) {
+              for (const im of this.imagesToRemove) {
+                await this.removeImage({key: im, id: this.$route.params.id})
+              }
             }
             this.$toast.success(`Predmet "${this.form.name}" uspešno posodobljen`, {duration: 2000});
             // await this.$router.replace(`/item/${this.$route.params.id}`)
@@ -299,10 +356,15 @@ export default {
           }
         )
           .then(async (res) => {
-            if (this.cover.file && res._id) {
-              await this.uploadImage(res._id);
+            if (this.cover.path && res?._id) {
+              for (const im of this.cover?.path) {
+                // Check if new
+                if (!im?.obj?.key) {
+                  await this.uploadImage({file: im.file, id: res?._id});
+                }
+              }
             }
-            this.$toast.success(`Predmet "${this.form.name}" uspešno dodan`, {duration: 2000});
+            this.$toast.success(`Predmet "${res?.name}" uspešno dodan`, {duration: 2000});
             // await this.$router.back()
             await this.$router.replace(`/item/${res._id}`)
           })
@@ -315,16 +377,11 @@ export default {
           })
       }
     },
-    async uploadImage(id) {
-      const formData = new FormData();
-      formData.append('file', this.cover.file);
-
-      try {
-        await this.$axios.$post(`/inventory/file/${id}`, formData)
-      } catch (reason) {
-        console.error(reason);
-        this.$toast.error('Napaka pri dodajanju slike', {duration: 2000});
+    popImage(im) {
+      if (im?.obj?.key) {
+        this.imagesToRemove.push(im?.obj.key)
       }
+      this.cover.path = this.cover.path.filter(p => p.path !== im.path)
     }
   }
 }

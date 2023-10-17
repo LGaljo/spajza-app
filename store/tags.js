@@ -27,7 +27,7 @@ export const getters = {
 
 export const actions = {
   async fetch({ commit }, filters) {
-    await this.$axios.$get(`/tags`, { params: filters })
+    return await this.$axios.$get(`/tags`, { params: filters })
       .then(res => {
         commit('set', res)
         return Promise.resolve(res)
@@ -39,7 +39,7 @@ export const actions = {
       })
   },
   async remove({ commit }, id) {
-    await this.$axios.$delete(`/tags/${id}`)
+    return await this.$axios.$delete(`/tags/${id}`)
       .then(res => {
         this.$toast.success('Značka izbrisana', { duration: 2500 })
         return Promise.resolve(res)

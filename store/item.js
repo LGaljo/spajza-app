@@ -38,7 +38,7 @@ export const actions = {
   // async fetchAll({ commit }){
   // },
   async fetch({ commit }, id) {
-    return this.$axios.$get(`/inventory/${id}`)
+    return await this.$axios.$get(`/inventory/${id}`)
       .then(res => {
         commit('set', res)
         return Promise.resolve(res)
@@ -50,7 +50,7 @@ export const actions = {
       })
   },
   async update({ commit }, data) {
-    return this.$axios.$put(`/inventory/${data._id}`, data)
+    return await this.$axios.$put(`/inventory/${data._id}`, data)
       .then(res => {
         commit('set', res)
         this.$toast.success(`Predmet uspešno posodobljen`, {duration: 2000});
@@ -62,8 +62,31 @@ export const actions = {
         return Promise.reject(err)
       })
   },
+  async addImage({ commit }, data) {
+    const formData = new FormData();
+    formData.append('file', data.file);
+
+    await this.$axios.$post(`/inventory/file/${data.id}`, formData)
+      .then((res) => (Promise.resolve(res)))
+      .catch(err => {
+        console.error(err)
+        this.$toast.error('Napaka pri dodajanju slike', {duration: 2000});
+        Promise.reject(err)
+      })
+  },
+  async removeImage({ commit }, data) {
+    await this.$axios.$delete(`/inventory/file/${data.id}`, {
+      params: { key: data.key }
+    })
+      .then((res) => (Promise.resolve(res)))
+      .catch(err => {
+        console.error(err)
+        this.$toast.error('Napaka pri brisanju slike', {duration: 2000});
+        Promise.reject(err)
+      })
+  },
   async remove({ commit }, id) {
-    return this.$axios.$delete(`/inventory/${id}`)
+    return await this.$axios.$delete(`/inventory/${id}`)
       .then(res => {
         this.$toast.success(`Predmet uspešno izbrisan`, { duration: 3000 });
         Promise.resolve(res)
@@ -75,7 +98,7 @@ export const actions = {
       })
   },
   async rent({ commit }, id) {
-    return this.$axios.$post(`/rents/borrow/${id}`, this.form)
+    return await this.$axios.$post(`/rents/borrow/${id}`, this.form)
       .then((res) => {
         commit('set', res)
         this.$toast.success(`Predmet uspešno izposojen`, { duration: 3000 });
@@ -86,7 +109,7 @@ export const actions = {
 
   },
   async returnItem({ commit }, id) {
-    return this.$axios.$post(`/rents/return/${_id}`)
+    return await this.$axios.$post(`/rents/return/${_id}`)
       .then(res => {
         commit('set', res)
         this.$toast.success(`Predmet uspešno vrnjen`, { duration: 3000 });
