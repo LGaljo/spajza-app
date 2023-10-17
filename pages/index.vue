@@ -245,7 +245,7 @@ export default {
     this.filters.statuses.values = this.statuses
 
     if (this.$route.query.category) {
-      this.selected.category = this.$route.query.category
+      this.selected.category = this.$route.query.category.split(',')
       this.filters.category.visible = true;
     }
     if (this.$route.query.tags) {
