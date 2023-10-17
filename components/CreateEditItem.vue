@@ -222,7 +222,7 @@ export default {
       },
       cover: {
         file: [],
-        path: null
+        path: []
       },
       loading: false,
       imagesToRemove: [],
@@ -234,6 +234,7 @@ export default {
       deep: true,
       handler() {
         if (this.cover.file) {
+
           this.cover.path = [
             ...this.cover.path,
             ...this.cover.file.map(f => ({
