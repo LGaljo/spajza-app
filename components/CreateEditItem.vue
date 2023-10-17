@@ -271,7 +271,7 @@ export default {
             category: this.item?.category?.name
           }
           // this.cover.path = this.item?.cover?.Location
-          this.cover.path = this.item?.cover.map(c => ({
+          this.cover.path = this.item?.cover?.map(c => ({
             path: c?.Location,
             file: {
               name: c?.Location.split('/').slice(-1)[0]
