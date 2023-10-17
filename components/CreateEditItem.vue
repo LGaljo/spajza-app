@@ -34,13 +34,21 @@
       </b-form-group>
       <div v-if="cover.path" class="my-3">
         <div>Izbrane slike:</div>
-        <div class="d-flex flex-row flex-wrap justify-content-center">
-          <div v-for="im in cover.path" :key="im.path" class="p-2 d-flex flex-column">
+        <div class="d-flex flex-row flex-wrap justify-content-center" :key="counter">
+          <div v-for="(im, idx) in cover.path" :key="im.path" class="p-2 d-flex flex-column">
             <small v-if="im.file && im.file.name" class="mb-1">{{ im.file.name }}</small>
-            <div>
+            <div class="position-relative">
               <b-btn variant="light" @click="popImage(im)" class="position-absolute" href="#">
                 <b-icon icon="x-circle-fill"></b-icon>
               </b-btn>
+              <b-btn-group class="position-absolute" style="right: 0">
+                <b-btn :disabled="idx === 0" variant="light" @click="moveUp(im, idx)" class="">
+                  <b-icon icon="arrow-up"></b-icon>
+                </b-btn>
+                <b-btn :disabled="idx === cover.path.length - 1" variant="light" @click="moveDown(im, idx)" class="">
+                  <b-icon icon="arrow-down"></b-icon>
+                </b-btn>
+              </b-btn-group>
               <b-img :src="im.path" fluid alt="image" width="250"></b-img>
             </div>
           </div>
@@ -218,6 +226,7 @@ export default {
       },
       loading: false,
       imagesToRemove: [],
+      counter: 0,
     }
   },
   watch: {
@@ -266,7 +275,7 @@ export default {
             file: {
               name: c?.Location.split('/').slice(-1)[0]
             },
-            key: c.key,
+            obj: c
           }))
         })
         .catch(err => {
@@ -283,6 +292,18 @@ export default {
     }),
     setCurrentTime() {
       this.form.boughtTime = DateTime.now().toFormat(`yyyy-MM-dd'T'hh:mm`)
+    },
+    moveUp(im, idx) {
+      const tmp = Object.assign({}, this.cover.path[idx])
+      this.cover.path[idx] = this.cover.path[idx-1]
+      this.cover.path[idx-1] = tmp
+      this.counter++
+    },
+    moveDown(im, idx) {
+      const tmp = Object.assign({}, this.cover.path[idx])
+      this.cover.path[idx] = this.cover.path[idx+1]
+      this.cover.path[idx+1] = tmp
+      this.counter++
     },
     async onSubmit() {
       this.loading = true;
@@ -301,12 +322,13 @@ export default {
           ...this.form,
           category: this.form.categoryId,
           boughtTime: new Date(this.form.boughtTime),
+          cover: this.cover?.path?.map(c => c.obj).filter(c => !!c)
         })
           .then(async (res) => {
             if (this.cover.path) {
               for (const im of this.cover?.path) {
                 // Check if new
-                if (!im?.key) {
+                if (!Object.hasOwn(im, 'obj') && !im?.obj?.key) {
                   await this.uploadImage({file: im.file, id: this.$route.params.id});
                 }
               }
@@ -337,7 +359,7 @@ export default {
             if (this.cover.path && res?._id) {
               for (const im of this.cover?.path) {
                 // Check if new
-                if (!im?.key) {
+                if (!im?.obj?.key) {
                   await this.uploadImage({file: im.file, id: res?._id});
                 }
               }
@@ -355,21 +377,9 @@ export default {
           })
       }
     },
-    // async uploadImage(id) {
-    //   const formData = new FormData();
-    //   formData.append('file', this.cover.file);
-    //
-    //   try {
-    //     await this.$axios.$post(`/inventory/file/${id}`, formData)
-    //   } catch (reason) {
-    //     console.error(reason);
-    //     this.$toast.error('Napaka pri dodajanju slike', {duration: 2000});
-    //   }
-    // },
     popImage(im) {
-      if (im?.key) {
-        console.log('from web')
-        this.imagesToRemove.push(im?.key)
+      if (im?.obj?.key) {
+        this.imagesToRemove.push(im?.obj.key)
       }
       this.cover.path = this.cover.path.filter(p => p.path !== im.path)
     }
