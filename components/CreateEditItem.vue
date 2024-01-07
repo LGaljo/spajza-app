@@ -236,7 +236,7 @@ export default {
         if (this.cover.file) {
 
           this.cover.path = [
-            ...this.cover.path,
+            ...this.cover.path ?? [],
             ...this.cover.file.map(f => ({
               path: URL.createObjectURL(f),
               file: f,
