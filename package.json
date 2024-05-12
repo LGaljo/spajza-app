@@ -1,9 +1,9 @@
 {
   "name": "spajza",
-  "version": "1.2.6",
+  "version": "1.2.7",
   "private": true,
   "engines": {
-    "node": "^18.18.0"
+    "node": "^20.13.1"
   },
   "scripts": {
     "dev": "npx cross-env NODE_ENV=development nuxt",
@@ -16,29 +16,30 @@
   "dependencies": {
     "@nuxtjs/axios": "^5.13.6",
     "@nuxtjs/toast": "^3.3.1",
-    "acorn": "^8.8.2",
+    "acorn": "^8.11.3",
     "bootstrap": "^4.6.2",
     "bootstrap-vue": "^2.23.1",
-    "core-js": "^3.30.1",
-    "jsonwebtoken": "^9.0.0",
-    "luxon": "^3.3.0",
-    "nuxt": "^2.17.2",
-    "read-excel-file": "^5.6.1",
-    "uuid": "^9.0.0",
+    "core-js": "^3.37.0",
+    "heic-convert": "^2.1.0",
+    "jsonwebtoken": "^9.0.2",
+    "luxon": "^3.4.4",
+    "nuxt": "^2.17.3",
+    "read-excel-file": "^5.8.1",
+    "uuid": "^9.0.1",
     "v-click-outside": "^3.2.0",
     "vee-validate": "^3.4.15",
     "vue-infinite-loading": "^2.4.5",
     "vuedraggable": "^2.24.3"
   },
   "devDependencies": {
-    "@nuxt/types": "^2.16.3",
+    "@nuxt/types": "^2.17.3",
     "sass": "^1.62.1",
     "sass-loader": "^10.4.1",
-    "webpack": "^4.46.0"
+    "webpack": "^4.47.0"
   },
   "overrides": {
-    "vue": "^2.7.15",
-    "vue-server-renderer": "^2.7.15",
-    "vue-template-compiler": "^2.7.15"
+    "vue": "^2.7.16",
+    "vue-server-renderer": "^2.7.16",
+    "vue-template-compiler": "^2.7.16"
   }
 }
