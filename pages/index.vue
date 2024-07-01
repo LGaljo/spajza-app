@@ -6,12 +6,13 @@
           <!-- Search box -->
           <b-form-input
             type="text"
+            :value="search"
+            @input="setSearch"
             placeholder="Išči"
-            v-model="searchQuery"
             aria-describedby="basic-addon2"
-            @keydown.enter.prevent="search"
+            @keydown.enter.prevent="updateFilters({field: 'search', value: search})"
           />
-          <div class="input-group-append" @click.prevent="search">
+          <div class="input-group-append" @click.prevent="updateFilters({field: 'search', value: search})">
             <span class="input-group-text fake-button" id="basic-addon2">
               <span class="material-icons icon-button">
                 search
@@ -27,18 +28,18 @@
       <b-col class="col-12 col-md-4 offset-md-8 col-lg-3 offset-lg-9">
         <div class="d-flex flex-row justify-content-end">
           <b-form-select
-            v-model="sort.field"
+            :value="sort.field"
             :options="sort.options"
             no-caret
             size="sm"
             class="mr-2"
-            @change="onFilterChange()"
+            @input="onSortUpdate({'field': $event})"
           />
           <b-button
             v-if="sort.dir === 'asc'"
             size="sm"
             variant="light"
-            @click="sort.dir = 'desc'; onFilterChange()"
+            @click="onSortUpdate({dir: 'desc'})"
             style="width: 40px;"
           >
             <b-icon-arrow-up/>
@@ -47,7 +48,7 @@
             v-else
             size="sm"
             variant="light"
-            @click="sort.dir = 'asc'; onFilterChange()"
+            @click="onSortUpdate({dir: 'asc'})"
             style="width: 40px;"
           >
             <b-icon-arrow-down/>
@@ -58,12 +59,7 @@
 
     <b-row>
       <!-- Sidebar filters -->
-      <sidebar
-        class="px-md-0 col-md-2 col-12 mb-3"
-        :filters="filters"
-        @change="onFilterChange"
-        v-model="selected"
-      />
+      <sidebar class="px-md-0 col-md-2 col-12 mb-3" expand-category @reset="resetInfLoader" />
 
       <!-- List -->
       <div class="col-md-10 col-12">
@@ -96,170 +92,61 @@
 
 <script>
 import status from "@/mixins/status";
-import {mapGetters} from "vuex";
+import {mapActions, mapGetters} from "vuex";
 import InfiniteLoading from 'vue-infinite-loading';
 import ItemCard from "../components/ItemCard";
 import sidebar from "../components/sidebar";
 import RentDialog from "../components/modals/RentDialog";
 
 export default {
+  name: 'Home',
   components: { InfiniteLoading, ItemCard, sidebar, RentDialog },
   mixins: [status],
-  data() {
-    return {
-      sort: {
-        field: '_updatedAt',
-        dir: 'desc',
-        options: [
-          { text: 'Ime predmeta', value: 'name' },
-          { text: 'Čas zadnje posodobitve', value: '_updatedAt' },
-          { text: 'Čas vnosa', value: '_createdAt' },
-          { text: 'Identifikator', value: '_id' },
-          { text: 'Vsebuje sliko', value: 'cover' },
-        ]
-      },
-      infiniteId: 0,
-      searchQuery: null,
-      viewType: 'cards',
-      selected: {
-        category: [],
-        tags: [],
-        statuses: [],
-      },
-      filters: {
-        category: {
-          name: 'Kategorije',
-          values: [],
-          nameKey: 'name',
-          valueKey: '_id',
-          visible: false,
-          type: 'multiple',
-        },
-        tags: {
-          name: 'Značke',
-          values: [],
-          nameKey: 'name',
-          valueKey: '_id',
-          visible: false,
-          type: 'multiple'
-        },
-        statuses: {
-          name: 'Status',
-          values: [],
-          nameKey: 'text',
-          valueKey: 'value',
-          visible: false,
-          type: 'multiple'
-        },
-      },
-      items: [],
-      rentedItem: null,
-      limit: 15,
-      skip: 0,
-    }
-  },
-  watch: {
-    categories() {
-      this.filters.category.values = this.categories;
-    },
-    tags() {
-      this.filters.tags.values = this.tags;
-    },
-  },
+  data: () => ({
+    infiniteId: 0,
+    searchQuery: null,
+    viewType: 'cards',
+    rentedItem: null,
+    expandFilters: false,
+  }),
   computed: {
     ...mapGetters({
-      categories: 'categories/getList',
-      tags: 'tags/get',
+      items: 'item-list/get',
+      sort: "item-list/sort",
+      search: "item-list/search"
     })
   },
   methods: {
-    onInfiniteLoad($state) {
-      this.$axios.$get(`/inventory`, {
-        params: {
-          category: this.selected.category,
-          tags: this.selected.tags,
-          statuses: this.selected.statuses,
-          search: this.searchQuery,
-          limit: this.limit,
-          skip: this.skip,
-          sort: this.sort.field,
-          sort_dir: this.sort.dir
-        }
-      })
-      .then(response => {
-        if (response.length) {
-          this.items.push(...response)
-          this.skip += this.limit
-          $state.loaded();
-        } else {
-          $state.complete();
-        }
-      })
-      .catch(reason => {
-        console.error(reason)
-      })
-    },
-    async openDetails(item) {
-      await this.$router.push(`/item/${item._id}`)
-    },
-    async onFilterChange() {
-      this.resetInfLoader();
-      const query = {};
-      if (this.selected.category.length) query['category'] = this.selected.category
-      if (this.selected.tags.length) query['tags'] = this.selected.tags
-      if (this.selected.statuses.length) query['statuses'] = this.selected.statuses
-      if (this.sort.field) query['sort'] = this.sort.field
-      if (this.sort.field) query['dir'] = this.sort.dir
-      let encoded = '?' + this.encodeQueryData(query)
-      encoded = encoded.length > 1 ? encoded : '';
-      history.pushState(
-        {},
-        null,
-        `${this.$route.path}${encoded}`
-      );
-    },
-    encodeQueryData(data) {
-      const ret = [];
-      for (let d in data)
-        ret.push(encodeURIComponent(d) + '=' + encodeURIComponent(data[d]));
-      return ret.join('&');
-    },
-
-    async search() {
-      this.resetInfLoader();
+    ...mapActions({
+      fetchAll: 'item-list/fetch',
+      fetchCategories: 'categories/fetch',
+      fetchTags: 'tags/fetch',
+      updateFilters: 'item-list/updateFilters',
+      setFilterValues: 'item-list/setFilterValues',
+      setFilters: 'item-list/setFilters',
+      onSortUpdate: 'item-list/onSortUpdate',
+      setSearch: 'item-list/setSearch',
+    }),
+    async onInfiniteLoad($state) {
+      this.fetchAll()
+        .then(response => response.length ? $state.loaded() : $state.complete())
+        .catch(reason => console.error(reason))
     },
     onRentItem(item) {
       this.$refs.dialog.open(item);
     },
     resetInfLoader() {
       this.infiniteId++;
-      this.items = [];
-      this.skip = 0;
     }
   },
   async created() {
-    await Promise.all([
-      this.$store.dispatch('categories/fetch'),
-      this.$store.dispatch('tags/fetch'),
-    ])
-    this.filters.statuses.values = this.statuses
+    await this.fetchTags().then(res => this.setFilterValues({key: 'tags', values: res}))
+    await this.fetchCategories().then(res => this.setFilterValues({key: 'category', values: res}))
+    await this.setFilterValues({key: 'statuses', values: this.statuses})
+    await this.setFilters(this.$route.query)
 
-    if (this.$route.query.category) {
-      this.selected.category = this.$route.query.category.split(',')
-      this.filters.category.visible = true;
-    }
-    if (this.$route.query.tags) {
-      this.selected.tags = this.$route.query.tags.split(',')
-      this.filters.tags.visible = true;
-    }
-    if (this.$route.query.statuses) {
-      this.selected.statuses = this.$route.query.statuses.split(',')
-      this.filters.statuses.visible = true;
-    }
-    this.sort.dir = this.$route.query?.dir ?? 'desc';
-    this.sort.field = this.$route.query?.name ?? '_updatedAt';
     if (window.innerWidth > 767) {
-      this.filters.category.visible = true;
+      this.expandFilters = true;
     }
   }
 }

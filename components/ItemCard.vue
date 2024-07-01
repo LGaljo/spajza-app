@@ -82,9 +82,6 @@ export default {
     },
   },
   methods: {
-    async openDetails(item) {
-      await this.$router.push(`/item/${item._id}`)
-    },
     openDialog() {
       this.$emit('rent')
     }
