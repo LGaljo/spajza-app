@@ -3,9 +3,12 @@
     <div v-for="(filter, key) of filters">
       <div
         class="mb-1 w-100"
-        @click="filter.visible = !filter.visible"
+        @click="toggleFilter(key)"
       >
-        <div :class="['d-flex', 'flex-row', 'justify-content-between', 'py-2', 'cursor-pointer', 'border-top', {'border-bottom': filter.visible}]">
+        <div
+          class="d-flex flex-row justify-content-between py-2 cursor-pointer border-top"
+          :class="{'border-bottom': filter.visible}"
+        >
           <span>{{ filter.name }}</span>
           <span
             class="material-icons icon-button"
@@ -13,10 +16,11 @@
             {{ filter.visible ? 'expand_more' : 'chevron_right' }}
           </span>
         </div>
-        <b-collapse v-model="filter.visible">
+        <b-collapse :visible="filter.visible">
           <b-form-checkbox-group
             v-if="filter.type === 'multiple'"
-            v-model="value[key]"
+            :checked="selected[key]"
+            @input="updateFilters({field: key, value: $event})"
             class="ml-2 mt-2 d-block"
           >
             <b-form-checkbox
@@ -30,7 +34,8 @@
           </b-form-checkbox-group>
           <b-form-radio-group
             v-else
-            v-model="value[key]"
+            :checked="selected[key]"
+            @input="updateFilters({field: key, value: $event})"
             class="ml-2 mt-2 d-block"
           >
             <b-form-radio
@@ -50,7 +55,7 @@
         size="sm"
         variant="outline-info"
         class="w-100 my-1"
-        @click="resetSelected"
+        @click="this.resetFilters"
       >
         Počisti filtre
       </b-button>
@@ -60,46 +65,31 @@
 
 <script>
 
+import {mapActions, mapGetters} from "vuex";
+
 export default {
   name: "sidebar",
   props: {
-    filters: {
-      type: Object,
-      required: true,
-    },
-    value: {
-      type: Object,
-    }
-  },
-  data() {
-    return {
-    }
-  },
-  watch: {
-    value: {
-      deep: true,
-      handler() {
-        this.$emit('change')
-      }
+    expandCategory: {
+      type: Boolean,
+      default: true,
     }
   },
   computed: {
+    ...mapGetters({
+      filters: 'item-list/filters',
+      selected: 'item-list/selected',
+    }),
     showFilterClear() {
-      return this.value.category || this.value.tags?.length || this.value.statuses?.length
-    }
+      return this.selected?.category?.length || this.selected?.tags?.length || this.selected?.statuses?.length
+    },
   },
   methods: {
-    resetSelected() {
-      this.$emit('input', {
-        category: null,
-        tags: [],
-        statuses: []
-      })
-      this.$emit('change')
-    },
-    activeCategory(category) {
-      return this.$route.query.category === category._id;
-    },
+    ...mapActions({
+      updateFilters: 'item-list/updateFilters',
+      toggleFilter: 'item-list/toggleFilter',
+      resetFilters: 'item-list/resetFilters',
+    }),
   }
 }
 </script>

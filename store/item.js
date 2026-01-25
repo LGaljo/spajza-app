@@ -1,14 +1,10 @@
 export const state = () => ({
-  list: [],
   item: null,
 })
 
 export const mutations = {
   set(state, value) {
     state.item = value
-  },
-  setList(state, value) {
-    state.list = value
   },
   unset(state) {
     state.item = null
@@ -29,14 +25,9 @@ export const getters = {
   get(state) {
     return state.item
   },
-  getList(state) {
-    return state.list
-  }
 }
 
 export const actions = {
-  // async fetchAll({ commit }){
-  // },
   async fetch({ commit }, id) {
     return await this.$axios.$get(`/inventory/${id}`)
       .then(res => {

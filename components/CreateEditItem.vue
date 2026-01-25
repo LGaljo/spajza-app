@@ -26,7 +26,7 @@
           v-model="cover.file"
           id="image"
           multiple
-          accept="image/jpeg, image/png"
+          accept="image/jpeg, image/png, image/heic"
           :state="Boolean(cover.file)"
           placeholder="Izberi ali spusti datoteko..."
           drop-placeholder="Spusti datoteko..."
@@ -203,6 +203,7 @@
 import {mapActions, mapGetters} from "vuex";
 import status from "@/mixins/status";
 import {DateTime} from "luxon";
+import * as convert from 'heic-convert/browser';
 
 export default {
   mixins: [status],
@@ -222,7 +223,7 @@ export default {
       },
       cover: {
         file: [],
-        path: null
+        path: []
       },
       loading: false,
       imagesToRemove: [],
@@ -232,14 +233,22 @@ export default {
   watch: {
     'cover.file': {
       deep: true,
-      handler() {
+      async handler() {
         if (this.cover.file) {
-          this.cover.path = [
-            ...this.cover.path,
-            ...this.cover.file.map(f => ({
+          if (!this.cover?.path?.length) {
+            this.cover.path = []
+          }
+          for (let f of this.cover.file) {
+            if (f.name?.endsWith('.heic')) {
+              const buffer = await this.fileToBuffer(f)
+              const a = await convert({buffer, format: 'JPEG'})
+              f = await this.bufferToFile(a, f.name.replaceAll('heic', 'jpeg'), 'image/jpeg')
+            }
+            this.cover.path.push({
               path: URL.createObjectURL(f),
               file: f,
-            }))]
+            })
+          }
         }
         this.form.cover = null;
       }
@@ -270,7 +279,7 @@ export default {
             category: this.item?.category?.name
           }
           // this.cover.path = this.item?.cover?.Location
-          this.cover.path = this.item?.cover.map(c => ({
+          this.cover.path = this.item?.cover?.map(c => ({
             path: c?.Location,
             file: {
               name: c?.Location.split('/').slice(-1)[0]
@@ -290,6 +299,27 @@ export default {
       removeImage: 'item/removeImage',
       uploadImage: 'item/addImage'
     }),
+    fileToBuffer(file) {
+      return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+
+        reader.onload = (event) => {
+          const arrayBuffer = event.target.result;
+          const buffer = Buffer.from(arrayBuffer);
+          resolve(buffer);
+        };
+
+        reader.onerror = (error) => {
+          reject(error);
+        };
+
+        reader.readAsArrayBuffer(file);
+      });
+    },
+    bufferToFile(buffer, fileName, fileType) {
+      const blob = new Blob([buffer], { type: fileType });
+      return new File([blob], fileName, { type: fileType });
+    },
     setCurrentTime() {
       this.form.boughtTime = DateTime.now().toFormat(`yyyy-MM-dd'T'hh:mm`)
     },
