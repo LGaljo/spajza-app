@@ -4,7 +4,7 @@ import type { NuxtError } from '#app'
 const props = defineProps<{ error: NuxtError }>()
 const router = useRouter()
 
-const statusCode = computed(() => Number(props.error?.statusCode ?? 500))
+const statusCode = computed(() => Number(props.error?.status ?? 500))
 const isNotFound = computed(() => statusCode.value === 404)
 const title = computed(() => (isNotFound.value ? 'Page not found' : 'Unexpected error'))
 const message = computed(() =>
@@ -33,7 +33,7 @@ const goBack = () => {
 </script>
 
 <template>
-  <section class="nf-theme atma-regular">
+  <section class="nf-theme">
     <div class="nf-backdrop" aria-hidden="true">
       <div class="nf-orb nf-orb--a"></div>
       <div class="nf-orb nf-orb--b"></div>
@@ -56,7 +56,7 @@ const goBack = () => {
           <button type="button" class="btn btn-ghost nf-btn-ghost" @click="goBack">Go back</button>
         </div>
 
-        <div class="nf-path">
+        <div v-if="errorUrl" class="nf-path">
           <span class="nf-path__label">Requested URL</span>
           <span class="nf-path__value">{{ errorUrl }}</span>
         </div>

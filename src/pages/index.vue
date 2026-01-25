@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, onMounted, ref, watch } from 'vue'
+import { computed, onBeforeUnmount, onMounted, ref, watch } from 'vue'
 import { storeToRefs } from 'pinia'
 import { useRoute, useRouter } from '#vue-router'
 import { useItemsStore } from '~/stores/items.store'
@@ -29,6 +29,8 @@ const loading = computed(() => loadingRef.value)
 
 const hasMore = ref(true)
 const rentDialogRef = ref<InstanceType<typeof RentDialog> | null>(null)
+const loadMoreTrigger = ref<HTMLDivElement | null>(null)
+let loadMoreObserver: IntersectionObserver | null = null
 
 const statuses = [
   { text: 'Novo', value: 'NEW' },
@@ -43,14 +45,14 @@ const applyFetchResult = (res: any[]) => {
 
 const loadInitial = async () => {
   try {
-    const tagsRes = await tagsStore.fetch(null)
+    const tagsRes = await tagsStore.fetch()
     itemsStore.setFilterValues({ key: 'tags', values: tagsRes })
   } catch (err) {
     console.error(err)
   }
 
   try {
-    const categoriesRes = await categoriesStore.fetch(null)
+    const categoriesRes = await categoriesStore.fetch()
     itemsStore.setFilterValues({ key: 'category', values: categoriesRes })
   } catch (err) {
     console.error(err)
@@ -64,7 +66,7 @@ const loadInitial = async () => {
 }
 
 const loadMore = async () => {
-  if (!hasMore.value) return
+  if (!hasMore.value || loading.value) return
   const res: any[] = await itemsStore.fetch()
   applyFetchResult(res)
 }
@@ -114,6 +116,30 @@ watch(filtersOpen, (open) => {
 })
 
 onMounted(loadInitial)
+
+onMounted(() => {
+  loadMoreObserver = new IntersectionObserver(
+    (entries) => {
+      if (entries.some((entry) => entry.isIntersecting)) {
+        loadMore()
+      }
+    },
+    { rootMargin: '200px 0px' },
+  )
+  if (loadMoreTrigger.value) {
+    loadMoreObserver.observe(loadMoreTrigger.value)
+  }
+})
+
+watch(loadMoreTrigger, (target) => {
+  if (!loadMoreObserver || !target) return
+  loadMoreObserver.observe(target)
+})
+
+onBeforeUnmount(() => {
+  loadMoreObserver?.disconnect()
+  loadMoreObserver = null
+})
 </script>
 
 <template>
@@ -161,12 +187,13 @@ onMounted(loadInitial)
         </div>
         <div v-else class="text-center text-base-content/70">Ni rezultatov iskanja</div>
 
+        <div ref="loadMoreTrigger" class="h-6"></div>
         <div class="flex justify-center">
-          <button v-if="hasMore" class="btn btn-outline" :disabled="loading" @click="loadMore">
-            <span v-if="loading" class="loading loading-spinner loading-sm"></span>
-            Naloži več
-          </button>
-          <div v-else class="text-sm text-base-content/60">Konec seznama</div>
+          <div v-if="loading" class="flex items-center gap-2 text-sm text-base-content/60">
+            <span class="loading loading-spinner loading-sm"></span>
+            Nalaganje...
+          </div>
+          <div v-else-if="!hasMore" class="text-sm text-base-content/60">Konec seznama</div>
         </div>
       </div>
     </div>

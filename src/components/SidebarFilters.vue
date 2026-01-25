@@ -65,30 +65,39 @@ const toggleFilter = (key: 'category' | 'tags' | 'statuses') => {
           <span class="font-semibold text-sm tracking-wide uppercase text-base-content/80">{{ filter.name }}</span>
           <span class="text-base-content/60 text-lg leading-none">{{ filter.visible ? '−' : '+' }}</span>
         </button>
-        <div v-if="filter.visible" class="pl-2 pb-2 space-y-2">
-          <label
-            v-for="value in filter.values"
-            :key="value[filter.valueKey]"
-            class="flex items-center gap-3 px-2 py-1 rounded-md hover:bg-base-200/70 transition-colors"
-          >
-            <input
-              v-if="filter.type === 'multiple'"
-              type="checkbox"
-              class="checkbox checkbox-sm"
-              :value="value[filter.valueKey]"
-              :checked="selected[key].includes(value[filter.valueKey])"
-              @change="
-                emit('updateFilters', {
-                  field: key,
-                  value: selected[key].includes(value[filter.valueKey])
-                    ? selected[key].filter((entry) => entry !== value[filter.valueKey])
-                    : [...selected[key], value[filter.valueKey]],
-                })
-              "
-            />
-            <span class="text-sm">{{ value[filter.nameKey] }}</span>
-          </label>
-        </div>
+        <Transition
+          enter-active-class="transition-all duration-200 ease-out"
+          enter-from-class="opacity-0 max-h-0 -translate-y-1"
+          enter-to-class="opacity-100 max-h-96 translate-y-0"
+          leave-active-class="transition-all duration-150 ease-in"
+          leave-from-class="opacity-100 max-h-96 translate-y-0"
+          leave-to-class="opacity-0 max-h-0 -translate-y-1"
+        >
+          <div v-if="filter.visible" class="pl-2 pb-2 space-y-2 overflow-hidden">
+            <label
+              v-for="value in filter.values"
+              :key="value[filter.valueKey]"
+              class="flex items-center gap-3 px-2 py-1 rounded-md hover:bg-base-200/70 transition-colors"
+            >
+              <input
+                v-if="filter.type === 'multiple'"
+                type="checkbox"
+                class="checkbox checkbox-sm"
+                :value="value[filter.valueKey]"
+                :checked="selected[key].includes(value[filter.valueKey])"
+                @change="
+                  emit('updateFilters', {
+                    field: key,
+                    value: selected[key].includes(value[filter.valueKey])
+                      ? selected[key].filter((entry) => entry !== value[filter.valueKey])
+                      : [...selected[key], value[filter.valueKey]],
+                  })
+                "
+              />
+              <span class="text-sm">{{ value[filter.nameKey] }}</span>
+            </label>
+          </div>
+        </Transition>
       </div>
 
       <button v-if="showFilterClear" class="btn btn-sm btn-outline w-full" @click="emit('resetFilters')">

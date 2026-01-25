@@ -15,7 +15,7 @@ const tag = ref('')
 const editId = ref<string | null>(null)
 
 const load = async () => {
-  await tagsStore.fetch(null)
+  await tagsStore.fetch()
 }
 
 const resetEdit = () => {
