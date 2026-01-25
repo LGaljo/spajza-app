@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed } from 'vue'
+import { computed, onMounted, ref } from 'vue'
 import { storeToRefs } from 'pinia'
 import { useRouter, useRoute } from '#vue-router'
 import { FunnelIcon } from '@heroicons/vue/24/solid'
@@ -15,7 +15,14 @@ const { user } = storeToRefs(authStore)
 
 const filtersOpen = useState<boolean>('filtersDialogOpen', () => false)
 const showSearch = computed(() => route.path === '/')
-const avatarLetter = computed(() => user.value?.username?.charAt(0)?.toUpperCase() ?? 'U')
+const hasHydrated = ref(false)
+onMounted(() => {
+  hasHydrated.value = true
+})
+const avatarLetter = computed(() => {
+  if (!hasHydrated.value) return 'U'
+  return user.value?.username?.charAt(0)?.toUpperCase() ?? 'U'
+})
 
 const searchValue = computed({
   get: () => search.value ?? '',
@@ -109,4 +116,3 @@ const logout = async () => {
     </div>
   </div>
 </template>
-

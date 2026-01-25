@@ -103,7 +103,7 @@ export const useItemStore = defineStore('item', () => {
     const formData = new FormData()
     formData.append('file', data.file)
     try {
-      return await apiFetch<InventoryItem>(`/inventory/file/${data.id}`, {
+      return await apiFetch<any>(`/inventory/file/${data.id}`, {
         method: 'POST',
         body: formData,
       })
