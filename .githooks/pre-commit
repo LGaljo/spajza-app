@@ -1,0 +1,11 @@
+#!/bin/sh
+set -e
+
+node scripts/bump-minor-version.mjs
+
+if [ -f package.json ]; then
+  git add package.json
+fi
+if [ -f package-lock.json ]; then
+  git add package-lock.json
+fi
