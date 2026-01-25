@@ -1,30 +1,18 @@
-# Base image
-FROM node:20-alpine as builder
-
+FROM node:20-alpine AS deps
 WORKDIR /app
-
-COPY --chown=node:node . .
-
+COPY package*.json ./
 RUN npm ci
 
-RUN npm run build:prod
-
-RUN rm -rf node_modules && \
-  NODE_ENV=production npm ci
-
-FROM node:20-alpine
-
+FROM node:20-alpine AS build
 WORKDIR /app
+COPY --from=deps /app/node_modules ./node_modules
+COPY . .
+RUN npm run build
 
-COPY --from=builder --chown=node:node /app  .
-
-USER node
-
-ARG NODE_ENV=production
-ARG HOST=0.0.0.0
-#ARG PORT=3100
-#ARG API_URL=http://localhost:4500
-
-EXPOSE 3100
-
-CMD ["npm", "run", "start"]
+FROM node:20-alpine AS runner
+WORKDIR /app
+ENV NODE_ENV=production
+COPY --from=build /app/.output ./.output
+COPY --from=build /app/package.json ./package.json
+EXPOSE 3000
+CMD ["node", ".output/server/index.mjs"]

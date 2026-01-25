@@ -1,45 +1,28 @@
 {
-  "name": "spajza",
-  "version": "1.2.8",
+  "name": "nuxt-app",
   "private": true,
-  "engines": {
-    "node": "^20.13.1"
-  },
+  "type": "module",
   "scripts": {
-    "dev": "npx cross-env NODE_ENV=development nuxt",
-    "build:dev": "npx cross-env NODE_ENV=development nuxt build",
-    "build:prod": "npx cross-env NODE_ENV=production nuxt build",
-    "start": "nuxt start",
+    "build": "nuxt build",
+    "dev": "nuxt dev --dotenv .env.local",
     "generate": "nuxt generate",
-    "heroku-postbuild": "npm run build:prod"
+    "preview": "nuxt preview",
+    "postinstall": "nuxt prepare"
   },
   "dependencies": {
-    "@nuxtjs/axios": "^5.13.6",
-    "@nuxtjs/toast": "^3.3.1",
-    "acorn": "^8.12.0",
-    "bootstrap": "^4.6.2",
-    "bootstrap-vue": "^2.23.1",
-    "core-js": "^3.37.0",
-    "heic-convert": "^2.1.0",
-    "jsonwebtoken": "^9.0.2",
-    "luxon": "^3.4.4",
-    "nuxt": "^2.18.1",
-    "read-excel-file": "^5.8.3",
-    "uuid": "^10.0.0",
-    "v-click-outside": "^3.2.0",
-    "vee-validate": "^3.4.15",
-    "vue-infinite-loading": "^2.4.5",
-    "vuedraggable": "^2.24.3"
-  },
-  "devDependencies": {
-    "@nuxt/types": "^2.18.1",
-    "sass": "^1.77.6",
-    "sass-loader": "^10.5.2",
-    "webpack": "^4.47.0"
-  },
-  "overrides": {
-    "vue": "^2.7.16",
-    "vue-server-renderer": "^2.7.16",
-    "vue-template-compiler": "^2.7.16"
+    "@heroicons/vue": "^2.2.0",
+    "@nuxtjs/color-mode": "^3.5.2",
+    "@nuxtjs/tailwindcss": "^6.12.2",
+    "@pinia/nuxt": "^0.7.0",
+    "@vee-validate/nuxt": "^4.14.7",
+    "@vee-validate/yup": "^4.14.7",
+    "daisyui": "^4.12.14",
+    "nuxt": "^4.3.0",
+    "nuxt-toastify": "^1.1.0",
+    "pinia": "^2.2.7",
+    "read-excel-file": "^6.0.1",
+    "vue": "latest",
+    "vue-router": "latest",
+    "yup": "^1.4.0"
   }
 }
