@@ -28,7 +28,7 @@ const [email, emailAttrs] = defineField('email')
 
 <template>
   <section class="mt-12 px-4">
-    <h1 class="text-center mb-4">Ponastavi geslo računa</h1>
+    <h1 class="text-center mb-4 atma-semibold">Ponastavi geslo računa</h1>
     <p v-if="!success" class="mb-6 text-center">
       Na vnešeni račun boš dobil povezavo za ponastavitev gesla.
     </p>
