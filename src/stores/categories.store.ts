@@ -9,7 +9,6 @@ export const useCategoriesStore = defineStore('categories', () => {
   const error = ref<unknown | null>(null)
   const loading = ref(false)
 
-  const runtimeConfig = useRuntimeConfig()
   const apiFetch = useApiFetch()
 
   const getList = computed(() => list.value)
@@ -25,7 +24,7 @@ export const useCategoriesStore = defineStore('categories', () => {
     loading.value = true
     error.value = null
     try {
-      const res = await apiFetch<Category>(`${runtimeConfig.public.apiUrl}/categories/${id}`)
+      const res = await apiFetch<Category>(`/categories/${id}`)
       category.value = res
       return res
     } catch (err) {
@@ -42,7 +41,7 @@ export const useCategoriesStore = defineStore('categories', () => {
     loading.value = true
     error.value = null
     try {
-      const res = await apiFetch<Category[]>(`${runtimeConfig.public.apiUrl}/categories`, {
+      const res = await apiFetch<Category[]>(`/categories`, {
         query: {
           ...(filters ?? {}),
         },
@@ -63,7 +62,7 @@ export const useCategoriesStore = defineStore('categories', () => {
     loading.value = true
     error.value = null
     try {
-      const res = await apiFetch<Category>(`${runtimeConfig.public.apiUrl}/categories/${id}`, {
+      const res = await apiFetch<Category>(`/categories/${id}`, {
         method: 'DELETE',
       })
       toast.success('Kategorija izbrisana')
@@ -79,7 +78,7 @@ export const useCategoriesStore = defineStore('categories', () => {
   }
 
   const unset = () => {
-    list.value = null
+    list.value = []
   }
 
   return {

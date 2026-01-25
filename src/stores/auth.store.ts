@@ -25,7 +25,7 @@ export const useAuthStore = defineStore('auth', () => {
     loading.value = true
     error.value = null
     try {
-      const res = await apiFetch<User>(`${runtimeConfig.public.apiUrl}/users/${userId}`)
+      const res = await apiFetch<User>(`/users/${userId}`)
       user.value = res
       return res
     } catch (err) {
@@ -42,7 +42,7 @@ export const useAuthStore = defineStore('auth', () => {
     loading.value = true
     error.value = null
     try {
-      const res: any = await apiFetch(`${runtimeConfig.public.apiUrl}/auth/login`, {
+      const res: any = await apiFetch(`/auth/login`, {
         method: 'POST',
         body: data,
       })
@@ -103,7 +103,7 @@ export const useAuthStore = defineStore('auth', () => {
 
   const changePassword = async (data: ChangePassData) => {
     loading.value = true
-    await apiFetch(runtimeConfig.public.apiUrl + '/auth/change-password', {
+    await apiFetch('/auth/change-password', {
       method: 'POST',
       body: JSON.stringify(data),
     })
@@ -127,7 +127,7 @@ export const useAuthStore = defineStore('auth', () => {
 
   const changePasswordExternal = async (data: ExtChangePassData) => {
     loading.value = true
-    await apiFetch(runtimeConfig.public.apiUrl + '/auth/ext-change-password', {
+    await apiFetch('/auth/ext-change-password', {
       method: 'POST',
       body: JSON.stringify(data),
     })
@@ -151,7 +151,7 @@ export const useAuthStore = defineStore('auth', () => {
 
   const requestPasswordChange = async (data: ResendData) => {
     loading.value = true
-    await apiFetch(runtimeConfig.public.apiUrl + '/auth/request-password-change', {
+    await apiFetch('/auth/request-password-change', {
       method: 'POST',
       body: JSON.stringify(data),
     })
@@ -175,7 +175,7 @@ export const useAuthStore = defineStore('auth', () => {
 
   const profileVerification = async (data: VerificationData) => {
     loading.value = true
-    await apiFetch(runtimeConfig.public.apiUrl + '/auth/verification', {
+    await apiFetch('/auth/verification', {
       method: 'POST',
       body: JSON.stringify(data),
     })
@@ -198,7 +198,7 @@ export const useAuthStore = defineStore('auth', () => {
 
   const resendProfileVerification = async (userId: string) => {
     loading.value = true
-    await apiFetch(runtimeConfig.public.apiUrl + '/auth/resend-verification', {
+    await apiFetch('/auth/resend-verification', {
       method: 'POST',
       body: JSON.stringify({ userId }),
     })

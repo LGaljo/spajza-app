@@ -29,7 +29,7 @@ const getRoleMeta = (role: string) => roles.find((entry) => entry.value === role
 
 const getUsers = async () => {
   try {
-    users.value = await apiFetch(`${runtimeConfig.public.apiUrl}/users`)
+    users.value = await apiFetch(`/users`)
   } catch (err) {
     console.error(err)
     toast.error('Napaka pri pridobivanju uporabnikov', { autoClose: 3000 })
@@ -38,7 +38,7 @@ const getUsers = async () => {
 
 const updateRole = async (user: any, role: string) => {
   try {
-    const res: any = await apiFetch(`${runtimeConfig.public.apiUrl}/users/${user._id}/role`, {
+    const res: any = await apiFetch(`/users/${user._id}/role`, {
       method: 'PUT',
       body: { role },
     })
@@ -58,7 +58,7 @@ const openDisable = (userId: string) => {
 const removeUser = async () => {
   if (!actionId.value) return
   try {
-    await apiFetch(`${runtimeConfig.public.apiUrl}/users/${actionId.value}`, {
+    await apiFetch(`/users/${actionId.value}`, {
       method: 'DELETE',
     })
     toast.success('Uporabnik onemogočen', { autoClose: 3000 })

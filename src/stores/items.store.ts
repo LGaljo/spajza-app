@@ -129,7 +129,7 @@ export const useItemsStore = defineStore('items', () => {
     loading.value = true
     error.value = null
     try {
-      const res = await apiFetch<InventoryItem[]>(`${runtimeConfig.public.apiUrl}/inventory`, {
+      const res = await apiFetch<InventoryItem[]>(`/inventory`, {
         query: {
           category: selected.category,
           tags: selected.tags,

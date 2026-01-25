@@ -69,7 +69,7 @@ const importItems = async () => {
   if (!items.value.length || validationFail.value !== 0) return
   loading.value = true
   try {
-    await apiFetch(`${runtimeConfig.public.apiUrl}/inventory/multi`, {
+    await apiFetch(`/inventory/multi`, {
       method: 'POST',
       body: items.value,
     })

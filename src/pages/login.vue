@@ -24,7 +24,7 @@ const showPassInput = computed(() => {
   return { type: showPass.value ? 'password' : 'text' }
 })
 
-const doLogin = handleSubmit(values => {
+const doLogin = handleSubmit((values: any) => {
   authStore.login(values)
 })
 
@@ -56,8 +56,8 @@ const [saveme, savemeAttrs] = defineField('saveme');
                 <LockClosedIcon class="w-6" />
                 <input v-bind="{...passwordAttrs, ...showPassInput}" v-model="password" class="grow" placeholder="Geslo"/>
                 <button>
-                  <EyeSlashIcon v-if="showPass" class="w-6" @click="showPass = !showPass" />
-                  <EyeIcon v-else class="w-6" @click="showPass = !showPass" />
+                  <EyeSlashIcon v-if="showPass" class="w-6" @click.stop.prevent="showPass = !showPass" />
+                  <EyeIcon v-else class="w-6" @click.stop.prevent="showPass = !showPass" />
                 </button>
               </label>
               <div v-if="errors.password" class="badge badge-error mt-1 w-full">{{ errors.password }}</div>

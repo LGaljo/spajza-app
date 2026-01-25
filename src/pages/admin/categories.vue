@@ -40,13 +40,13 @@ const addUpdate = async () => {
   }
   try {
     if (editId.value) {
-      await apiFetch(`${runtimeConfig.public.apiUrl}/categories/${editId.value}`, {
+      await apiFetch(`/categories/${editId.value}`, {
         method: 'POST',
         body: { name: category.value },
       })
       toast.success(`Obdobje "${category.value}" uspešno posodobljeno`, { autoClose: 3000 })
     } else {
-      await apiFetch(`${runtimeConfig.public.apiUrl}/categories`, {
+      await apiFetch(`/categories`, {
         method: 'POST',
         body: { name: category.value },
       })

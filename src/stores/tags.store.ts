@@ -8,7 +8,6 @@ export const useTagsStore = defineStore('tags', () => {
   const error = ref<unknown | null>(null)
   const loading = ref(false)
 
-  const runtimeConfig = useRuntimeConfig()
   const apiFetch = useApiFetch()
 
   const get = computed(() => list.value)
@@ -23,7 +22,7 @@ export const useTagsStore = defineStore('tags', () => {
     loading.value = true
     error.value = null
     try {
-      const res = await apiFetch<Tag[]>(`${runtimeConfig.public.apiUrl}/tags`, {
+      const res = await apiFetch<Tag[]>(`/tags`, {
         query: {
           ...(filters ?? {}),
         },
@@ -44,7 +43,7 @@ export const useTagsStore = defineStore('tags', () => {
     loading.value = true
     error.value = null
     try {
-      const res = await apiFetch<Tag>(`${runtimeConfig.public.apiUrl}/tags/${id}`, {
+      const res = await apiFetch<Tag>(`/tags/${id}`, {
         method: 'DELETE',
       })
       toast.success('Značka izbrisana')
@@ -60,7 +59,7 @@ export const useTagsStore = defineStore('tags', () => {
   }
 
   const unset = () => {
-    list.value = null
+    list.value = []
   }
 
   return {
