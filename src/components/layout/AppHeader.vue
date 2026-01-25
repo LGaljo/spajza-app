@@ -43,7 +43,7 @@ const logout = async () => {
   <div class="bg-base-100">
     <div class="navbar">
       <div class="navbar-start">
-        <a class="btn btn-ghost text-xl" @click="router.push({ path: '/' })">Špajza</a>
+        <a class="btn btn-ghost text-3xl atma-semibold d-flex justify-center items-center pt-2" @click="router.push({ path: '/' })">Špajza</a>
       </div>
 
       <div class="navbar-center hidden md:flex w-full max-w-xl" v-if="showSearch">
@@ -109,3 +109,4 @@ const logout = async () => {
     </div>
   </div>
 </template>
+
