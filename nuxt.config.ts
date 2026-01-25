@@ -4,6 +4,7 @@ import { toast } from 'vue3-toastify';
 export default defineNuxtConfig({
   app: {
     head: {
+      title: 'Špajza',
       link: [
         { rel: 'preconnect', href: "https://fonts.googleapis.com" },
         { rel: 'preconnect', href: "https://fonts.gstatic.com" },

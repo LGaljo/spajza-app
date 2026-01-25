@@ -40,13 +40,13 @@ const addUpdate = async () => {
   }
   try {
     if (editId.value) {
-      await apiFetch(`${runtimeConfig.public.apiUrl}/tags/${editId.value}`, {
+      await apiFetch(`/tags/${editId.value}`, {
         method: 'POST',
         body: { name: tag.value },
       })
       toast.success(`Značka "${tag.value}" uspešno posodobljena`, { autoClose: 3000 })
     } else {
-      await apiFetch(`${runtimeConfig.public.apiUrl}/tags`, {
+      await apiFetch(`/tags`, {
         method: 'POST',
         body: { name: tag.value },
       })

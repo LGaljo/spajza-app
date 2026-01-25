@@ -29,8 +29,6 @@ const router = useRouter()
 const categoriesStore = useCategoriesStore()
 const tagsStore = useTagsStore()
 const itemStore = useItemStore()
-const runtimeConfig = useRuntimeConfig()
-const apiFetch = useApiFetch()
 
 const statuses = [
   { text: 'Novo', value: 'NEW' },
@@ -59,7 +57,7 @@ const form = reactive<InventoryForm>({
 })
 
 const loading = ref(false)
-const coverEntries = ref<CoverEntry[]>([])
+const coverEntries: Ref = ref<CoverEntry[]>([])
 const imagesToRemove = ref<string[]>([])
 
 const optionsCats = computed(() => categoriesStore.getOptions)
@@ -97,7 +95,7 @@ const removeImage = (entry: CoverEntry) => {
   if (entry.existing?.key) {
     imagesToRemove.value.push(entry.existing.key)
   }
-  coverEntries.value = coverEntries.value.filter((item) => item.url !== entry.url)
+  coverEntries.value = coverEntries.value.filter((item: any) => item.url !== entry.url)
 }
 
 const loadExisting = async (id: string) => {
@@ -127,15 +125,15 @@ const createOrUpdate = async () => {
 
   loading.value = true
   try {
+    const basePayload = {
+      ...form,
+      category: form.categoryId,
+      boughtTime: new Date(form.boughtTime),
+    }
     if (existingId.value) {
-      await apiFetch(`${runtimeConfig.public.apiUrl}/inventory/${existingId.value}`, {
-        method: 'PUT',
-        body: {
-          ...form,
-          category: form.categoryId,
-          boughtTime: new Date(form.boughtTime),
-          cover: coverEntries.value.filter((entry) => entry.existing).map((entry) => entry.existing),
-        },
+      await itemStore.updateItem(existingId.value, {
+        ...basePayload,
+        cover: coverEntries.value.filter((entry: any) => entry.existing).map((entry: any) => entry.existing),
       })
 
       for (const entry of coverEntries.value) {
@@ -148,16 +146,9 @@ const createOrUpdate = async () => {
       }
 
       toast.success(`Predmet "${form.name}" uspešno posodobljen`, { autoClose: 2000 })
-      await router.back()
+      router.back()
     } else {
-      const res: any = await apiFetch(`${runtimeConfig.public.apiUrl}/inventory`, {
-        method: 'POST',
-        body: {
-          ...form,
-          category: form.categoryId,
-          boughtTime: new Date(form.boughtTime),
-        },
-      })
+      const res: any = await itemStore.createItem(basePayload)
       for (const entry of coverEntries.value) {
         if (entry.file) {
           await itemStore.addImage({ file: entry.file, id: res?._id })
@@ -177,8 +168,8 @@ const createOrUpdate = async () => {
 }
 
 onMounted(async () => {
-  await categoriesStore.fetch(null)
-  await tagsStore.fetch(null)
+  await categoriesStore.fetch()
+  await tagsStore.fetch()
   if (existingId.value) {
     await loadExisting(existingId.value)
   }

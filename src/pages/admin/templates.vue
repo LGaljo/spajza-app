@@ -43,7 +43,7 @@ const addTemplate = async () => {
   try {
     const formData = new FormData()
     formData.append('file', templateImage.value)
-    await apiFetch(`${runtimeConfig.public.apiUrl}/categories/file/${selectedCategory.value}`, {
+    await apiFetch(`/categories/file/${selectedCategory.value}`, {
       method: 'POST',
       body: formData,
     })
@@ -58,7 +58,7 @@ const addTemplate = async () => {
 
 const removeTemplate = async (category: any) => {
   try {
-    await apiFetch(`${runtimeConfig.public.apiUrl}/categories/remove_file/${category._id}`, { method: 'POST' })
+    await apiFetch(`/categories/remove_file/${category._id}`, { method: 'POST' })
     toast.success('Predloga uspešno izbrisana', { autoClose: 3000 })
   } catch (err) {
     console.error(err)
