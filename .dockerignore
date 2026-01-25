@@ -1,5 +1,9 @@
-Dockerfile
-.dockerignore
 node_modules
-npm-debug.log
 .nuxt
+.output
+.git
+.idea
+deprecated
+*.log
+Dockerfile
+docker-compose.yml

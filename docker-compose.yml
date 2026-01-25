@@ -1,0 +1,9 @@
+services:
+  app:
+    build: lgaljo/spajza-app:latest
+    ports:
+      - "3000:3000"
+    environment:
+      NODE_ENV: production
+      NUXT_PUBLIC_API_URL: ${NUXT_PUBLIC_API_URL}
+    restart: unless-stopped
