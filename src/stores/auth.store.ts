@@ -92,6 +92,12 @@ export const useAuthStore = defineStore('auth', () => {
     }
   }
 
+  const logout = async () => {
+    localStorage.removeItem('jwt')
+    localStorage.removeItem('userId')
+    await router.replace('/login')
+  }
+
   const unsetUser = () => {
     user.value = null
     token.value = ''
@@ -230,6 +236,7 @@ export const useAuthStore = defineStore('auth', () => {
     isNormalUser,
     fetchUser,
     login,
+    logout,
     unsetUser,
     changePassword,
     changePasswordExternal,

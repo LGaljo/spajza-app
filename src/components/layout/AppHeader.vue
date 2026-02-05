@@ -40,9 +40,7 @@ const clearSearch = async () => {
 }
 
 const logout = async () => {
-  localStorage.removeItem('jwt')
-  localStorage.removeItem('userId')
-  await router.replace('/login')
+  authStore.logout()
 }
 </script>
 
