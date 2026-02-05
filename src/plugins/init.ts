@@ -37,7 +37,7 @@ export default defineNuxtPlugin(nuxtApp => {
   nuxtApp.hooks.hook('app:created', async () => {
     if (import.meta.client) {
       await checkAuth(route, router);
-      if (!authStore.user) {
+      if (!authStore.user && authStore.token) {
         const userId = localStorage.getItem('userId')
         if (userId) {
           await authStore.fetchUser(userId)

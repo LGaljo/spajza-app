@@ -55,9 +55,9 @@ const [saveme, savemeAttrs] = defineField('saveme');
               <label class="input input-bordered flex items-center gap-2">
                 <LockClosedIcon class="w-6" />
                 <input v-bind="{...passwordAttrs, ...showPassInput}" v-model="password" class="grow" placeholder="Geslo"/>
-                <button>
-                  <EyeSlashIcon v-if="showPass" class="w-6" @click.stop.prevent="showPass = !showPass" />
-                  <EyeIcon v-else class="w-6" @click.stop.prevent="showPass = !showPass" />
+                <button type="button" @click.stop.prevent="showPass = !showPass">
+                  <EyeSlashIcon v-if="showPass" class="w-6" />
+                  <EyeIcon v-else class="w-6" />
                 </button>
               </label>
               <div v-if="errors.password" class="badge badge-error mt-1 w-full">{{ errors.password }}</div>
@@ -70,7 +70,7 @@ const [saveme, savemeAttrs] = defineField('saveme');
               </label>
             </div>
 
-            <button class="btn btn-primary">Prijavi se</button>
+            <button class="btn btn-primary" type="submit">Prijavi se</button>
             <div v-if="authStore.error" class="badge badge-error w-full">{{ authStore.error }}</div>
             <a class="link link-primary" href="/password/forgotten">Pozabljeno geslo</a>
             <a class="link link-primary" href="/registration">Nimaš računa?</a>
