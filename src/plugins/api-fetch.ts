@@ -5,7 +5,7 @@ export default defineNuxtPlugin(() => {
 
   const apiFetch = createFetch({
     defaults: {
-      baseURL: runtimeConfig.public.apiUrl,
+      baseURL: runtimeConfig.public.apiUrl || 'http://localhost:4500',
       onRequest: (request) => {
         const token = localStorage.getItem('jwt')
         if (!token) return

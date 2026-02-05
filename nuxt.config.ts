@@ -35,7 +35,7 @@ export default defineNuxtConfig({
   css: ['@/styles.css'],
   runtimeConfig: {
     public: {
-      apiUrl: process.env.API_URL ?? 'http://localhost:4500',
+      apiUrl: '', // can be overridden by NUXT_PUBLIC_API_URL environment variable
     }
   },
   pinia: {
