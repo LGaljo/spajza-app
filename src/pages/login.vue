@@ -40,11 +40,11 @@ const [saveme, savemeAttrs] = defineField('saveme');
         <div class="max-w-4xl">
           <h1 class="text-6xl md:text-6xl lg:text-8xl atma-semibold">Špajza</h1>
 
-          <form @submit.stop.prevent="doLogin" class="mt-12 flex flex-col gap-2">
+          <form @submit.stop.prevent="doLogin" class="mt-12 flex flex-col gap-2" autocomplete="on">
             <div class="form-control">
               <label class="input input-bordered flex items-center gap-2">
                 <AtSymbolIcon class="w-6" />
-                <input type="text" v-model="username" v-bind="usernameAttrs" class="grow"
+                <input id="login-username" name="username" type="text" autocomplete="username" autocapitalize="none" spellcheck="false" v-model="username" v-bind="usernameAttrs" class="grow"
                        placeholder="Uporabniško ime ali email"/>
               </label>
               <div v-if="errors.username" class="badge badge-error mt-1 w-full">{{ errors.username }}</div>
@@ -54,7 +54,7 @@ const [saveme, savemeAttrs] = defineField('saveme');
 
               <label class="input input-bordered flex items-center gap-2">
                 <LockClosedIcon class="w-6" />
-                <input v-bind="{...passwordAttrs, ...showPassInput}" v-model="password" class="grow" placeholder="Geslo"/>
+                <input id="login-password" name="password" autocomplete="current-password" v-bind="{...passwordAttrs, ...showPassInput}" v-model="password" class="grow" placeholder="Geslo"/>
                 <button type="button" @click.stop.prevent="showPass = !showPass">
                   <EyeSlashIcon v-if="showPass" class="w-6" />
                   <EyeIcon v-else class="w-6" />
