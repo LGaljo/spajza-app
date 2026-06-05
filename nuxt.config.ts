@@ -58,4 +58,14 @@ export default defineNuxtConfig({
       ErrorMessage: 'VeeErrorMessage',
     },
   },
+  vite: {
+    optimizeDeps: {
+      include: [
+        '@heroicons/vue/24/solid',
+        '@vue/devtools-core',
+        '@vue/devtools-kit',
+        'yup',
+      ]
+    }
+  }
 })
