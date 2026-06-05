@@ -1,23 +1,25 @@
-import {defineStore} from 'pinia'
-import {ref} from 'vue'
-import {toast} from 'vue3-toastify'
-import type {RegistrationData} from '~/lib/interfaces'
-import type {User} from '~/lib/types'
+import { defineStore } from 'pinia'
+import { ref } from 'vue'
+import { toast } from 'vue3-toastify'
+import type { RegistrationData } from '~/lib/interfaces'
+import type { User } from '~/lib/types'
 
 export const useUserStore = defineStore('users', () => {
   const user = ref<User | null>(null)
   const token = ref('')
   const error = ref<string | null>(null)
   const loading = ref(false)
+  const runtimeConfig = useRuntimeConfig()
   const router = useRouter()
   const apiFetch = useApiFetch()
 
   const fetchUser = async (userId: string) => {
-    user.value = await apiFetch<User>(`/users/${userId}`)
+    const data = await apiFetch<User>(runtimeConfig.public.apiUrl + '/users/' + userId)
+    user.value = data
   }
 
   const registration = async (data: RegistrationData) => {
-    await apiFetch('/users', {
+    await apiFetch(runtimeConfig.public.apiUrl +  '/users', {
       method: 'POST',
       body: JSON.stringify(data),
     })

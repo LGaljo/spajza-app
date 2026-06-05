@@ -14,9 +14,9 @@ const time = ref(5)
 const error = ref<string | null>(null)
 let timerId: ReturnType<typeof setInterval> | null = null
 
-const resolveQueryValue = (value: string | string[] | undefined) => (Array.isArray(value) ? value[0] : value ?? '')
-const userId = resolveQueryValue(String(route.query.userId))
-const token = resolveQueryValue(String(route.query.token))
+const resolveQueryValue = (value: any) => (Array.isArray(value) ? value[0] : value ?? '')
+const userId = route.query.userId ? resolveQueryValue(route.query.userId) : ''
+const token = route.query.token ? resolveQueryValue(route.query.token) : ''
 
 onMounted(async () => {
   if (!userId || !token) {

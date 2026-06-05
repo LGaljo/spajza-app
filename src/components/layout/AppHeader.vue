@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, onMounted, ref } from 'vue'
+import { computed, watch, onUnmounted } from 'vue'
 import { storeToRefs } from 'pinia'
 import { useRouter, useRoute } from '#vue-router'
 import { FunnelIcon } from '@heroicons/vue/24/solid'
@@ -13,34 +13,57 @@ const { search } = storeToRefs(itemsStore)
 const authStore = useAuthStore()
 const { user } = storeToRefs(authStore)
 
+const isAdmin = computed(() => authStore.isAdmin)
+const isKeeper = computed(() => authStore.isKeeper)
+
 const filtersOpen = useState<boolean>('filtersDialogOpen', () => false)
 const showSearch = computed(() => route.path === '/')
-const hasHydrated = ref(false)
-onMounted(() => {
-  hasHydrated.value = true
-})
-const avatarLetter = computed(() => {
-  if (!hasHydrated.value) return 'U'
-  return user.value?.username?.charAt(0)?.toUpperCase() ?? 'U'
-})
+const avatarLetter = computed(() => user.value?.username?.charAt(0)?.toUpperCase() ?? 'U')
 
 const searchValue = computed({
   get: () => search.value ?? '',
   set: (value) => itemsStore.setSearch(value),
 })
 
+let debounceTimeout: any = null
+
+watch(searchValue, (newVal) => {
+  if (debounceTimeout) {
+    clearTimeout(debounceTimeout)
+  }
+  debounceTimeout = setTimeout(async () => {
+    await itemsStore.updateFilters({ field: 'search', value: newVal })
+  }, 300)
+})
+
 const onSearch = async () => {
+  if (debounceTimeout) {
+    clearTimeout(debounceTimeout)
+    debounceTimeout = null
+  }
   await itemsStore.updateFilters({ field: 'search', value: searchValue.value })
 }
 
 const clearSearch = async () => {
   if (!searchValue.value) return
+  if (debounceTimeout) {
+    clearTimeout(debounceTimeout)
+    debounceTimeout = null
+  }
   searchValue.value = ''
   await itemsStore.updateFilters({ field: 'search', value: '' })
 }
 
+onUnmounted(() => {
+  if (debounceTimeout) {
+    clearTimeout(debounceTimeout)
+  }
+})
+
 const logout = async () => {
-  authStore.logout()
+  localStorage.removeItem('jwt')
+  localStorage.removeItem('userId')
+  await router.replace('/login')
 }
 </script>
 
@@ -48,7 +71,7 @@ const logout = async () => {
   <div class="bg-base-100">
     <div class="navbar">
       <div class="navbar-start">
-        <a class="btn btn-ghost text-3xl atma-semibold d-flex justify-center items-center pt-2" @click="router.push({ path: '/' })">Špajza</a>
+        <a class="btn btn-ghost text-xl" @click="router.push({ path: '/' })">Špajza</a>
       </div>
 
       <div class="navbar-center hidden md:flex w-full max-w-xl" v-if="showSearch">
@@ -86,12 +109,12 @@ const logout = async () => {
             tabindex="0"
             class="menu menu-sm dropdown-content bg-base-100 rounded-box z-[1] mt-3 w-52 p-2 shadow"
           >
-            <li><a @click="router.push({ path: '/admin/add'})">Dodaj</a></li>
-            <li><a @click="router.push({ path: '/admin/import'})">Uvozi</a></li>
-            <li><a @click="router.push({ path: '/admin/tags'})">Značke</a></li>
-            <li><a @click="router.push({ path: '/admin/categories'})">Kategorije</a></li>
-            <li><a @click="router.push({ path: '/admin/templates'})">Predloge slik kategorij</a></li>
-            <li><a @click="router.push({ path: '/admin/users'})">Uporabniki</a></li>
+            <li v-if="isAdmin || isKeeper"><a @click="router.push({ path: '/admin/add'})">Dodaj</a></li>
+            <li v-if="isAdmin || isKeeper"><a @click="router.push({ path: '/admin/import'})">Uvozi</a></li>
+            <li v-if="isAdmin || isKeeper"><a @click="router.push({ path: '/admin/tags'})">Značke</a></li>
+            <li v-if="isAdmin || isKeeper"><a @click="router.push({ path: '/admin/categories'})">Kategorije</a></li>
+            <li v-if="isAdmin || isKeeper"><a @click="router.push({ path: '/admin/templates'})">Predloge slik kategorij</a></li>
+            <li v-if="isAdmin"><a @click="router.push({ path: '/admin/users'})">Uporabniki</a></li>
             <li><a @click="router.push({ path: '/profile'})">Profil</a></li>
             <li><a @click="logout">Odjava</a></li>
           </ul>

@@ -1,4 +1,5 @@
 import { createFetch } from 'ofetch'
+import { useAuthStore } from '~/stores/auth.store'
 
 export default defineNuxtPlugin(() => {
   const runtimeConfig = useRuntimeConfig()
@@ -7,11 +8,11 @@ export default defineNuxtPlugin(() => {
     defaults: {
       baseURL: runtimeConfig.public.apiUrl || 'http://localhost:4500',
       onRequest: (request) => {
-        if (import.meta.server) return
+        if (!import.meta.client) return
         const token = localStorage.getItem('jwt')
         if (!token) return
 
-        if (!Object.keys(request.options?.headers).includes('Authorization')) {
+        if (!Object.keys(request.options?.headers || {}).includes('Authorization')) {
           request.options?.headers.set('Authorization', `Bearer ${token}`)
         }
       },

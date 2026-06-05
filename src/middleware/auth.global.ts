@@ -1,4 +1,5 @@
 import { Role } from '~/lib/types'
+import { useAuthStore } from '~/stores/auth.store'
 
 const unprotectedPaths = [
   '/login',
@@ -12,23 +13,22 @@ const unprotectedPaths = [
 ]
 
 const adminOnlyPaths = [
-  '/admin',
-  '/users',
-  '/tags',
-  '/categories',
-  '/import',
-  '/edit',
-  '/add',
+  '/admin/users',
+  '/admin/tags',
+  '/admin/categories',
+  '/admin/templates',
   '/admin/import',
   '/admin/add',
+  '/edit',
 ]
 
 const keeperOnlyPaths = [
-  '/import',
-  '/edit',
-  '/add',
+  '/admin/tags',
+  '/admin/categories',
+  '/admin/templates',
   '/admin/import',
   '/admin/add',
+  '/edit',
 ]
 
 type JwtPayload = {
@@ -51,20 +51,40 @@ const decodeJwtPayload = (token: string): JwtPayload | null => {
 const isPathMatch = (path: string, list: string[]) =>
   list.some(entry => decodeURI(path).startsWith(entry))
 
-export default defineNuxtRouteMiddleware((to) => {
+export default defineNuxtRouteMiddleware(async (to, from) => {
   if (import.meta.server) return
 
   const path = to.fullPath ?? to.path
   if (isPathMatch(path, unprotectedPaths)) return
 
+  const authStore = useAuthStore()
+
   const token = localStorage.getItem('jwt')
-  if (!token) {
+  if (token) {
+    if (!authStore.user) {
+      const userId = localStorage.getItem('userId')
+      if (userId) {
+        try {
+          await authStore.fetchUser(userId)
+        } catch {
+          authStore.unsetUser()
+          return navigateTo('/login')
+        }
+      } else {
+        authStore.unsetUser()
+        return navigateTo('/login')
+      }
+    }
+  } else {
+    authStore.unsetUser()
     return navigateTo('/login')
   }
 
   const decoded = decodeJwtPayload(token)
-  if (isPathMatch(path, adminOnlyPaths) && decoded?.role !== Role.ADMIN) {
-    if (isPathMatch(path, keeperOnlyPaths) && decoded?.role === Role.KEEPER) {
+  const role = authStore.user?.role ?? decoded?.role
+
+  if (isPathMatch(path, adminOnlyPaths) && role !== Role.ADMIN) {
+    if (isPathMatch(path, keeperOnlyPaths) && role === Role.KEEPER) {
       return
     }
     return navigateTo('/')

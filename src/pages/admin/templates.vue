@@ -21,7 +21,7 @@ const filterCategories = computed(() =>
 )
 
 const load = async () => {
-  await categoriesStore.fetch()
+  await categoriesStore.fetch(null)
 }
 
 const openAddTemplate = () => {
@@ -43,7 +43,7 @@ const addTemplate = async () => {
   try {
     const formData = new FormData()
     formData.append('file', templateImage.value)
-    await apiFetch(`/categories/file/${selectedCategory.value}`, {
+    await apiFetch(`${runtimeConfig.public.apiUrl}/categories/file/${selectedCategory.value}`, {
       method: 'POST',
       body: formData,
     })
@@ -58,11 +58,11 @@ const addTemplate = async () => {
 
 const removeTemplate = async (category: any) => {
   try {
-    await apiFetch(`/categories/remove_file/${category._id}`, { method: 'POST' })
+    await apiFetch(`${runtimeConfig.public.apiUrl}/categories/remove_file/${category._id}`, { method: 'POST' })
     toast.success('Predloga uspešno izbrisana', { autoClose: 3000 })
   } catch (err) {
     console.error(err)
-    toast.error('Napaka pri dodajanju predloge', { autoClose: 3000 })
+    toast.error('Napaka pri brisanju predloge', { autoClose: 3000 })
   } finally {
     await load()
   }
@@ -89,7 +89,7 @@ onMounted(load)
       <div v-if="filterCategories.length" class="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
         <div v-for="category in filterCategories" :key="category._id" class="card bg-base-100 shadow">
           <figure>
-            <img :src="category?.templateImage?.Location" alt="template" />
+            <img :src="category.templateImage.Location" alt="template" />
           </figure>
           <div class="card-body">
             <h4 class="card-title">{{ category.name }}</h4>

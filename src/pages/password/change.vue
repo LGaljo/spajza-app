@@ -13,9 +13,12 @@ definePageMeta({
   layout: 'tight',
 })
 
-const resolveQueryValue = (value: string | string[] | undefined) => (Array.isArray(value) ? value[0] : value ?? '')
-const token = computed(() => resolveQueryValue(String(route.query.token)))
-const userId = computed(() => resolveQueryValue(String(route.query.userId ?? route.query.user_id)))
+const resolveQueryValue = (value: any) => (Array.isArray(value) ? value[0] : value ?? '')
+const token = computed(() => route.query.token ? resolveQueryValue(route.query.token) : '')
+const userId = computed(() => {
+  const val = route.query.userId ?? route.query.user_id
+  return val ? resolveQueryValue(val) : ''
+})
 
 const { errors, handleSubmit, defineField } = useForm({
   validationSchema: yup.object({
@@ -28,7 +31,7 @@ const submitError = ref<string | null>(null)
 const success = ref(false)
 const showPass = ref(false)
 const showPassInput = computed(() => {
-  return { type: showPass.value ? 'password' : 'text' }
+  return { type: showPass.value ? 'text' : 'password' }
 })
 
 const onSubmit = handleSubmit(async (values) => {
@@ -67,9 +70,9 @@ const [passwordRepeat, passwordRepeatAttrs] = defineField('passwordRepeat')
           <label class="input input-bordered flex items-center gap-2">
             <LockClosedIcon class="w-6" />
             <input v-model="password" v-bind="{ ...passwordAttrs, ...showPassInput }" class="grow" placeholder="Geslo" />
-            <button>
-              <EyeSlashIcon v-if="showPass" class="w-6" @click="showPass = !showPass" />
-              <EyeIcon v-else class="w-6" @click="showPass = !showPass" />
+            <button type="button" @click.stop.prevent="showPass = !showPass" class="focus:outline-none">
+              <EyeSlashIcon v-if="showPass" class="w-6" />
+              <EyeIcon v-else class="w-6" />
             </button>
           </label>
           <div v-if="errors.password" class="badge badge-error mt-1 w-full">{{ errors.password }}</div>
@@ -84,9 +87,9 @@ const [passwordRepeat, passwordRepeatAttrs] = defineField('passwordRepeat')
               class="grow"
               placeholder="Ponovi geslo"
             />
-            <button>
-              <EyeSlashIcon v-if="showPass" class="w-6" @click="showPass = !showPass" />
-              <EyeIcon v-else class="w-6" @click="showPass = !showPass" />
+            <button type="button" @click.stop.prevent="showPass = !showPass" class="focus:outline-none">
+              <EyeSlashIcon v-if="showPass" class="w-6" />
+              <EyeIcon v-else class="w-6" />
             </button>
           </label>
           <div v-if="errors.passwordRepeat" class="badge badge-error mt-1 w-full">{{ errors.passwordRepeat }}</div>

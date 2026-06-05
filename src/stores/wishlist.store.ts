@@ -12,13 +12,14 @@ export const useWishlistStore = defineStore('wishlist', () => {
   const error = ref<unknown | null>(null)
   const loading = ref(false)
 
+  const runtimeConfig = useRuntimeConfig()
   const apiFetch = useApiFetch()
 
   const fetch = async () => {
     loading.value = true
     error.value = null
     try {
-      const res = await apiFetch<WishlistItem[]>(`/wishlist`)
+      const res = await apiFetch<WishlistItem[]>(`${runtimeConfig.public.apiUrl}/wishlist`)
       items.value = res
       return res
     } catch (err) {
@@ -34,7 +35,7 @@ export const useWishlistStore = defineStore('wishlist', () => {
     loading.value = true
     error.value = null
     try {
-      const res = await apiFetch<WishlistItem>(`/wishlist`, {
+      const res = await apiFetch<WishlistItem>(`${runtimeConfig.public.apiUrl}/wishlist`, {
         method: 'POST',
         body: {
           name: item,

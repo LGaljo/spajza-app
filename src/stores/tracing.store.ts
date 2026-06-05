@@ -7,6 +7,7 @@ export const useTracingStore = defineStore('tracing', () => {
   const error = ref<unknown | null>(null)
   const loading = ref(false)
 
+  const runtimeConfig = useRuntimeConfig()
   const apiFetch = useApiFetch()
 
   const get = computed(() => traces.value)
@@ -15,7 +16,7 @@ export const useTracingStore = defineStore('tracing', () => {
     loading.value = true
     error.value = null
     try {
-      const res = await apiFetch<Trace[]>(`/tracing/${id}`)
+      const res = await apiFetch<Trace[]>(`${runtimeConfig.public.apiUrl}/tracing/${id}`)
       traces.value = res
       return res
     } catch (err) {

@@ -133,7 +133,7 @@ onBeforeUnmount(() => {
             :title="marker.text"
           />
           <div
-            v-if="nMarker.top && nMarker.left"
+            v-if="nMarker.key"
             class="marker-tmp"
             :style="{
               top: relativeMarker(nMarker).top + 'px',

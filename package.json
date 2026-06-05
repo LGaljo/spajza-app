@@ -8,23 +8,29 @@
     "dev": "nuxt dev --dotenv .env.local",
     "generate": "nuxt generate",
     "preview": "nuxt preview",
-    "postinstall": "nuxt prepare"
+    "postinstall": "nuxt prepare",
+    "test": "vitest run"
   },
   "dependencies": {
     "@heroicons/vue": "^2.2.0",
-    "@nuxtjs/color-mode": "^4.0.0",
+    "@nuxtjs/color-mode": "^3.5.2",
     "@nuxtjs/tailwindcss": "^6.14.0",
-    "@pinia/nuxt": "^0.11.3",
+    "@pinia/nuxt": "^0.9.0",
     "@vee-validate/nuxt": "^4.15.1",
     "@vee-validate/yup": "^4.15.1",
     "daisyui": "^4.12.24",
-    "nuxt": "^4.3.0",
+    "nuxt": "^4.4.7",
     "nuxt-toastify": "^1.1.0",
-    "pinia": "^3.0.4",
-    "read-excel-file": "^6.0.1",
-    "tailwindcss": "^3.4.19",
-    "vue": "^3.5.27",
-    "vue-router": "^4.6.4",
+    "pinia": "^2.3.1",
+    "read-excel-file": "^6.0.3",
+    "vue": "latest",
+    "vue-router": "latest",
     "yup": "^1.7.1"
+  },
+  "devDependencies": {
+    "@nuxt/test-utils": "^4.0.3",
+    "@vue/test-utils": "^2.4.11",
+    "happy-dom": "^20.10.1",
+    "vitest": "^4.1.8"
   }
 }

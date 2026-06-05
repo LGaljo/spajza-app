@@ -19,10 +19,10 @@ export const useItemsStore = defineStore('items', () => {
   type SortUpdate = { dir?: string; field?: string }
   type FiltersQuery = Partial<Record<FilterKey, string>> & { name?: string; dir?: string }
 
-  const list: Ref = ref<InventoryItem[]>([])
-  const error: Ref = ref<unknown | null>(null)
-  const loading: Ref = ref(false)
-  const lastFetchCount: Ref = ref(0)
+  const list = ref<InventoryItem[]>([])
+  const error = ref<unknown | null>(null)
+  const loading = ref(false)
+  const lastFetchCount = ref(0)
 
   const filters = reactive<Record<FilterKey, FilterOption>>({
     category: {
@@ -63,7 +63,7 @@ export const useItemsStore = defineStore('items', () => {
     ],
   })
 
-  const search: Ref = ref<string | null>(null)
+  const search = ref<string | null>(null)
   const selected = reactive<SelectedFilters>({
     category: [],
     tags: [],
@@ -72,6 +72,7 @@ export const useItemsStore = defineStore('items', () => {
   const skip = ref(0)
   const limit = ref(15)
 
+  const runtimeConfig = useRuntimeConfig()
   const apiFetch = useApiFetch()
 
   const get = computed(() => list.value)
@@ -128,7 +129,7 @@ export const useItemsStore = defineStore('items', () => {
     loading.value = true
     error.value = null
     try {
-      const res = await apiFetch<InventoryItem[]>(`/inventory`, {
+      const res = await apiFetch<InventoryItem[]>(`${runtimeConfig.public.apiUrl}/inventory`, {
         query: {
           category: selected.category,
           tags: selected.tags,

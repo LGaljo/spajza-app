@@ -3,31 +3,19 @@ import { ref } from 'vue'
 import { toast } from 'vue3-toastify'
 import type { InventoryItem } from '~/lib/types'
 
-type ItemUpsertPayload = {
-  name: string
-  category: string | null
-  tags: string[]
-  count: number
-  description: string
-  location: string
-  boughtTime: Date
-  owner: string
-  status: string
-  cover?: any
-}
-
 export const useItemStore = defineStore('item', () => {
   const item = ref<InventoryItem | null>(null)
   const error = ref<unknown | null>(null)
   const loading = ref(false)
 
+  const runtimeConfig = useRuntimeConfig()
   const apiFetch = useApiFetch()
 
   const fetch = async (id: string) => {
     loading.value = true
     error.value = null
     try {
-      const res = await apiFetch<InventoryItem>(`/inventory/${id}`)
+      const res = await apiFetch<InventoryItem>(`${runtimeConfig.public.apiUrl}/inventory/${id}`)
       item.value = res
       return res
     } catch (err) {
@@ -44,7 +32,7 @@ export const useItemStore = defineStore('item', () => {
     loading.value = true
     error.value = null
     try {
-      const res = await apiFetch<InventoryItem>(`/inventory/${data._id}`, {
+      const res = await apiFetch<InventoryItem>(`${runtimeConfig.public.apiUrl}/inventory/${data._id}`, {
         method: 'PUT',
         body: data,
       })
@@ -61,49 +49,11 @@ export const useItemStore = defineStore('item', () => {
     }
   }
 
-  const createItem = async (payload: ItemUpsertPayload) => {
-    loading.value = true
-    error.value = null
-    try {
-      const res = await apiFetch<InventoryItem>(`/inventory`, {
-        method: 'POST',
-        body: payload,
-      })
-      item.value = res
-      return res
-    } catch (err) {
-      console.error(err)
-      error.value = err
-      throw err
-    } finally {
-      loading.value = false
-    }
-  }
-
-  const updateItem = async (id: string, payload: ItemUpsertPayload) => {
-    loading.value = true
-    error.value = null
-    try {
-      const res = await apiFetch<InventoryItem>(`/inventory/${id}`, {
-        method: 'PUT',
-        body: payload,
-      })
-      item.value = res
-      return res
-    } catch (err) {
-      console.error(err)
-      error.value = err
-      throw err
-    } finally {
-      loading.value = false
-    }
-  }
-
   const addImage = async (data: { file: File; id: string }) => {
     const formData = new FormData()
     formData.append('file', data.file)
     try {
-      return await apiFetch<any>(`/inventory/file/${data.id}`, {
+      return await apiFetch<InventoryItem>(`${runtimeConfig.public.apiUrl}/inventory/file/${data.id}`, {
         method: 'POST',
         body: formData,
       })
@@ -116,7 +66,7 @@ export const useItemStore = defineStore('item', () => {
 
   const removeImage = async (data: { id: string; key: string }) => {
     try {
-      return await apiFetch<InventoryItem>(`/inventory/file/${data.id}`, {
+      return await apiFetch<InventoryItem>(`${runtimeConfig.public.apiUrl}/inventory/file/${data.id}`, {
         method: 'DELETE',
         query: { key: data.key },
       })
@@ -131,7 +81,7 @@ export const useItemStore = defineStore('item', () => {
     loading.value = true
     error.value = null
     try {
-      const res = await apiFetch<InventoryItem>(`/inventory/${id}`, {
+      const res = await apiFetch<InventoryItem>(`${runtimeConfig.public.apiUrl}/inventory/${id}`, {
         method: 'DELETE',
       })
       toast.success('Predmet uspešno izbrisan')
@@ -150,7 +100,7 @@ export const useItemStore = defineStore('item', () => {
     loading.value = true
     error.value = null
     try {
-      const res = await apiFetch<InventoryItem>(`/rents/borrow/${id}`, {
+      const res = await apiFetch<InventoryItem>(`${runtimeConfig.public.apiUrl}/rents/borrow/${id}`, {
         method: 'POST',
         body: form,
       })
@@ -170,7 +120,7 @@ export const useItemStore = defineStore('item', () => {
     loading.value = true
     error.value = null
     try {
-      const res = await apiFetch<InventoryItem>(`/rents/return/${id}`, {
+      const res = await apiFetch<InventoryItem>(`${runtimeConfig.public.apiUrl}/rents/return/${id}`, {
         method: 'POST',
       })
       item.value = res
@@ -219,8 +169,6 @@ export const useItemStore = defineStore('item', () => {
     loading,
     fetch,
     update,
-    createItem,
-    updateItem,
     addImage,
     removeImage,
     remove,

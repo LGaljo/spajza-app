@@ -21,10 +21,10 @@ const {errors, handleSubmit, defineField} = useForm({
 
 const showPass = ref(false);
 const showPassInput = computed(() => {
-  return { type: showPass.value ? 'password' : 'text' }
+  return { type: showPass.value ? 'text' : 'password' }
 })
 
-const doLogin = handleSubmit((values: any) => {
+const doLogin = handleSubmit(values => {
   authStore.login(values)
 })
 
@@ -55,7 +55,7 @@ const [saveme, savemeAttrs] = defineField('saveme');
               <label class="input input-bordered flex items-center gap-2">
                 <LockClosedIcon class="w-6" />
                 <input id="login-password" name="password" autocomplete="current-password" v-bind="{...passwordAttrs, ...showPassInput}" v-model="password" class="grow" placeholder="Geslo"/>
-                <button type="button" @click.stop.prevent="showPass = !showPass">
+                <button type="button" @click.stop.prevent="showPass = !showPass" class="focus:outline-none">
                   <EyeSlashIcon v-if="showPass" class="w-6" />
                   <EyeIcon v-else class="w-6" />
                 </button>

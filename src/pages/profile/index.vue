@@ -26,7 +26,7 @@ const { errors, handleSubmit, defineField, resetForm } = useForm({
 
 const showPass = ref(false)
 const showPassInput = computed(() => {
-  return { type: showPass.value ? 'password' : 'text' }
+  return { type: showPass.value ? 'text' : 'password' }
 })
 
 const onSubmit = handleSubmit(async (values) => {
@@ -82,9 +82,9 @@ onMounted(async () => {
                 placeholder="Staro geslo"
                 autocomplete="current-password"
               />
-              <button>
-                <EyeSlashIcon v-if="showPass" class="w-6" @click="showPass = !showPass" />
-                <EyeIcon v-else class="w-6" @click="showPass = !showPass" />
+              <button type="button" @click.stop.prevent="showPass = !showPass" class="focus:outline-none">
+                <EyeSlashIcon v-if="showPass" class="w-6" />
+                <EyeIcon v-else class="w-6" />
               </button>
             </label>
             <div v-if="errors.old_pass" class="badge badge-error mt-1 w-full">{{ errors.old_pass }}</div>
@@ -100,9 +100,9 @@ onMounted(async () => {
                 placeholder="Novo geslo"
                 autocomplete="new-password"
               />
-              <button>
-                <EyeSlashIcon v-if="showPass" class="w-6" @click="showPass = !showPass" />
-                <EyeIcon v-else class="w-6" @click="showPass = !showPass" />
+              <button type="button" @click.stop.prevent="showPass = !showPass" class="focus:outline-none">
+                <EyeSlashIcon v-if="showPass" class="w-6" />
+                <EyeIcon v-else class="w-6" />
               </button>
             </label>
             <div v-if="errors.new_pass" class="badge badge-error mt-1 w-full">{{ errors.new_pass }}</div>
@@ -118,9 +118,9 @@ onMounted(async () => {
                 placeholder="Ponovi geslo"
                 autocomplete="new-password"
               />
-              <button>
-                <EyeSlashIcon v-if="showPass" class="w-6" @click="showPass = !showPass" />
-                <EyeIcon v-else class="w-6" @click="showPass = !showPass" />
+              <button type="button" @click.stop.prevent="showPass = !showPass" class="focus:outline-none">
+                <EyeSlashIcon v-if="showPass" class="w-6" />
+                <EyeIcon v-else class="w-6" />
               </button>
             </label>
             <div v-if="errors.new_pass_rep" class="badge badge-error mt-1 w-full">{{ errors.new_pass_rep }}</div>

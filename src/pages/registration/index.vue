@@ -26,7 +26,7 @@ const onSubmit = handleSubmit(values => {
 
 const showPass = ref(false);
 const showPassInput = computed(() => {
-  return { type: showPass.value ? 'password' : 'text' }
+  return { type: showPass.value ? 'text' : 'password' }
 })
 
 const [email, emailAttrs] = defineField('email');
@@ -39,11 +39,11 @@ const [passwordRepeat, passwordRepeatAttrs] = defineField('passwordRepeat');
   <section class="mt-12 px-4">
     <h1 class="text-center mb-8">Registracija</h1>
 
-    <form @submit.stop.prevent="onSubmit" class="flex flex-col gap-4">
+    <form @submit.stop.prevent="onSubmit" class="flex flex-col gap-4" autocomplete="on">
       <div class="form-control">
         <label class="input input-bordered flex items-center gap-2">
           <UserIcon class="w-6" />
-          <input type="text" v-model="username" v-bind="usernameAttrs" class="grow"
+          <input id="reg-username" name="username" type="text" autocomplete="username" v-model="username" v-bind="usernameAttrs" class="grow"
                  placeholder="Uporabniško ime"/>
         </label>
         <div v-if="errors.username" class="badge badge-error mt-1 w-full">{{ errors.username }}</div>
@@ -52,7 +52,7 @@ const [passwordRepeat, passwordRepeatAttrs] = defineField('passwordRepeat');
       <div class="form-control">
         <label class="input input-bordered flex items-center gap-2">
           <AtSymbolIcon class="w-6" />
-          <input type="text" v-model="email" v-bind="emailAttrs" class="grow"
+          <input id="reg-email" name="email" type="email" autocomplete="email" v-model="email" v-bind="emailAttrs" class="grow"
                  placeholder="Elektronski naslov"/>
         </label>
         <div v-if="errors.email" class="badge badge-error mt-1 w-full">{{ errors.email }}</div>
@@ -61,11 +61,11 @@ const [passwordRepeat, passwordRepeatAttrs] = defineField('passwordRepeat');
       <div class="form-control">
         <label class="input input-bordered flex items-center gap-2">
           <LockClosedIcon class="w-6" />
-          <input v-model="password" v-bind="{...passwordAttrs, ...showPassInput}" class="grow"
+          <input id="reg-password" name="password" autocomplete="new-password" v-model="password" v-bind="{...passwordAttrs, ...showPassInput}" class="grow"
                  placeholder="Geslo"/>
-          <button>
-            <EyeSlashIcon v-if="showPass" class="w-6" @click="showPass = !showPass" />
-            <EyeIcon v-else class="w-6" @click="showPass = !showPass" />
+          <button type="button" @click.stop.prevent="showPass = !showPass" class="focus:outline-none">
+            <EyeSlashIcon v-if="showPass" class="w-6" />
+            <EyeIcon v-else class="w-6" />
           </button>
         </label>
         <div v-if="errors.password" class="badge badge-error mt-1 w-full">{{ errors.password }}</div>
@@ -74,18 +74,18 @@ const [passwordRepeat, passwordRepeatAttrs] = defineField('passwordRepeat');
       <div class="form-control">
         <label class="input input-bordered flex items-center gap-2">
           <LockClosedIcon class="w-6" />
-          <input v-model="passwordRepeat" v-bind="{...passwordRepeatAttrs, ...showPassInput}" class="grow"
+          <input id="reg-password-repeat" name="passwordRepeat" autocomplete="new-password" v-model="passwordRepeat" v-bind="{...passwordRepeatAttrs, ...showPassInput}" class="grow"
                  placeholder="Ponovi geslo"/>
-          <button>
-            <EyeSlashIcon v-if="showPass" class="w-6" @click="showPass = !showPass" />
-            <EyeIcon v-else class="w-6" @click="showPass = !showPass" />
+          <button type="button" @click.stop.prevent="showPass = !showPass" class="focus:outline-none">
+            <EyeSlashIcon v-if="showPass" class="w-6" />
+            <EyeIcon v-else class="w-6" />
           </button>
         </label>
         <div v-if="errors.passwordRepeat" class="badge badge-error mt-1 w-full">{{ errors.passwordRepeat }}</div>
       </div>
 
 
-      <button class="btn btn-primary">Registriraj se</button>
+      <button class="btn btn-primary" type="submit">Registriraj se</button>
       <div v-if="userStore.error" class="badge badge-error w-full">{{ userStore.error }}</div>
     </form>
 

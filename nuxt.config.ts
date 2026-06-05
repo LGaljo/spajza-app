@@ -4,7 +4,6 @@ import { toast } from 'vue3-toastify';
 export default defineNuxtConfig({
   app: {
     head: {
-      title: 'Špajza',
       link: [
         { rel: 'preconnect', href: "https://fonts.googleapis.com" },
         { rel: 'preconnect', href: "https://fonts.gstatic.com" },
@@ -13,6 +12,9 @@ export default defineNuxtConfig({
     }
   },
   compatibilityDate: '2024-11-01',
+  experimental: {
+    appManifest: false,
+  },
   devtools: { enabled: true },
   srcDir: 'src/',
   modules: [
@@ -24,7 +26,6 @@ export default defineNuxtConfig({
   ],
   plugins: [
     '~/plugins/api-fetch',
-    '~/plugins/init',
   ],
   colorMode: {
     preference: 'system', // default theme
@@ -35,7 +36,7 @@ export default defineNuxtConfig({
   css: ['@/styles.css'],
   runtimeConfig: {
     public: {
-      apiUrl: '', // can be overridden by NUXT_PUBLIC_API_URL environment variable
+      apiUrl: process.env.API_URL ?? 'http://localhost:4500',
     }
   },
   pinia: {

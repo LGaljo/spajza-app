@@ -2,6 +2,16 @@
 import { ref, onMounted, watch } from 'vue'
 import { toast } from 'vue3-toastify'
 import { useCategoriesStore } from '~/stores/categories.store'
+import {
+  FolderIcon,
+  PencilSquareIcon,
+  XMarkIcon,
+  InformationCircleIcon,
+  PlusIcon,
+  CheckIcon,
+  TrashIcon,
+  ExclamationTriangleIcon,
+} from '@heroicons/vue/24/solid'
 
 definePageMeta({
   layout: 'default',
@@ -29,8 +39,10 @@ const updateEdit = (entry: any) => {
 }
 
 const removeCategory = async (entry: any) => {
-  await categoriesStore.remove(entry?._id)
-  await load()
+  if (confirm(`Ali ste prepričani, da želite izbrisati kategorijo "${entry?.name}"?`)) {
+    await categoriesStore.remove(entry?._id)
+    await load()
+  }
 }
 
 const addUpdate = async () => {
@@ -40,17 +52,17 @@ const addUpdate = async () => {
   }
   try {
     if (editId.value) {
-      await apiFetch(`/categories/${editId.value}`, {
+      await apiFetch(`${runtimeConfig.public.apiUrl}/categories/${editId.value}`, {
         method: 'POST',
         body: { name: category.value },
       })
-      toast.success(`Obdobje "${category.value}" uspešno posodobljeno`, { autoClose: 3000 })
+      toast.success(`Kategorija "${category.value}" uspešno posodobljena`, { autoClose: 3000 })
     } else {
-      await apiFetch(`/categories`, {
+      await apiFetch(`${runtimeConfig.public.apiUrl}/categories`, {
         method: 'POST',
         body: { name: category.value },
       })
-      toast.success(`Obdobje "${category.value}" uspešno dodano`, { autoClose: 3000 })
+      toast.success(`Kategorija "${category.value}" uspešno dodana`, { autoClose: 3000 })
     }
     resetEdit()
     await load()
@@ -70,48 +82,148 @@ onMounted(load)
 </script>
 
 <template>
-  <section class="max-w-3xl mx-auto px-4 py-8">
-    <h1 class="text-3xl font-semibold mb-6">Kategorije</h1>
-
-    <div class="mb-6">
-      <span class="block font-semibold">
-        {{ editId ? 'Uredi' : 'Dodaj' }}
-        <span v-if="editId" class="text-sm text-base-content/70">(Počisti polje za dodajanje nove kategorije)</span>
-      </span>
-      <div class="join mt-3 w-full">
-        <input
-          v-model="category"
-          type="text"
-          class="input input-bordered join-item w-full"
-          placeholder="Dodaj kategorijo"
-          @keydown.enter.prevent="addUpdate"
-        />
-        <button class="btn btn-primary join-item" @click="addUpdate">
-          {{ editId ? 'Shrani' : 'Dodaj' }}
-        </button>
+  <section class="max-w-6xl mx-auto px-4 py-8">
+    <!-- Header with Breadcrumbs or modern title -->
+    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-8">
+      <div>
+        <h1 class="text-3xl font-extrabold tracking-tight text-base-content">
+          Upravljanje kategorij
+        </h1>
+        <p class="text-sm text-base-content/60 mt-1">
+          Ustvarite in urejajte kategorije za organizacijo svojega inventarja.
+        </p>
       </div>
     </div>
 
-    <div class="overflow-x-auto">
-      <table class="table table-zebra">
-        <thead>
-          <tr>
-            <th>Ime</th>
-            <th class="text-right">Dejanja</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr v-for="entry in categoriesStore.getList" :key="entry._id">
-            <td>{{ entry.name }}</td>
-            <td class="text-right space-x-3">
-              <button class="btn btn-link text-error px-0" @click="removeCategory(entry)">Izbriši</button>
-              <button class="btn btn-link text-info px-0" @click="updateEdit(entry)">Uredi</button>
-            </td>
-          </tr>
-        </tbody>
-      </table>
-      <div v-if="!categoriesStore.getList?.length" class="text-center py-6">Ni kategorij</div>
-      <p class="text-sm text-base-content/70 mt-3">Brisana kategorija ne sme vsebovati predmetov.</p>
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+      <!-- Left side: Form (Form Card) -->
+      <div class="lg:col-span-4">
+        <div class="card bg-base-100 shadow-md border border-base-200/60 overflow-hidden">
+          <div class="card-body p-6">
+            <div class="flex items-center gap-2 mb-4">
+              <span class="p-2 bg-primary/10 text-primary rounded-lg">
+                <FolderIcon class="w-5 h-5" v-if="!editId" />
+                <PencilSquareIcon class="w-5 h-5" v-else />
+              </span>
+              <h2 class="card-title text-lg font-bold">
+                {{ editId ? 'Uredi kategorijo' : 'Nova kategorija' }}
+              </h2>
+            </div>
+
+            <div class="form-control w-full gap-4">
+              <div>
+                <label class="label pt-0">
+                  <span class="label-text font-semibold text-base-content/80">Naziv kategorije</span>
+                </label>
+                <div class="relative">
+                  <input
+                    v-model="category"
+                    type="text"
+                    class="input input-bordered w-full pl-3 pr-10 focus:input-primary transition-all duration-200"
+                    placeholder="Npr. Elektronika, Kuhinja..."
+                    @keydown.enter.prevent="addUpdate"
+                  />
+                  <span v-if="category" class="absolute inset-y-0 right-0 flex items-center pr-3">
+                    <button type="button" @click="resetEdit" class="text-base-content/30 hover:text-base-content/60 focus:outline-none">
+                      <XMarkIcon class="w-5 h-5" />
+                    </button>
+                  </span>
+                </div>
+                <label class="label pb-0" v-if="editId">
+                  <span class="label-text-alt text-base-content/60 flex items-center gap-1 leading-normal">
+                    <InformationCircleIcon class="w-4 h-4 text-info flex-shrink-0" />
+                    Počisti polje za dodajanje nove kategorije
+                  </span>
+                </label>
+              </div>
+
+              <div class="flex flex-col sm:flex-row gap-2 mt-2">
+                <button class="btn btn-primary flex-1 shadow-sm font-bold gap-1.5" @click="addUpdate">
+                  <PlusIcon v-if="!editId" class="w-4 h-4" />
+                  <CheckIcon v-else class="w-4 h-4" />
+                  {{ editId ? 'Shrani' : 'Dodaj' }}
+                </button>
+                <button v-if="editId" class="btn btn-ghost border border-base-300 font-bold" @click="resetEdit">
+                  Prekliči
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Right side: Table/List -->
+      <div class="lg:col-span-8 space-y-4">
+        <div class="card bg-base-100 shadow-md border border-base-200/60 overflow-hidden">
+          <div class="p-6 pb-0">
+            <h2 class="text-lg font-extrabold text-base-content flex items-center gap-2">
+              Seznam kategorij
+              <span class="badge badge-secondary badge-sm font-bold">{{ categoriesStore.getList?.length || 0 }}</span>
+            </h2>
+          </div>
+          
+          <div class="p-6">
+            <div class="overflow-x-auto rounded-lg border border-base-200">
+              <table class="table w-full">
+                <thead>
+                  <tr class="bg-base-200/50">
+                    <th class="font-bold text-xs uppercase tracking-wider text-base-content/60 pl-4">Ime kategorije</th>
+                    <th class="font-bold text-xs uppercase tracking-wider text-base-content/60 text-right pr-6">Dejanja</th>
+                  </tr>
+                </thead>
+                <tbody class="divide-y divide-base-200">
+                  <tr v-for="entry in categoriesStore.getList" :key="entry._id" class="hover:bg-base-200/20 transition-all duration-150">
+                    <td class="font-medium text-base-content pl-4">
+                      <div class="flex items-center gap-3">
+                        <span class="p-1.5 bg-base-200 text-base-content/60 rounded-md">
+                          <FolderIcon class="w-4 h-4" />
+                        </span>
+                        <span>{{ entry.name }}</span>
+                      </div>
+                    </td>
+                    <td class="text-right pr-6 py-2">
+                      <div class="inline-flex gap-1.5">
+                        <button 
+                          class="btn btn-sm btn-ghost hover:bg-info/10 hover:text-info text-base-content/70 gap-1"
+                          @click="updateEdit(entry)"
+                        >
+                          <PencilSquareIcon class="w-4 h-4" />
+                          <span class="hidden sm:inline">Uredi</span>
+                        </button>
+                        <button 
+                          class="btn btn-sm btn-ghost hover:bg-error/10 hover:text-error text-base-content/70 gap-1"
+                          @click="removeCategory(entry)"
+                        >
+                          <TrashIcon class="w-4 h-4" />
+                          <span class="hidden sm:inline">Izbriši</span>
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                  
+                  <tr v-if="!categoriesStore.getList?.length">
+                    <td colspan="2" class="text-center py-12 text-base-content/50">
+                      <FolderIcon class="w-12 h-12 mx-auto mb-2 text-base-content/20" />
+                      <p class="font-semibold text-sm">Ni najdenih kategorij</p>
+                      <p class="text-xs text-base-content/40 mt-1">Ustvarite svojo prvo kategorijo z obrazcem na levi.</p>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+
+            <div class="flex items-start gap-2.5 bg-warning/5 border border-warning/10 p-4 rounded-xl mt-6">
+              <ExclamationTriangleIcon class="w-5 h-5 text-warning flex-shrink-0 mt-0.5" />
+              <div>
+                <h4 class="text-xs font-extrabold text-warning uppercase tracking-wider">Pomembno opozorilo</h4>
+                <p class="text-xs text-base-content/75 mt-0.5 leading-relaxed">
+                  Brisana kategorija ne sme vsebovati aktivnih ali upokojenih predmetov v inventarju. Pred brisanjem se prepričajte, da so vsi predmeti prestavljeni v drugo kategorijo.
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
   </section>
 </template>
