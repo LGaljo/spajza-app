@@ -45,6 +45,9 @@ const itemId = computed(() => {
 })
 
 const item = computed(() => itemStore.item as any)
+useHead({
+  title: computed(() => item.value?.name ? `Špajza - ${item.value.name}` : 'Špajza'),
+})
 const changes = computed(() => tracingStore.get as any[])
 const user = computed(() => authStore.user as any)
 const isAdmin = computed(() => authStore.isAdmin)
